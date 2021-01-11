@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY_DJ')
+SECRET_KEY = os.environ['SECRET_KEY_DJ']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'users',
     'recipes',
     'api',
+    "debug_toolbar",
     'django.contrib.sites',
     'django.contrib.flatpages',
     'django.contrib.admin',
@@ -60,6 +61,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = 'foodgram.urls'
@@ -139,11 +141,9 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static/'),)
-
 LOGIN_URL = "/auth/login/"
 LOGIN_REDIRECT_URL = "index"
 CORS_ORIGIN_ALLOW_ALL = True
@@ -165,7 +165,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
 }
 
-AUTH_USER_MODEL = 'api.User'
+# AUTH_USER_MODEL = 'api.User'
 
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
@@ -177,3 +177,7 @@ CACHES = {
 }
 
 SITE_ID = 1
+
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
