@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+    {% load thumbnail %}
+    {% load static%}  
+    {{href_url}}  
+
+{% block head %}
+<head>       
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{{title_url}}</title>
+    <link rel="stylesheet" href="{% static './pages/{{href_url}}' %}">
+    
+</head>
+{% include "nav.html" %}
+{% endblock %}
+
+{% block page %}
+    {% block content %}
+    <main class="main container"></main>    
+	{% endblock %}
+{% endblock %}
+
+{% block footer %}
+    {% block copyright %}
+    {% include "footer.html" %}
+	{% endblock %}
+{% endblock %}
+<script src="{% static './js/components/MainCards.js' %}"></script>
+
+  <script src="{% static './js/components/Purchases.js' %}"></script>
+  <script src="{% static './js/components/Favorites.js' %}"></script>
+
+  <script src="{% static './js/config/config.js' %}"></script>
+  <script src="{% static './js/components/CardList.js' %}"></script>
+  <script src="{% static './js/components/Header.js' %}"></script>
+
+  <script src="{% static './js/api/Api.js' %}"></script>
+  <script src="{% static 'indexAuth.js' %}"></script>
+
+
+ 
+
+
+</html>
