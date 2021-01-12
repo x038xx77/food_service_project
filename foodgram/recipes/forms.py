@@ -5,7 +5,7 @@ from .models import Recipe
 class RecipeForm(forms.ModelForm):
     class Meta:
         model = Recipe
-        fields = ['diet', 'text', 'image']
+        fields = ['diet', 'title', 'image']
         labels = {
             'diet': ('Рацион'),
         }

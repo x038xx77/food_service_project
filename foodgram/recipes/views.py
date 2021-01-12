@@ -1,9 +1,4 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from .models import Recipe, Diet
-from .forms import RecipeForm
-from django.core.paginator import Paginator
-from django.contrib.auth.decorators import login_required
-from django.urls import reverse
+from django.shortcuts import render
 
 
 def page_not_found(request, exception):
@@ -20,9 +15,7 @@ def server_error(request):
 
 
 def index(request):
-    title_href = {"title_url": "Рецепты", "href_url": "index.css"}
     return render(
         request,
-        'index.html',
-        title_href
+        'index.html'
     )
