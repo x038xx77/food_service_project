@@ -1,4 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from .models import Recipe
+from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
+from .forms import RecipeForm
 
 
 def page_not_found(request, exception):
@@ -15,7 +19,26 @@ def server_error(request):
 
 
 def index(request):
+    recipe_list = Recipe.objects.order_by('-pub_date').all()
+    paginator = Paginator(recipe_list, 10)
+    page_number = request.GET.get('page')
+    page = paginator.get_page(page_number)
     return render(
         request,
-        'index.html'
+        'index.html',
+        {'page': page, 'paginator': paginator}
     )
+
+
+@login_required
+def new_recipe(request):
+    if request.method == 'POST':
+        form = RecipeForm(request.POST, files=request.FILES or None)
+        if form.is_valid():
+            recipe = form.save(commit=False)
+            recipe.author = request.user
+            recipe.save()
+            return redirect('index')
+    else:
+        form = RecipeForm()
+    return render(request, 'formRecipe.html', {'form': form, 'is_edit': False})

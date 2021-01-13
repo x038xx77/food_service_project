@@ -1,2 +1,12 @@
 {% extends "base.html" %}
+
+{% block content %}
+{% for recipe in page %}
+{% include "includes/recipe_item.html" with recipe=recipe %}
+{%endfor%}
+
+
+{%endblock%}
+
+
 	
