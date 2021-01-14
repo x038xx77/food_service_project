@@ -1,5 +1,5 @@
-from django.shortcuts import render, redirect
-from .models import Recipe
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Recipe, User, FollowUser
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from .forms import RecipeForm
@@ -30,8 +30,40 @@ def index(request):
     )
 
 
+def author_recipe(request, username):
+    recepe_author = get_object_or_404(User, username=username)
+    recipe_list = recepe_author.recipes.all()
+    paginator = Paginator(recipe_list, 10)
+    page_number = request.GET.get('page')
+    page = paginator.get_page(page_number)
+    user = request.user
+    if user.is_authenticated:
+        following = FollowUser.objects.filter(
+            user=user, author=recepe_author).exists()
+    else:
+        following = False
+    return render(
+            request,
+            'authorRecipe.html', {
+                'page': page, 'paginator': paginator, 'author': recepe_author,
+                'following': following, 'count_post': paginator.count})
+
+
 @login_required
-def new_recipe(request):
+def myfollow(request):
+    recipe_list = Recipe.objects.select_related('author').filter(
+        author__following__user=request.user)
+    paginator = Paginator(recipe_list, 10)
+    page_number = request.GET.get('page')
+    page = paginator.get_page(page_number)
+    return render(request,
+                  "myFollow.html",
+                  {"page": page,
+                   "paginator": paginator})
+
+
+@login_required
+def create_recipe(request):
     if request.method == 'POST':
         form = RecipeForm(request.POST, files=request.FILES or None)
         if form.is_valid():
@@ -42,3 +74,29 @@ def new_recipe(request):
     else:
         form = RecipeForm()
     return render(request, 'formRecipe.html', {'form': form, 'is_edit': False})
+
+
+def recipe_view(request, recipe_id, username):
+    recipe = get_object_or_404(Recipe, pk=recipe_id, author__username=username)
+    return render(
+        request,
+        'singlePage.html',
+        {'recipe': recipe, 'author': recipe.author}
+    )
+
+
+@login_required
+def recipe_edit(request, username, recipe_id):
+    recipe = get_object_or_404(Recipe, pk=recipe_id, author__username=username)
+    if request.user != recipe.author:
+        return redirect(
+            'recipe', username=request.user.username, recipe_id=recipe_id)
+    form = RecipeForm(
+        request.POST or None, files=request.FILES or None, instance=recipe)
+    if form.is_valid():
+        form.save()
+        return redirect(
+            'recipe', username=request.user.username, recipe_id=recipe_id)
+    return render(
+        request, 'formChangeRecipe.html',
+        {'form': form, 'recipe': recipe, 'is_edit': True})

@@ -73,6 +73,7 @@ class FollowRecipe(models.Model):
         User, on_delete=models.CASCADE, related_name="follower_recipe")
     recipe = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="following_recipe")
+    obj = models.BooleanField(default=False)
 
 
 class Purchases(models.Model):

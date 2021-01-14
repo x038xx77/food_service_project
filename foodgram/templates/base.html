@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
-    {% load thumbnail %}          
+    {% load thumbnail %} 
+    {% csrf_token %}         
     <head>  
         {% load static %}         
         <meta charset="UTF-8">
@@ -23,9 +24,10 @@
         {% block footer %}  {% include "footer.html" %} {%endblock%}       
         
   <script src="{% static './js/components/MainCards.js' %}"></script>
-
+  <script src="{% static './js/components/SingleCard.js' %}"></script>
   <script src="{% static './js/components/Purchases.js' %}"></script>
   <script src="{% static './js/components/Favorites.js' %}"></script>
+  <script src="{% static './js/components/Subscribe.js' %}"></script>
   <script src="{% static './js/components/AuthorRecipe.js' %}"></script>
   <script src="{% static './js/config/config.js' %}"></script>
   <script src="{% static './js/components/CardList.js' %}"></script>
@@ -34,6 +36,7 @@
   <script src="{% static './js/api/Api.js' %}"></script>
   <script src="{% static 'formRecipe.js' %}"></script>
   <script src="{% static 'indexAuth.js' %}"></script>
+  <script src="{% static 'singlePage.js' %}"></script>
 
 </body> 
 </html>
