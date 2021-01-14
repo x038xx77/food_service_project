@@ -1,57 +1,55 @@
-
-   <div class="main__header">
-        <h1 class="main__title">Регистрация</h1>
-    </div>
-    <div class="form-container">
-        <form method="post" action="{% url 'signup' %}">
-            
-            {% csrf_token %}
-            {% if form.errors %}
-                    {% for error in form.errors %}
-                        <div class="alert alert-danger" role="alert">
-                            {{ error|escape }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
-           
-            <div class="form__group">
-                <label for="first_name" class="form__label">Имя</label>
-                <div class="form__field-group">
-                    <input type="text" name="first_name" id="first_name" class="form__input">
-                    <span class="form__error"></span>
-                </div>
+<div class="main__header">
+    <h1 class="main__title">Регистрация</h1>
+</div>
+<div class="form-container">
+    <form class="form" method="post" action="{% url 'signup' %}">
+        {% csrf_token %}
+        {% if form.errors %}
+                {% for error in form.errors %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ error|escape }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+       
+        <div class="form__group">
+            <label for="first_name" class="form__label">Имя</label>
+            <div class="form__field-group">
+                <input type="text" name="first_name" id="first_name" class="form__input">
+                <span class="form__error"></span>
             </div>
-            <div class="form__group">
-                <label for="username" class="form__label">Имя пользователя</label>
-                <div class="form__field-group">
-                    <input type="text" name="username" id="username" class="form__input">
-                    <span class="form__error">Имя пользователя и пароль не совпадают. Введите правильные данные.
-                    </span>
-                </div>
+        </div>
+        <div class="form__group">
+            <label for="username" class="form__label">Имя пользователя</label>
+            <div class="form__field-group">
+                <input type="text" name="username" id="username" class="form__input">
+                <span class="form__error">Имя пользователя и пароль не совпадают. Введите правильные данные.
+                </span>
             </div>
-            <div class="form__group">
-                <label for="email" class="form__label">Адрес электронной почты</label>
-                <div class="form__field-group">
-                    <input type="email" name="email" id="email" class="form__input">
-                    <span class="form__error"></span>
-                </div>
+        </div>
+        <div class="form__group">
+            <label for="email" class="form__label">Адрес электронной почты</label>
+            <div class="form__field-group">
+                <input type="email" name="email" id="email" class="form__input">
+                <span class="form__error"></span>
             </div>
-            <div class="form__group">
-                <label for="password1" class="form__label">Пароль</label>
-                <div class="form__field-group">
-                    <input type="password" name="password1" id="password1" class="form__input">
-                    <span class="form__error"></span>
-                </div>
+        </div>
+        <div class="form__group">
+            <label for="password1" class="form__label">Пароль</label>
+            <div class="form__field-group">
+                <input type="password" name="password1" id="password1" class="form__input">
+                <span class="form__error"></span>
             </div>
-            <div class="form__group">
-                <label for="password2" class="form__label">Повторите пароль</label>
-                <div class="form__field-group">
-                    <input type="password" name="password2" id="password2" class="form__input">
-                    <span class="form__error"></span>
-                </div>
+        </div>
+        <div class="form__group">
+            <label for="password2" class="form__label">Повторите пароль</label>
+            <div class="form__field-group">
+                <input type="password" name="password2" id="password2" class="form__input">
+                <span class="form__error"></span>
             </div>
-            <div class="form__footer">
-                <button class="button button_style_blue">Создать аккаунт</button>
-            </div>
-        </form>
-    </div>
+        </div>
+        <div class="form__footer">
+            <button class="button button_style_blue">Создать аккаунт</button>
+        </div>
+    </form>
+</div>

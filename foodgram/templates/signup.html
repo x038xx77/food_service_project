@@ -1,6 +1,9 @@
 {% extends "base.html" %}
+{% load static %}
+{% block head %}
+<title>Регистрация</title>
+<link rel="stylesheet" href="{% static './pages/form.css' %}">
+{%endblock%}
 {% block content %}
-<main class="main container">
-    {% include "reg.html" %}    
-</main>
+{% include "reg.html" %}
 {%endblock%}

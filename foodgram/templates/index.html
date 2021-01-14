@@ -1,12 +1,19 @@
 {% extends "base.html" %}
-
-{% block content %}
-{% for recipe in page %}
-{% include "includes/recipe_item.html" with recipe=recipe %}
-{%endfor%}
-
-
+{% load static %}
+{% block head %}
+<title>Рецепты</title>
+<link rel="stylesheet" href="{% static './pages/index.css' %}">
 {%endblock%}
 
+{% block content %}
+    {% include "menu_diet.html" %}
+    <div class="card-list">
+        {% for recipe in page %}
+            {% include "includes/recipe_item.html" with recipe=recipe %}
+        {%endfor%}
+        </div>
+    
+        {% include "paginator.html" with items=page paginator=paginator%}
+    
 
-	
+{%endblock%}
