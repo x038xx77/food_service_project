@@ -25,6 +25,7 @@ class Subscriptions():
 
 
 class Favorites(LoginRequiredMixin, View):
+
     def post(self, request):
         reg = json.loads(request.body)
         recipe_id = reg.get("id", None)

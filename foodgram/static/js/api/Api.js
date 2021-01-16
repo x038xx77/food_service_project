@@ -87,7 +87,9 @@ class Api {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
+      },
+      data: {
+        'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value,
       },
       body: JSON.stringify({
         id: id

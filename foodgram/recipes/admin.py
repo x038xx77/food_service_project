@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Recipe, Diet, Ingredient, RecipeIngridient # noqa
+from .models import Recipe, Diet, Ingredient, RecipeIngridient, FollowRecipe # noqa
 
 
 class RecipeAdmin(admin.ModelAdmin):
@@ -12,4 +12,5 @@ class RecipeAdmin(admin.ModelAdmin):
 admin.site.register(Diet)
 admin.site.register(Ingredient)
 admin.site.register(RecipeIngridient)
+admin.site.register(FollowRecipe)
 admin.site.register(Recipe, RecipeAdmin)

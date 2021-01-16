@@ -8,7 +8,7 @@ urlpatterns = [
     # path('subscriptions/', views.Subscriptions.as_view()),
     # path('subscriptions/<int:username_id>', views.Subscriptions.as_view()),
     # path('ingredients/', views.Ingredients.as_view()),
-    path('favorites/', views.Favorites.as_view()),
+    path('favorites', views.Favorites.as_view(), name="favorite_list"),
     path('favorites/<int:recipe_id>', views.Favorites.as_view()),
     # path('ingredients/', views.Ingredients.as_view()),
 ]

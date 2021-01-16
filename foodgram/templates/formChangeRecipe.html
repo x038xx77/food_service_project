@@ -9,7 +9,7 @@
         <h1 class="main__title">Редактирование рецепта</h1>
     </div>
     <div class="form-container">
-        <form class="form">
+        <form class="form" method="post" enctype="multipart/form-data">
             <div class="form__group">
                 <label for="id_name" class="form__label">Название рецепта</label>
                 <div class="form__field-group">
@@ -97,4 +97,11 @@
             </div>
         </form>
     </div>
+{%endblock%}
+{% block js %}
+<script src="{% static './js/config/config.js' %}"></script>
+<script src="{% static './js/components/Header.js' %}"></script>
+<script src="{% static './js/utils/debouncing.js' %}"></script>
+<script src="{% static './js/api/Api.js' %}"></script>
+<script src="{% static 'formRecipe.js' %}"></script>
 {%endblock%}
