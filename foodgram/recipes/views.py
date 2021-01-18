@@ -1,19 +1,35 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Recipe, User, FollowUser, FollowRecipe
+from .models import Recipe, User, FollowUser, FollowRecipe, Diet
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
+from django.views.generic import ListView
 from .forms import RecipeForm
 
 
-class Favorites_recipe:
+class Diets:
+    def get_diet(self):
+        return Diet.objects.all()
 
-    def get_recipe(self):
-        recipe = Recipe.objects.all()
-        return recipe
 
-    def get_favorite_recipe(self):
-        recipe_follow = FollowRecipe.objects.filter(obj=True)
-        return recipe_follow
+class RecipesView(Diets, ListView):
+    """Список """
+    model = Recipe
+    queryset = Recipe.objects.all()
+    paginate_by = 5
+
+
+class FilterDietView(Diets, ListView):
+    """Фильтр diet"""
+    def get_queryset(self):
+        queryset = Recipe.objects.filter(
+            diet__in=self.request.GET.getlist("diet"))
+        return queryset
+
+
+class Favorites_recipe(Diets, ListView):
+    model = FollowRecipe
+    queryset = FollowRecipe.objects.all()
+    paginate_by = 5
 
 
 def page_not_found(request, exception):
@@ -29,31 +45,13 @@ def server_error(request):
     return render(request, "misc/500.html", status=500)
 
 
-def index(request):
-    recipe_list = Recipe.objects.order_by('-pub_date').all()
-    paginator = Paginator(recipe_list, 10)
-    page_number = request.GET.get('page')
-    page = paginator.get_page(page_number)
+def recipe_view(request, recipe_id, username):
+    recipe = get_object_or_404(
+        Recipe, pk=recipe_id, author__username=username)
     return render(
         request,
-        'index.html',
-        {'page': page, 'paginator': paginator}
-    )
-
-
-def favorite_list(request):
-    recipe_favorite = FollowRecipe.objects.all()
-    paginator = Paginator(recipe_favorite, 10)
-    page_number = request.GET.get('page')
-    page = paginator.get_page(page_number)
-    return render(
-        request,
-        'favorites.html',
-        {
-            'page': page,
-            'paginator': paginator,
-            'recipe_favorite_id': recipe_favorite
-        })
+        'singlePage.html',
+        {'recipe': recipe, 'author': recipe.author})
 
 
 def author_recipe(request, username):
@@ -65,7 +63,7 @@ def author_recipe(request, username):
     user = request.user
     if user.is_authenticated:
         following = FollowUser.objects.filter(
-            user=user, author=recepe_author).exists()
+            user=user, following=recepe_author).exists()
     else:
         following = False
     return render(
@@ -117,14 +115,6 @@ def recipe_edit(request, username, recipe_id):
     return render(
         request, 'formChangeRecipe.html',
         {'form': form, 'recipe': recipe, 'is_edit': True})
-
-
-def recipe_view(request, recipe_id, username):
-    recipe = get_object_or_404(Recipe, pk=recipe_id, author__username=username)
-    return render(
-        request,
-        'singlePage.html',
-        {'recipe': recipe, 'author': recipe.author})
 
 
 def shop_list(request):

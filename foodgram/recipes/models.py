@@ -63,16 +63,16 @@ class RecipeIngridient(models.Model):
 
 class FollowUser(models.Model):
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="follower")
-    author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="following")
+        User, on_delete=models.CASCADE, related_name='following')
+    following = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='followers')
 
 
 class FollowRecipe(models.Model):
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="follower_recipe")
-    recipe = models.ForeignKey(
-        Recipe, on_delete=models.CASCADE, related_name="following_recipe")
+        User, on_delete=models.CASCADE, related_name="following_recipe")
+    following_recipe = models.ForeignKey(
+        Recipe, on_delete=models.CASCADE, related_name="followers_recipe")
     obj = models.BooleanField(default=False)
 
 

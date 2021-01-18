@@ -1,5 +1,5 @@
     {% load thumbnail %}      
-    {% csrf_token %}     
+        
             <div class="card" data-id={{recipe.id}} >    
                 {% thumbnail recipe.image "960x339" crop="center" upscale=True as im %}             
                 <a href="{% url 'recipe' recipe.author.username recipe.id %}" class="link" target="_blank"><img src="{{ im.url }}" alt="Какой-то текст" class="card__image"></a>
@@ -7,28 +7,35 @@
                 <div class="card__body">
                     <a class="card__title link" href="#" target="_blank">{{recipe.title}}</a>
                     <ul class="card__items">
-                        <li class="card__item"><span class="badge badge_style_green">Обед</span></li>
-                        <li class="card__item"><span class="badge badge_style_orange">Завтрак</span></li>
-                        <li class="card__item"><span class="badge badge_style_purple">Ужин</span></li>
+                        {% if recipe.diet == "Ужин" %} 
+                        <li class="card__item"><span class="badge badge_style_green">{{recipe.diet}}</span></li>
+                        {% elif recipe.diet == "Завтрак" %}
+                        <li class="card__item"><span class="badge badge_style_orange">{{recipe.diet}}</span></li>
+                        {% else %}
+                        <li class="card__item"><span class="badge badge_style_purple">{{recipe.diet}}</span></li>
+                        {%endif%}
                     </ul>
                     <div class="card__items card__items_column">
                         <p class="card__text"><span class="icon-time"></span> {{recipe.cooking_time}} мин.</p>
                         <p class="card__text"><span class="icon-user"></span> <a href="{% url 'author_recipe' recipe.author.username %}" style="color: black">{{recipe.author.username}} </a></p>
                     </div>
                 </div>
-                
                 <div class="card__footer">
                     <button class="button button_style_light-blue" name="purchases" data-out ><span class="icon-plus button__icon"></span>Добавить в покупки</button>
+                    {%if recip %}
+                        {% for follow_recipe in followrecipe_list %}
+                    <!-- {{recipe.id|floatformat:"0"}} -->
+                    {{follow_recipe.following_recipe}}
                     
-                   
-                    
-                    {{recipe.id}}
-                    {% if recipe.id %}
-                    <button class="button button_style_none" name="favorites"><span class="icon-favorite icon-favorite_active"></span></button>
-                    {% else %}
-                    <button class="button button_style_none" name="favorites" data-out><span class="icon-favorite"></span></button>
-                    {% endif %}                   
-                </div>
-                
+                        {% if follow_recipe.recipe.id|floatformat:"0" == recipe.id|floatformat:"0" %}
+                        <button class="button button_style_none" name="favorites"><span class="icon-favorite icon-favorite_active"></span></button>                 
+                        {%endif%}
+                    {%endfor%}
+                    {%else%}
+                    {% csrf_token %} 
+                    <button class="button button_style_none" name="favorites" data-out><span class="icon-favorite"></span></button>        
+                    {%endif%}
+
+                </div>    
             </div>
    

@@ -11,13 +11,17 @@
         {% block head %} 
         <title>Рецепты</title>
         <link rel="stylesheet" href="{% static './pages/index.css' %}">
-        {%endblock%}
+        {%endblock%}   
+                  
     </head>       
     <body class="body">         
         {% block menu %}   {% include "menu.html" %}  {%endblock%}       
     <main class="main container">  
-                
-        {% block content %} {%endblock%}  
+        {% block menu_diet %}  {%endblock%}   
+        
+        {% block content %}         
+        {%endblock%} 
+          
           
     </main>         
         {% block footer %}  {% include "footer.html" %} {%endblock%}       
