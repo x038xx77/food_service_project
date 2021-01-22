@@ -3,23 +3,38 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views import View
-from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from api.serializers import UserSerializer
 
 from recipes.models import (
     Recipe,
     FollowRecipe,
     FollowUser,
-    User
+    User,
+    Purchases,
+    Unit
 )
 
 
-class Purchases():
-    """
-    docstring
-    """
-    pass
+class Purchases_shop(View):
+
+    template_name = "shopList.html"
+
+    def post(self, request):
+        reg = json.loads(request.body)
+        recipe_id = reg.get("id", None)
+        if recipe_id is not None:
+            recipe = get_object_or_404(Recipe, id=recipe_id)
+            obj, created = Purchases.objects.get_or_create(
+                user=request.user, recipe_id=recipe.id)
+            if created:
+                return JsonResponse({"success": True})
+            return JsonResponse({"success": True})
+        return JsonResponse({"success": False}, status=400)
+
+    def delete(self, request, purchase_id):
+        recipe = get_object_or_404(
+            Purchases, recipe_id=purchase_id, user=request.user)
+        recipe.delete()
+        return JsonResponse({"success": True})
 
 
 class Subscriptions(LoginRequiredMixin, View):
@@ -28,17 +43,21 @@ class Subscriptions(LoginRequiredMixin, View):
         reg = json.loads(request.body)
         user_id = reg.get("id", None)
         if user_id is not None:
-            user_id = get_object_or_404(User, id=user_id)
-            following, created = FollowUser.objects.get_or_create(
-                user=request.user, following=user_id)
-            if created:
+            username = User.objects.get(pk=user_id)
+            author = get_object_or_404(User, username=username)
+            obj_exists = FollowUser.objects.filter(
+                user=request.user, author=author).exists()
+            if not obj_exists and author.id != request.user.id:
+                created = FollowUser.objects.create(
+                    user=request.user, author=author)
+                if created:
+                    return JsonResponse({"success": True})
                 return JsonResponse({"success": True})
-            return JsonResponse({"success": True})
-        return JsonResponse({"success": False}, status=400)
+            return JsonResponse({"success": False}, status=400)
 
-    def delete(self, request, recipe_id):
+    def delete(self, request, username_id):
         recipe = get_object_or_404(
-            FollowRecipe, recipe=recipe_id, user=request.user)
+            FollowUser, author=username_id, user=request.user)
         recipe.delete()
         return JsonResponse({"success": True})
 
@@ -64,17 +83,14 @@ class Favorites(LoginRequiredMixin, View):
         return JsonResponse({"success": True})
 
 
-class Ingredients(object):
-    """
-    docstring
-    """
-    pass
-
-
-class UserFollowingViewSet(viewsets.ModelViewSet):
-
-    permission_classes = (IsAuthenticatedOrReadOnly,)
-    serializer_class = UserSerializer
-    queryset = FollowUser.objects.all()
-
-    # return JsonResponse({'status':status.HTTP_200_OK, 'data':{'user':serializer.data, 'following':following_data.data, 'followers':followers_data.data}, "message":"success"}) # noqa
+def get_ingredients(request):
+    part_product_name = request.GET["query"]
+    print(part_product_name)
+    unit_dimension = Unit.objects.filter(
+        ingredients_unit__icontains=part_product_name)
+    dimension = unit_dimension[0].dimension
+    unit_value = [{
+        "title": part_product_name,
+        "dimension": dimension}]
+    print(unit_value)
+    return JsonResponse(unit_value, safe=False)

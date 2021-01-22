@@ -1,34 +1,25 @@
 <!doctype html>
 <html lang="en">
-    {% load thumbnail %} 
-    {% csrf_token %}         
-    <head>  
-        {% load static %}         
+    {% load thumbnail %}
+    {% csrf_token %}
+    <head>
+        {% load static %}      
         <meta charset="UTF-8">
         <meta name="viewport"
               content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        {% block head %} 
+        {% block head %}
         <title>Рецепты</title>
         <link rel="stylesheet" href="{% static './pages/index.css' %}">
-        {%endblock%}   
-                  
-    </head>       
-    <body class="body">         
+        {%endblock%}        
+    </head>
+    <body class="body">
         {% block menu %}   {% include "menu.html" %}  {%endblock%}       
-    <main class="main container">  
-        {% block menu_diet %}  {%endblock%}   
-        
-        {% block content %}         
-        {%endblock%} 
-          
-          
-    </main>         
-        {% block footer %}  {% include "footer.html" %} {%endblock%}       
-        
-{% block js %}
-
-{%endblock%}
-
+    <main class="main container">
+        {% block menu_diet %} {%endblock%}
+        {% block content %} {%endblock%}
+    </main>
+{% block footer %}  {% include "footer.html" %} {%endblock%}               
+{% block js %} {%endblock%}
 </body> 
 </html>

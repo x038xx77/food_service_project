@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Recipe, User, FollowUser, FollowRecipe, Diet
+from .models import Recipe, User, FollowUser, FollowRecipe, Diet, Purchases
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView
 from .forms import RecipeForm
+import json # noqa
 
 
 class Diets:
@@ -45,13 +46,38 @@ def server_error(request):
     return render(request, "misc/500.html", status=500)
 
 
+def list_ingredients(data):
+    nameIngredient_list = []
+    j = 1
+    for i in data:
+        if "nameIngredient_"+str(j) == i:
+            nameIngredient_list.append(i)
+            j += 1
+    nameIngredient_dict = {}
+    for i in range(1, len(nameIngredient_list)+1):
+        a = data['nameIngredient_'+str(i)]
+        nameIngredient_dict[a] = data['valueIngredient_'+str(i)]
+    all_dict = {}
+    all_dict.update(nameIngredient_dict)
+    return all_dict
+
+
 def recipe_view(request, recipe_id, username):
     recipe = get_object_or_404(
         Recipe, pk=recipe_id, author__username=username)
+    user = request.user
+    if user.is_authenticated:
+        following_recipe = FollowRecipe.objects.filter(
+            user = user, # noqa
+            following_recipe = recipe).exists() # noqa
+    else:
+        following_recipe = False
     return render(
         request,
         'singlePage.html',
-        {'recipe': recipe, 'author': recipe.author})
+        {
+            'recipe': recipe, 'author': recipe.author,
+            'following_recipe': following_recipe }) # noqa
 
 
 def author_recipe(request, username):
@@ -75,25 +101,49 @@ def author_recipe(request, username):
 
 @login_required
 def myfollow(request):
+    author_list = FollowUser.objects.select_related(
+        'author').filter(author__following__user=request.user)
     recipe_list = Recipe.objects.select_related('author').filter(
         author__following__user=request.user)
-    paginator = Paginator(recipe_list, 10)
+    paginator = Paginator(author_list, 3)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
     return render(request,
                   "myFollow.html",
                   {"page": page,
-                   "paginator": paginator})
+                   "paginator": paginator,
+                   'author_list': author_list,
+                   'recipe_list': recipe_list})
 
 
 @login_required
 def create_recipe(request):
     if request.method == 'POST':
         form = RecipeForm(request.POST, files=request.FILES or None)
+        recipe_dict = request.POST.dict()
+        print(recipe_dict)
+        diet_tag = []
+        for i in recipe_dict:
+            if i == "breakfast":
+                diet_tag.append(i)
+            elif i == "lunch":
+                diet_tag.append(i)
+            elif i == "dinner":
+                diet_tag.append(i)
+        if len(diet_tag) != 1:
+            return render(
+                request, 'formRecipe.html', {'form': form, 'is_edit': False})
         if form.is_valid():
             recipe = form.save(commit=False)
             recipe.author = request.user
             recipe.save()
+            diet_reg = get_object_or_404(Diet, slug=diet_tag[0])
+
+            Recipe.objects.filter(
+                author=recipe.author,
+                id=recipe.id).update(
+                    ingredients=list_ingredients(request.POST.dict()),
+                    diet=diet_reg)
             return redirect('index')
     else:
         form = RecipeForm()
@@ -118,4 +168,9 @@ def recipe_edit(request, username, recipe_id):
 
 
 def shop_list(request):
-    return render(request, 'shopList.html')
+    count_purchase = Purchases.objects.all().count()
+    purchases = Purchases.objects.all()
+    return render(
+        request, 'shopList.html', {
+            "purchases": purchases,
+            "count_purchase": count_purchase})

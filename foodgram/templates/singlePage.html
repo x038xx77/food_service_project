@@ -4,49 +4,56 @@
 <title>Французские тосты</title>
 <link rel="stylesheet" href="{% static './pages/single.css' %}">
 {%endblock%}
-{% block content %}    
-        <div class="single-card" data-id="371" data-author="12">
+{% block content %}  
+{% csrf_token %} 
+        <div class="single-card" data-id={{recipe.id}} data-author={{author.id}}>
             <img src="{% static './images/testCardImg.png' %}" alt="какой-то текст" class="single-card__image">
             <div class="single-card__info">
                 <div class="single-card__header-info">
-                    <h1 class="single-card__title">Французские тосты</h1>
+                    <h1 class="single-card__title">{{recipe.title}}</h1>
                     <div class="single-card__favorite">
+                        {%if following_recipe %}
+                        <button class="button button_style_none" name="favorites"><span class="icon-favorite icon-favorite_active"></span></button>
+                        {%else%}
                         <button class="button button_style_none" name="favorites" data-out><span class="icon-favorite icon-favorite_big"></span></button>
+                        {%endif%}
                         <div class="single-card__favorite-tooltip tooltip">Добавить в избранное</div>
                     </div>
                 </div>
                 <ul class="single-card__items">
-                    <li class="single-card__item"><span class="badge badge_style_green">Обед</span></li>
-                    <li class="single-card__item"><span class="badge badge_style_orange">Завтрак</span></li>
-                    <li class="single-card__item"><span class="badge badge_style_purple">Ужин</span></li>
+                    {% if recipe.diet == "Обед" %}
+                    <li class="single-card__item"><span class="badge badge_style_green">{{recipe.diet}}</span></li>
+                    {% elif recipe.diet == "Завтрак" %}
+                    <li class="single-card__item"><span class="badge badge_style_orange">{{recipe.diet}}</span></li>
+                    {% else %}
+                    <li class="single-card__item"><span class="badge badge_style_purple">{{recipe.diet}}</span></li>
+                    {%endif%}
+     
                 </ul>
                 <div class="single-card__items single-card__items_column">
-                    <p class="single-card__text"><span class="icon-time"></span> 20 мин.</p>
+                    <p class="single-card__text"><span class="icon-time"></span> {{recipe.cooking_time}} мин.</p>
                     <ul class="single-card__items">
-                        <li class="single-card__item"><p class="single-card__text"><span class="icon-user"></span> Вероника Чернова</p></li>
+                        <li class="single-card__item"><p class="single-card__text"><span class="icon-user"></span> {{recipe.author.username}}</p></li>
                         <li class="single-card__item">  <a style="margin-left: 2.5em" href="{% url 'recipe_edit' recipe.author.username recipe.id %}" class="single-card__text">Редактировать рецепт</a></li>
                     </ul>
                 </div>
-                <ul class="single-card__items">
+                <ul class="single-card__items" >
+                    {% csrf_token %} 
                     <li class="single-card__item"><button class="button button_style_blue" name="purchases" data-out><span class="icon-plus"></span> Добавить в покупки</button></li>
                     <li class="single-card__item"><button class="button button_style_light-blue button_size_subscribe" name="subscribe" data-out>Подписаться на автора</button></li>
                 </ul>
                 <div class="single-card__section">
                     <h3 class="single-card__section-title">Ингридиенты:</h3>
                     <div class="single-card__items single-card__items_column">
-                        <p class=" single-card__section-item">Яйцо - 2 шт.</p>
-                        <p class=" single-card__section-item">Молоко - 200 мл.</p>
-                        <p class=" single-card__section-item">Тосты - 4 шт.</p>
-                        <p class=" single-card__section-item">Сахар 2 сл.л.</p>
-                        <p class=" single-card__section-item">Яйцо - 2 шт.</p>
-                        <p class=" single-card__section-item">Молоко - 200 мл.</p>
+                        {%for nameIngredient, valueIngredient in recipe.ingredients.items %}
+                        <p class=" single-card__section-item">{{nameIngredient}} - {{valueIngredient}} шт.</p>
+                        {%endfor%}
                     </div>
                 </div>
                 <div class="single-card__section">
                     <h3 class="single-card__section-title">Описание:</h3>
-                    <p class=" single-card__section-text">Смешать молоко с сахаром, добавить яйца, тщательно все взбить.
-                        Обмакнуть тосты в смесь и жарить на сливочном масле до золотистой корочки.</p>
-                    <p class=" single-card__section-text">Полить сверху сиропом топинамбура и украсить ягодами.</p>
+                    
+                    <p class=" single-card__section-text">{{recipe.description}}</p>
                 </div>
             </div>
         </div>

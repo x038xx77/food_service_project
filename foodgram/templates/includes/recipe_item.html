@@ -1,5 +1,4 @@
     {% load thumbnail %}      
-        
             <div class="card" data-id={{recipe.id}} >    
                 {% thumbnail recipe.image "960x339" crop="center" upscale=True as im %}             
                 <a href="{% url 'recipe' recipe.author.username recipe.id %}" class="link" target="_blank"><img src="{{ im.url }}" alt="Какой-то текст" class="card__image"></a>
@@ -26,7 +25,6 @@
                         {% for follow_recipe in followrecipe_list %}
                     <!-- {{recipe.id|floatformat:"0"}} -->
                     {{follow_recipe.following_recipe}}
-                    
                         {% if follow_recipe.recipe.id|floatformat:"0" == recipe.id|floatformat:"0" %}
                         <button class="button button_style_none" name="favorites"><span class="icon-favorite icon-favorite_active"></span></button>                 
                         {%endif%}
@@ -35,7 +33,5 @@
                     {% csrf_token %} 
                     <button class="button button_style_none" name="favorites" data-out><span class="icon-favorite"></span></button>        
                     {%endif%}
-
                 </div>    
             </div>
-   

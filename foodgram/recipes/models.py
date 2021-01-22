@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.contrib.postgres.fields import JSONField
+from django.shortcuts import reverse
 
 User = get_user_model()
 
@@ -8,16 +10,16 @@ class Diet(models.Model):
     title = models.CharField(max_length=7)
     slug = models.SlugField(unique=True)
 
+    def get_absolute_url(self):
+        return reverse('filter', args=[str(self.slug)])
+
     def __str__(self):
         return self.title
 
 
 class Recipe(models.Model):
-    title = models.TextField(
-        'Название рецепта',
-        help_text="Please enter your Text...", default=None)
-    ingredients = models.ManyToManyField(
-        'Ingredient', verbose_name='Ингридиенты',)
+    title = models.TextField(blank=True)
+    ingredients = JSONField(null=True)
     pub_date = models.DateTimeField("date published", auto_now_add=True)
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="recipes")
@@ -32,47 +34,18 @@ class Recipe(models.Model):
         ordering = ["-pub_date"]
 
 
-class Ingredient(models.Model):
-    nameIngredient = models.CharField(
-        max_length=200, verbose_name='Название'
-    )
-    valueIngredient = models.ManyToManyField(
-        Recipe, through='RecipeIngridient'
-    )
-    unitsIngredient = models.CharField(
-        max_length=20, verbose_name='Единица измерения'
-    )
-
-    def __str__(self):
-        return self.nameIngredient
-
-
-class RecipeIngridient(models.Model):
-    ingredient = models.ForeignKey(
-        Ingredient,
-        on_delete=models.CASCADE,
-        related_name='ingredients'
-    )
-    recipe = models.ForeignKey(
-        Recipe,
-        on_delete=models.CASCADE,
-        related_name='recipes'
-    )
-    amount = models.PositiveSmallIntegerField()
-
-
 class FollowUser(models.Model):
     user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='follower')
+    author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='following')
-    following = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='followers')
 
 
 class FollowRecipe(models.Model):
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="following_recipe")
+        User, on_delete=models.CASCADE, related_name="followers_recipe")
     following_recipe = models.ForeignKey(
-        Recipe, on_delete=models.CASCADE, related_name="followers_recipe")
+        Recipe, on_delete=models.CASCADE, related_name="following_recipe")
     obj = models.BooleanField(default=False)
 
 
@@ -83,3 +56,8 @@ class Purchases(models.Model):
     recipe = models.ForeignKey(
         Recipe, on_delete=models.CASCADE,
         related_name='recipe_shoping_list')
+
+
+class Unit(models.Model):
+    ingredients_unit = models.CharField(max_length=200)
+    dimension = models.CharField(max_length=200)

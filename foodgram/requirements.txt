@@ -43,5 +43,10 @@ wrapt==1.12.1
 zipp==3.1.0
 django-environ==0.4.5
 sorl-thumbnail==12.7.0
-pip install django-debug-toolbar==3.2
-Pillow 8.1.0
+django-debug-toolbar==3.2
+Pillow==8.1.0
+psycopg2-binary
+flake8==3.8.4
+postgresql
+postgresql-contrib
+gunicorn
