@@ -9,7 +9,7 @@ urlpatterns = [
     path('create_recipe/', views.create_recipe, name='create_recipe'),
     path(
         'favorite_list/',
-        views.Favorites_recipe.as_view(), name='favorite_list'
+        views.FavoritesView.as_view(), name='favorite_list'
         ),
     path('<username>/', views.author_recipe, name='author_recipe'),
     path(

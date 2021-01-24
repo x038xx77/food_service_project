@@ -6,13 +6,17 @@
                 <div class="card__body">
                     <a class="card__title link" href="#" target="_blank">{{recipe.title}}</a>
                     <ul class="card__items">
-                        {% if recipe.diet == "Ужин" %} 
-                        <li class="card__item"><span class="badge badge_style_green">{{recipe.diet}}</span></li>
-                        {% elif recipe.diet == "Завтрак" %}
-                        <li class="card__item"><span class="badge badge_style_orange">{{recipe.diet}}</span></li>
-                        {% else %}
-                        <li class="card__item"><span class="badge badge_style_purple">{{recipe.diet}}</span></li>
-                        {%endif%}
+                         <!-- {{recipe}}
+                        {% for i in diets %}
+                         {{i}}
+                        {% endfor %}
+                        <li class="card__item"><span class="badge badge_style_green">{{diet_breakfast}}</span></li>
+                        
+                        <li class="card__item"><span class="badge badge_style_orange">{{diet_lunch}}</span></li>
+                       
+                        <li class="card__item"><span class="badge badge_style_purple">{{diet_dinner}}</span></li> -->
+                       
+                       
                     </ul>
                     <div class="card__items card__items_column">
                         <p class="card__text"><span class="icon-time"></span> {{recipe.cooking_time}} мин.</p>
@@ -21,17 +25,16 @@
                 </div>
                 <div class="card__footer">
                     <button class="button button_style_light-blue" name="purchases" data-out ><span class="icon-plus button__icon"></span>Добавить в покупки</button>
-                    {%if recip %}
-                        {% for follow_recipe in followrecipe_list %}
+                    
+                    
                     <!-- {{recipe.id|floatformat:"0"}} -->
-                    {{follow_recipe.following_recipe}}
-                        {% if follow_recipe.recipe.id|floatformat:"0" == recipe.id|floatformat:"0" %}
-                        <button class="button button_style_none" name="favorites"><span class="icon-favorite icon-favorite_active"></span></button>                 
-                        {%endif%}
-                    {%endfor%}
-                    {%else%}
-                    {% csrf_token %} 
-                    <button class="button button_style_none" name="favorites" data-out><span class="icon-favorite"></span></button>        
+                    
+                    
+                    {% if is_follow_recipe %}
+                    <button class="button button_style_none" name="favorites"><span class="icon-favorite icon-favorite_active"></span></button>
+                    {% else %}  
+                    <button class="button button_style_none" name="favorites" data-out><span class="icon-favorite"></span></button>             
                     {%endif%}
+                    
                 </div>    
             </div>

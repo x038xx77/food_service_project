@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Recipe, User, FollowUser, FollowRecipe, Diet, Purchases
+from django.views.generic.base import View
+from .models import Recipe, User, FollowUser, FollowRecipe, Diet, Purchases, Unit
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView
@@ -23,11 +24,11 @@ class FilterDietView(Diets, ListView):
     """Фильтр diet"""
     def get_queryset(self):
         queryset = Recipe.objects.filter(
-            diet__in=self.request.GET.getlist("diet"))
+            diets__in=self.request.GET.getlist("diets"))
         return queryset
 
 
-class Favorites_recipe(Diets, ListView):
+class FavoritesView(Diets, ListView):
     model = FollowRecipe
     queryset = FollowRecipe.objects.all()
     paginate_by = 5
@@ -77,7 +78,7 @@ def recipe_view(request, recipe_id, username):
         'singlePage.html',
         {
             'recipe': recipe, 'author': recipe.author,
-            'following_recipe': following_recipe }) # noqa
+            'following_recipe': following_recipe}) # noqa
 
 
 def author_recipe(request, username):
@@ -116,55 +117,67 @@ def myfollow(request):
                    'recipe_list': recipe_list})
 
 
+class RecipeCreate(View):
+    def get(self, request):
+        form = RecipeForm()
+        return render(request, 'formRecipe.html', {'form': form})
+
+
 @login_required
 def create_recipe(request):
+    print(request.POST.dict())
     if request.method == 'POST':
         form = RecipeForm(request.POST, files=request.FILES or None)
         recipe_dict = request.POST.dict()
-        print(recipe_dict)
-        diet_tag = []
-        for i in recipe_dict:
-            if i == "breakfast":
-                diet_tag.append(i)
-            elif i == "lunch":
-                diet_tag.append(i)
-            elif i == "dinner":
-                diet_tag.append(i)
-        if len(diet_tag) != 1:
-            return render(
-                request, 'formRecipe.html', {'form': form, 'is_edit': False})
         if form.is_valid():
             recipe = form.save(commit=False)
             recipe.author = request.user
             recipe.save()
-            diet_reg = get_object_or_404(Diet, slug=diet_tag[0])
-
+            for i in recipe_dict:
+                if i == "breakfast":
+                    diet_breakfast = Diet.objects.get(slug=i)
+                    recipe.diets.add(diet_breakfast)
+                elif i == "lunch":
+                    diet_lunch = Diet.objects.get(slug=i)
+                    recipe.diets.add(diet_lunch)
+                elif i == "dinner":
+                    diet_dinner = Diet.objects.get(slug=i)
+                    recipe.diets.add(diet_dinner)
             Recipe.objects.filter(
-                author=recipe.author,
-                id=recipe.id).update(
-                    ingredients=list_ingredients(request.POST.dict()),
-                    diet=diet_reg)
+                author=recipe.author, id=recipe.id
+                ).update(ingredients=list_ingredients(request.POST.dict()))
             return redirect('index')
     else:
         form = RecipeForm()
-    return render(request, 'formRecipe.html', {'form': form, 'is_edit': False})
+    return render(request, 'formRecipe.html', {'form': form})
 
 
 @login_required
 def recipe_edit(request, username, recipe_id):
     recipe = get_object_or_404(Recipe, pk=recipe_id, author__username=username)
+    
     if request.user != recipe.author:
         return redirect(
             'recipe', username=request.user.username, recipe_id=recipe_id)
+    tag_breakfast = recipe.diets.filter(slug="breakfast")
+    tag_lunch = recipe.diets.filter(slug="lunch")
+    tag_dinner = recipe.diets.filter(slug="dinner")
+    
+    
+    print(tag_breakfast, tag_lunch, tag_dinner)
     form = RecipeForm(
         request.POST or None, files=request.FILES or None, instance=recipe)
     if form.is_valid():
         form.save()
         return redirect(
             'recipe', username=request.user.username, recipe_id=recipe_id)
+    
     return render(
         request, 'formChangeRecipe.html',
-        {'form': form, 'recipe': recipe, 'is_edit': True})
+        {'form': form, 'recipe': recipe,
+        'tag_breakfast': tag_breakfast,
+        'tag_dinner': tag_dinner,
+        'tag_lunch': tag_lunch})
 
 
 def shop_list(request):

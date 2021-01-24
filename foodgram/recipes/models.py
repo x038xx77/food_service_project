@@ -6,32 +6,31 @@ from django.shortcuts import reverse
 User = get_user_model()
 
 
-class Diet(models.Model):
-    title = models.CharField(max_length=7)
-    slug = models.SlugField(unique=True)
-
-    def get_absolute_url(self):
-        return reverse('filter', args=[str(self.slug)])
-
-    def __str__(self):
-        return self.title
-
-
 class Recipe(models.Model):
     title = models.TextField(blank=True)
     ingredients = JSONField(null=True)
     pub_date = models.DateTimeField("date published", auto_now_add=True)
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="recipes")
-    diet = models.ForeignKey(
-        Diet, on_delete=models.SET_NULL,
-        related_name="diet", blank=True, null=True, verbose_name="рацион")
+    diets = models.ManyToManyField(
+        'Diet', blank=True, related_name="recipe_set", verbose_name="рацион")
     description = models.TextField(blank=True)
     cooking_time = models.IntegerField()
     image = models.ImageField(upload_to='recipec/', blank=True, null=True)
 
     class Meta:
         ordering = ["-pub_date"]
+
+
+class Diet(models.Model):
+    title = models.CharField(max_length=50)
+    slug = models.SlugField(max_length=50, unique=True)
+
+    def get_absolute_url(self):
+        return reverse('filter', args=[str(self.slug)])
+
+    def __str__(self):
+        return self.title
 
 
 class FollowUser(models.Model):

@@ -3,7 +3,7 @@ from .models import Recipe, Diet, FollowRecipe, FollowUser, Purchases, Unit
 
 
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ("id", "title", "pub_date", "author", "diet", "ingredients")
+    list_display = ("id", "title", "pub_date", "author", "ingredients")
     search_fields = ("title",)
     list_filter = ("pub_date",)
     empty_value_display = "-пусто-"

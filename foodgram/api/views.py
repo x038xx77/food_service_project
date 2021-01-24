@@ -3,6 +3,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views import View
+from django.shortcuts import render
+from django.http import HttpResponse
 
 from recipes.models import (
     Recipe,
@@ -84,13 +86,27 @@ class Favorites(LoginRequiredMixin, View):
 
 
 def get_ingredients(request):
-    part_product_name = request.GET["query"]
-    print(part_product_name)
-    unit_dimension = Unit.objects.filter(
-        ingredients_unit__icontains=part_product_name)
-    dimension = unit_dimension[0].dimension
-    unit_value = [{
-        "title": part_product_name,
-        "dimension": dimension}]
-    print(unit_value)
-    return JsonResponse(unit_value, safe=False)
+    part_product_name = request.GET.get('query', None)
+    # manager = request.GET["query"]
+    dimension = []
+    try:
+        unit_dimension = Unit.objects.filter(
+            ingredients_unit__icontains=part_product_name)
+        dimension_1 = unit_dimension[0].dimension
+        unit_title = part_product_name
+        if dimension_1 is not None:
+            dimension.append(dimension_1)
+    except IndexError:
+        pass
+    if dimension[0] is not None:
+        dimension = dimension[0]
+    else:
+        dimension = "шт"
+    # unit_value = ([{
+    #         "title": part_product_name,
+    #         "dimension": dimension}])
+    unit_value= [{"title": "гренадин", "dimension": "г"}]
+    print("===", dimension)
+    #return HttpResponse(unit_value)
+    #return JsonResponse({"success": True})
+    return render(request, 'formRecipe.html', {'dimension': dimension})
