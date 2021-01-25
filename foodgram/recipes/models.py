@@ -32,6 +32,9 @@ class Diet(models.Model):
     def __str__(self):
         return self.title
 
+    class Meta:
+        ordering = ["title"]
+
 
 class FollowUser(models.Model):
     user = models.ForeignKey(

@@ -1,10 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.base import View
-from .models import Recipe, User, FollowUser, FollowRecipe, Diet, Purchases, Unit
+from .models import Recipe, User, FollowUser, FollowRecipe, Diet, Purchases
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView
 from .forms import RecipeForm
+from .utils import ingredient_arrey
+from django.contrib.auth.mixins import LoginRequiredMixin
 import json # noqa
 
 
@@ -13,18 +15,51 @@ class Diets:
         return Diet.objects.all()
 
 
-class RecipesView(Diets, ListView):
+class RecipesView(LoginRequiredMixin, Diets, ListView):
     """Список """
     model = Recipe
     queryset = Recipe.objects.all()
-    paginate_by = 5
+    paginate_by = 2
+
+    # def get_context_data(self, *, object_list=None, **kwargs):
+    #     queryset = object_list if object_list is not None else self.object_list
+    #     page_size = self.get_paginate_by(queryset)
+    #     context_object_name = self.get_context_object_name(queryset)
+    #     if page_size:
+    #         paginator, page, queryset, is_paginated = self.paginate_queryset(
+    #             queryset, page_size)
+    #         if page.has_previous():
+    #             prev_url = '?page={}'.format(page.previous_page_number())
+    #         else:
+    #             prev_url = ' '
+    #         if page.has_next():
+    #             next_url = '?page={}'.format(page.next_page_number())
+    #         else:
+    #             next_url = ' '
+    #         context = {
+    #             'paginator': paginator,
+    #             'page_obj': page,
+    #             'is_paginated': is_paginated,
+    #             'prev_url': prev_url,
+    #             'next_url': next_url,
+    #             'object_list': queryset}
+    #     else:
+    #         context = {
+    #             'paginator': None,
+    #             'page_obj': None,
+    #             'is_paginated': False,
+    #             'object_list': queryset}
+    #     if context_object_name is not None:
+    #         context[context_object_name] = queryset
+    #     context.update(kwargs)
+    #     return super().get_context_data(**context)
 
 
 class FilterDietView(Diets, ListView):
     """Фильтр diet"""
     def get_queryset(self):
         queryset = Recipe.objects.filter(
-            diets__in=self.request.GET.getlist("diets"))
+            diets__in=self.request.GET.getlist("diet"))
         return queryset
 
 
@@ -47,22 +82,6 @@ def server_error(request):
     return render(request, "misc/500.html", status=500)
 
 
-def list_ingredients(data):
-    nameIngredient_list = []
-    j = 1
-    for i in data:
-        if "nameIngredient_"+str(j) == i:
-            nameIngredient_list.append(i)
-            j += 1
-    nameIngredient_dict = {}
-    for i in range(1, len(nameIngredient_list)+1):
-        a = data['nameIngredient_'+str(i)]
-        nameIngredient_dict[a] = data['valueIngredient_'+str(i)]
-    all_dict = {}
-    all_dict.update(nameIngredient_dict)
-    return all_dict
-
-
 def recipe_view(request, recipe_id, username):
     recipe = get_object_or_404(
         Recipe, pk=recipe_id, author__username=username)
@@ -73,18 +92,21 @@ def recipe_view(request, recipe_id, username):
             following_recipe = recipe).exists() # noqa
     else:
         following_recipe = False
+
+    t={"nameIngredient_1": "\u041c\u043e\u043b\u043e\u043a\u043e", "valueIngredient_1": "3", "unitsIngredient_1": "y.e1", "nameIngredient_2": "\u042f\u0439\u0446\u043e", "valueIngredient_2": "3", "unitsIngredient_2": "y.e2", "nameIngredient_3": "\u0440\u0438\u0441", "valueIngredient_3": "2", "unitsIngredient_3": "y.e3"}
+    count= len(t)/3
     return render(
         request,
         'singlePage.html',
         {
             'recipe': recipe, 'author': recipe.author,
-            'following_recipe': following_recipe}) # noqa
+            'following_recipe': following_recipe, "t":t, 'range': range(3) }) # noqa
 
 
 def author_recipe(request, username):
     recepe_author = get_object_or_404(User, username=username)
     recipe_list = recepe_author.recipes.all()
-    paginator = Paginator(recipe_list, 10)
+    paginator = Paginator(recipe_list, 5)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
     user = request.user
@@ -145,7 +167,7 @@ def create_recipe(request):
                     recipe.diets.add(diet_dinner)
             Recipe.objects.filter(
                 author=recipe.author, id=recipe.id
-                ).update(ingredients=list_ingredients(request.POST.dict()))
+                ).update(ingredients=ingredient_arrey(request.POST.dict()))
             return redirect('index')
     else:
         form = RecipeForm()

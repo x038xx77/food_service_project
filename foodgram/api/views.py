@@ -4,7 +4,6 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views import View
 from django.shortcuts import render
-from django.http import HttpResponse
 
 from recipes.models import (
     Recipe,
