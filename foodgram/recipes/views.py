@@ -15,44 +15,11 @@ class Diets:
         return Diet.objects.all()
 
 
-class RecipesView(LoginRequiredMixin, Diets, ListView):
+class RecipesView(Diets, ListView):
     """Список """
     model = Recipe
     queryset = Recipe.objects.all()
-    paginate_by = 2
-
-    # def get_context_data(self, *, object_list=None, **kwargs):
-    #     queryset = object_list if object_list is not None else self.object_list
-    #     page_size = self.get_paginate_by(queryset)
-    #     context_object_name = self.get_context_object_name(queryset)
-    #     if page_size:
-    #         paginator, page, queryset, is_paginated = self.paginate_queryset(
-    #             queryset, page_size)
-    #         if page.has_previous():
-    #             prev_url = '?page={}'.format(page.previous_page_number())
-    #         else:
-    #             prev_url = ' '
-    #         if page.has_next():
-    #             next_url = '?page={}'.format(page.next_page_number())
-    #         else:
-    #             next_url = ' '
-    #         context = {
-    #             'paginator': paginator,
-    #             'page_obj': page,
-    #             'is_paginated': is_paginated,
-    #             'prev_url': prev_url,
-    #             'next_url': next_url,
-    #             'object_list': queryset}
-    #     else:
-    #         context = {
-    #             'paginator': None,
-    #             'page_obj': None,
-    #             'is_paginated': False,
-    #             'object_list': queryset}
-    #     if context_object_name is not None:
-    #         context[context_object_name] = queryset
-    #     context.update(kwargs)
-    #     return super().get_context_data(**context)
+    paginate_by = 6
 
 
 class FilterDietView(Diets, ListView):
