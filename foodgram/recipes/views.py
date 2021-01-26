@@ -6,7 +6,6 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView
 from .forms import RecipeForm
 from .utils import ingredient_arrey
-from django.contrib.auth.mixins import LoginRequiredMixin
 import json # noqa
 
 
@@ -55,8 +54,7 @@ def recipe_view(request, recipe_id, username):
     user = request.user
     if user.is_authenticated:
         following_recipe = FollowRecipe.objects.filter(
-            user = user, # noqa
-            following_recipe = recipe).exists() # noqa
+            user=user, following_recipe=recipe).exists()
     else:
         following_recipe = False
 
@@ -91,11 +89,9 @@ def author_recipe(request, username):
 
 @login_required
 def myfollow(request):
-    author_list = FollowUser.objects.select_related(
-        'author').filter(author__following__user=request.user)
-    recipe_list = Recipe.objects.select_related('author').filter(
-        author__following__user=request.user)
-    paginator = Paginator(author_list, 3)
+    author_list = FollowUser.objects.all()
+    recipe_list = Recipe.objects.filter(author__following__user=request.user)
+    paginator = Paginator(author_list, 6)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
     return render(request,
