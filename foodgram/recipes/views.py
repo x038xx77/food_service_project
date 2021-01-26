@@ -1,5 +1,7 @@
+from django.db.models.query import QuerySet
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.base import View
+from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Recipe, User, FollowUser, FollowRecipe, Diet, Purchases
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
@@ -32,7 +34,7 @@ class FilterDietView(Diets, ListView):
 class FavoritesView(Diets, ListView):
     model = FollowRecipe
     queryset = FollowRecipe.objects.all()
-    paginate_by = 5
+    paginate_by = 6
 
 
 def page_not_found(request, exception):
@@ -68,44 +70,28 @@ def recipe_view(request, recipe_id, username):
             'following_recipe': following_recipe, "t":t, 'range': range(3) }) # noqa
 
 
-def author_recipe(request, username):
-    recepe_author = get_object_or_404(User, username=username)
-    recipe_list = recepe_author.recipes.all()
-    paginator = Paginator(recipe_list, 5)
-    page_number = request.GET.get('page')
-    page = paginator.get_page(page_number)
-    user = request.user
-    if user.is_authenticated:
-        following = FollowUser.objects.filter(
-            user=user, following=recepe_author).exists()
-    else:
-        following = False
-    return render(
-            request,
-            'authorRecipe.html', {
-                'page': page, 'paginator': paginator, 'author': recepe_author,
-                'following': following, 'count_post': paginator.count})
+class AuthorRecipeViev(LoginRequiredMixin, Diets, ListView):
+    model = Recipe
+    queryset = Recipe.objects.all()
+    template_name = "recipes/authorRecipe.html"
+    paginate_by = 6
+
+    def get_queryset(self):
+        user = get_object_or_404(User, username=self.kwargs.get('username'))
+        recepe_author = get_object_or_404(User, username=user)
+        return recepe_author.recipes.all()
 
 
-@login_required
-def myfollow(request):
-    author_list = FollowUser.objects.all()
-    recipe_list = Recipe.objects.filter(author__following__user=request.user)
-    paginator = Paginator(author_list, 6)
-    page_number = request.GET.get('page')
-    page = paginator.get_page(page_number)
-    return render(request,
-                  "myFollow.html",
-                  {"page": page,
-                   "paginator": paginator,
-                   'author_list': author_list,
-                   'recipe_list': recipe_list})
+class MyFollowView(LoginRequiredMixin, ListView):
+    model = FollowUser
+    queryset = FollowUser.objects.all()
+    paginate_by = 6
 
 
-class RecipeCreate(View):
-    def get(self, request):
-        form = RecipeForm()
-        return render(request, 'formRecipe.html', {'form': form})
+# class RecipeCreate(View):
+#     def get(self, request):
+#         form = RecipeForm()
+#         return render(request, 'formRecipe.html', {'form': form})
 
 
 @login_required
