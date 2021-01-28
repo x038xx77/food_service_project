@@ -63,3 +63,10 @@ class Purchases(models.Model):
 class Unit(models.Model):
     ingredients_unit = models.CharField(max_length=200)
     dimension = models.CharField(max_length=200)
+
+
+class Tag(models.Model):
+    demension = models.CharField(max_length=200)
+    is_breakfast = models.BooleanField(default=True)
+    is_lunch = models.BooleanField(default=True)
+    is_dinner = models.BooleanField(default=True)

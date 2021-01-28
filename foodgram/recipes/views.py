@@ -1,13 +1,15 @@
+from django import forms
 from django.db.models.query import QuerySet
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.base import View
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Recipe, User, FollowUser, FollowRecipe, Diet, Purchases
+from .models import Recipe, User, FollowUser, FollowRecipe, Diet, Purchases, Tag
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView
 from .forms import RecipeForm
 from .utils import ingredient_arrey
+from .forms import FilterRecipeForm
 import json # noqa
 
 
@@ -24,10 +26,43 @@ class RecipesView(Diets, ListView):
 
 
 class FilterDietView(Diets, ListView):
+    template_name = "filter.html"
+    paginate_by = 6
     """Фильтр diet"""
     def get_queryset(self):
         queryset = Recipe.objects.filter(
-            diets__in=self.request.GET.getlist("diet"))
+            diets__in=self.request.GET.getlist('diet'))
+        print("get==", self.request.GET.getlist('diet'))
+
+        display_type = self.request.GET.getlist('diet', None)
+        print(display_type)
+        if (
+            Tag.objects.filter(demension=display_type[0]) and
+            str(display_type[0]) == str('1')
+            ): # noqa
+            Tag.objects.filter(demension=display_type[0]).delete()
+        elif display_type[0] == str("1"):
+            Tag.objects.create(
+                demension=display_type[0],
+                is_breakfast=True, is_lunch=False, is_dinner=False)
+        elif (
+            Tag.objects.filter(demension=display_type[0]) and
+            str(display_type[0]) == str('2')
+            ): # noqa
+            Tag.objects.filter(demension=display_type[0]).delete()
+        elif display_type[0] == str("2"):
+            Tag.objects.create(
+                demension=display_type[0],
+                is_breakfast=True, is_lunch=False, is_dinner=False)
+        elif (
+            Tag.objects.filter(demension=display_type[0]) and
+            str(display_type[0]) == str('3')
+            ): # noqa
+            Tag.objects.filter(demension=display_type[0]).delete()
+        elif display_type[0] == str("3"):
+            Tag.objects.create(
+                demension=display_type[0],
+                is_breakfast=True, is_lunch=False, is_dinner=False)
         return queryset
 
 

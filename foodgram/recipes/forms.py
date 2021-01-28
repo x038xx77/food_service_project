@@ -26,3 +26,10 @@ class RecipeForm(forms.ModelForm):
         #     'diet': forms.SelectMultiple(attrs={'class': 'form-control'}),
         #     'image': forms.ImageField(attrs={'class': 'form-control'})
         #     }
+
+
+class FilterRecipeForm(forms.Form):
+    breakfast = forms.CharField(label="Завтрак", required=False) 
+    lunch = forms.CharField(label="Обед", required=False) 
+    dinner = forms.CharField(label="Ужин", required=False) 
+

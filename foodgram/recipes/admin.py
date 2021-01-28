@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Recipe, Diet, FollowRecipe, FollowUser, Purchases, Unit
+from .models import Diet, Recipe, FollowRecipe, FollowUser, Purchases, Tag, Unit
 
 
 class RecipeAdmin(admin.ModelAdmin):
@@ -9,9 +9,11 @@ class RecipeAdmin(admin.ModelAdmin):
     empty_value_display = "-пусто-"
 
 
-admin.site.register(Diet)
+
 admin.site.register(FollowRecipe)
 admin.site.register(FollowUser)
 admin.site.register(Purchases)
 admin.site.register(Unit)
+admin.site.register(Diet)
+admin.site.register(Tag)
 admin.site.register(Recipe, RecipeAdmin)
