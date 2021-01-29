@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Recipe, User, FollowUser, FollowRecipe, Diet, Purchases, Tag
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView
-from .forms import RecipeForm, UploadDocumentForm
+from .forms import RecipeForm
 from .utils import ingredient_arrey
 import json # noqa
 
