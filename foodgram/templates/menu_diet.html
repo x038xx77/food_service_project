@@ -16,10 +16,7 @@
             <a id="dinner" class="tags__checkbox tags__checkbox_style_purple tags__checkbox_active" href="{% url 'filter' %}?{% query_transform request diet=3 %}"></a>
             {% elif diet.title == "Ужин" %}
             <a id="dinner" class="tags__checkbox tags__checkbox_style_purple " href="{% url 'filter' %}?{% query_transform request diet=3 %}"></a>
-            
-
-            
-            
+        
             
             {% elif diet.title == "Обед" and tag_lunch %}
             <a id="lunch" class="tags__checkbox tags__checkbox_style_green tags__checkbox_active" href="{% url 'filter' %}?{% query_transform request diet=2 %}"></a>

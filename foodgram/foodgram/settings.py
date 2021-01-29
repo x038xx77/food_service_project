@@ -80,6 +80,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'recipes.context_processors.purchases_count',
                 'recipes.context_processors.follow_author',
+                'recipes.context_processors.follow_recipe',
                 'recipes.context_processors.get_diets',
                 'recipes.context_processors.get_tags',
             ],

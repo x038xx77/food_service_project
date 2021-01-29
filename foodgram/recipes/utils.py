@@ -30,39 +30,57 @@ from .models import Unit
 def add_out(data):
     if "image" not in data:
         data["image"] = "test"
-    elif "breakfast" not in data:
+    if "breakfast" not in data:
         data["breakfast"] = "test"
-    elif "dinner" not in data:
+    if "dinner" not in data:
         data["dinner"] = "test"
-    elif "lunch" not in data:
+    if "lunch" not in data:
         data["lunch"] = "test"
     return data
 
 
-def list_ingredients(data):
-    del data["csrfmiddlewaretoken"]
-    del data["title"]
-    del data["cooking_time"]
-    del data["description"]
-    del data["image"]
-    del data["breakfast"]
-    del data["dinner"]
-    del data["lunch"]
-    return data
-
-
 def ingredient_arrey(request):
-    arrey_ingredient = list_ingredients(add_out(request))
+    if "image" not in request:
+        request["image"] = "value"
+    if "breakfast" not in request:
+        request["breakfast"] = "value"
+    if "dinner" not in request:
+        request["dinner"] = "value"
+    if "lunch" not in request:
+        request["lunch"] = "value"
+    del request["csrfmiddlewaretoken"]
+    del request["title"]
+    del request["cooking_time"]
+    del request["description"]
+    del request["image"]
+    del request["breakfast"]
+    del request["dinner"]
+    del request["lunch"]
     new_list_key_ingridient = []
     j = 1
-    for i in range(int(len(arrey_ingredient) / 3)):
+    for i in range(int(len(request) / 3)):
         new_list_key_ingridient.append('nameIngredient_' + str(j))
         new_list_key_ingridient.append('valueIngredient_' + str(j))
         new_list_key_ingridient.append('unitsIngredient_' + str(j))
         j += 1
     t = 0
     new_arrey = {}
-    for key, value in arrey_ingredient.items():
+    for key, value in request.items():
         new_arrey[new_list_key_ingridient[t]] = value
         t += 1
-    return new_arrey
+    update = []
+    items = list(new_arrey.items())
+    for i in range(len(items) // 3):
+        _tmp = items[3 * i:3 * (i + 1)]
+        update.append(_tmp)
+    new_list_key = ["nameIngredient", "valueIngredient", "unitsIngredient"]
+    old_arrey = update
+    new_arrey_list = []
+    for i in old_arrey:
+        new_dict = {}
+        t = 0
+        for key, value in dict(i).items():
+            new_dict[new_list_key[t]] = value
+            t += 1
+        new_arrey_list.append(new_dict)
+    return new_arrey_list

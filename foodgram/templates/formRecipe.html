@@ -54,7 +54,7 @@
             <div class="form__group">
                 {% csrf_token %}
                 
-                <label for="nameIngredient" class="form__label">Ингредиенты</label>
+                <label for="nameIngredient" class="form__label">Ингредиенты {{error_ingredient}}</label>
                 <div class="form__field-group">
                     <div class="form__field-group-ingredientes">
                         <div class="form__dropdown">

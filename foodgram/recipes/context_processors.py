@@ -1,4 +1,4 @@
-from .models import Diet, Purchases, FollowRecipe, Recipe, Tag
+from .models import Diet, Purchases, FollowRecipe, FollowUser, Recipe, Tag
 
 
 def purchases_count(self):
@@ -7,8 +7,13 @@ def purchases_count(self):
 
 
 def follow_author(self):
-    follow_author = FollowRecipe.objects.all()
+    follow_author = FollowUser.objects.all()
     return {'follow_author': follow_author}
+
+
+def follow_recipe(self):
+    follow_recipe = FollowRecipe.objects.all()
+    return {'follow_recipe': follow_recipe}
 
 
 def get_diets(self):
@@ -43,21 +48,24 @@ def get_tags(self):
         pass
 
     url_list = []
-    if is_breakfast == int("1") and is_lunch == None and is_dinner == None: # noqa
-        url_list.append("diet=1")
-    elif is_lunch==int("2") and is_breakfast==None and is_dinner==None: # noqa
-        url_list.append("diet=2")
-    elif is_dinner==int("3") and is_breakfast==None and is_lunch==None: # noqa
-        url_list.append("diet=3")
-    elif is_breakfast==int("1") and is_lunch==int("2") and is_dinner==None: # noqa
-        url_list.append("diet=1 diet=2")
-    elif is_breakfast==int("1") and is_dinner==int("3") and is_lunch==None: # noqa
-        url_list.append("diet=1 diet=3")
-    elif is_lunch==int("2") and is_dinner==int("3") and is_breakfast==None: # noqa
-        url_list.append("diet=2 diet=3")
-    elif is_breakfast==int("1") and is_lunch==int("2") and is_dinner==int("3"): # noqa
-        url_list.append("diet=1 diet=2 diet=3")
-
+    try:
+        if is_breakfast == int("1") and is_lunch == None and is_dinner == None: # noqa
+            url_list.append("diet=1")
+        elif is_lunch==int("2") and is_breakfast==None and is_dinner==None: # noqa
+            url_list.append("diet=2")
+        elif is_dinner==int("3") and is_breakfast==None and is_lunch==None: # noqa
+            url_list.append("diet=3")
+        elif is_breakfast==int("1") and is_lunch==int("2") and is_dinner==None: # noqa
+            url_list.append("diet=1 diet=2")
+        elif is_breakfast==int("1") and is_dinner==int("3") and is_lunch==None: # noqa
+            url_list.append("diet=1 diet=3")
+        elif is_lunch==int("2") and is_dinner==int("3") and is_breakfast==None: # noqa
+            url_list.append("diet=2 diet=3")
+        elif is_breakfast==int("1") and is_lunch==int("2") and is_dinner==int("3"): # noqa
+            url_list.append("diet=1 diet=2 diet=3")
+        url_list = url_list[0]
+    except IndexError:
+        pass
     return {
         "tag_breakfast": is_breakfast,
         "tag_lunch": is_lunch,

@@ -1,15 +1,10 @@
-from django import forms
-from django.db.models.query import QuerySet
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic.base import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Recipe, User, FollowUser, FollowRecipe, Diet, Purchases, Tag
-from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView
-from .forms import RecipeForm
+from .forms import RecipeForm, UploadDocumentForm
 from .utils import ingredient_arrey
-from .forms import FilterRecipeForm
 import json # noqa
 
 
@@ -27,6 +22,7 @@ class RecipesView(Diets, ListView):
 
 class FilterDietView(Diets, ListView):
     template_name = "filter.html"
+    # context_object_name = 'filter_diet'
     paginate_by = 6
     """Фильтр diet"""
     def get_queryset(self):
@@ -94,15 +90,13 @@ def recipe_view(request, recipe_id, username):
             user=user, following_recipe=recipe).exists()
     else:
         following_recipe = False
-
-    t={"nameIngredient_1": "\u041c\u043e\u043b\u043e\u043a\u043e", "valueIngredient_1": "3", "unitsIngredient_1": "y.e1", "nameIngredient_2": "\u042f\u0439\u0446\u043e", "valueIngredient_2": "3", "unitsIngredient_2": "y.e2", "nameIngredient_3": "\u0440\u0438\u0441", "valueIngredient_3": "2", "unitsIngredient_3": "y.e3"}
-    count= len(t)/3
     return render(
         request,
         'singlePage.html',
         {
             'recipe': recipe, 'author': recipe.author,
-            'following_recipe': following_recipe, "t":t, 'range': range(3) }) # noqa
+            'following_recipe': following_recipe
+            })
 
 
 class AuthorRecipeViev(LoginRequiredMixin, Diets, ListView):
@@ -123,15 +117,8 @@ class MyFollowView(LoginRequiredMixin, ListView):
     paginate_by = 6
 
 
-# class RecipeCreate(View):
-#     def get(self, request):
-#         form = RecipeForm()
-#         return render(request, 'formRecipe.html', {'form': form})
-
-
 @login_required
 def create_recipe(request):
-    print(request.POST.dict())
     if request.method == 'POST':
         form = RecipeForm(request.POST, files=request.FILES or None)
         recipe_dict = request.POST.dict()
@@ -139,16 +126,32 @@ def create_recipe(request):
             recipe = form.save(commit=False)
             recipe.author = request.user
             recipe.save()
+            list_diet = []
             for i in recipe_dict:
-                if i == "breakfast":
-                    diet_breakfast = Diet.objects.get(slug=i)
-                    recipe.diets.add(diet_breakfast)
-                elif i == "lunch":
-                    diet_lunch = Diet.objects.get(slug=i)
-                    recipe.diets.add(diet_lunch)
-                elif i == "dinner":
-                    diet_dinner = Diet.objects.get(slug=i)
-                    recipe.diets.add(diet_dinner)
+                try:
+                    if i == "breakfast":
+                        diet_breakfast = Diet.objects.get(slug=i)
+                        recipe.diets.add(diet_breakfast)
+                        list_diet.append(i)
+                    elif i == "lunch":
+                        diet_lunch = Diet.objects.get(slug=i)
+                        recipe.diets.add(diet_lunch)
+                        list_diet.append(i)
+                    elif i == "dinner":
+                        diet_dinner = Diet.objects.get(slug=i)
+                        recipe.diets.add(diet_dinner)
+                        list_diet.append(i)
+                except KeyError:
+                    pass
+            print("list====", len(list_diet))
+            if len(ingredient_arrey(
+                request.POST.dict())) == 0 or len(
+                    list_diet) == 0:
+                recipe.delete()
+                return render(
+                    request, 'formRecipe.html', {
+                        'form': form, "error_ingredient": "Введите ингредиенты"
+                        })
             Recipe.objects.filter(
                 author=recipe.author, id=recipe.id
                 ).update(ingredients=ingredient_arrey(request.POST.dict()))
@@ -161,15 +164,12 @@ def create_recipe(request):
 @login_required
 def recipe_edit(request, username, recipe_id):
     recipe = get_object_or_404(Recipe, pk=recipe_id, author__username=username)
-    
     if request.user != recipe.author:
         return redirect(
             'recipe', username=request.user.username, recipe_id=recipe_id)
     tag_breakfast = recipe.diets.filter(slug="breakfast")
     tag_lunch = recipe.diets.filter(slug="lunch")
     tag_dinner = recipe.diets.filter(slug="dinner")
-    
-    
     print(tag_breakfast, tag_lunch, tag_dinner)
     form = RecipeForm(
         request.POST or None, files=request.FILES or None, instance=recipe)
@@ -177,19 +177,30 @@ def recipe_edit(request, username, recipe_id):
         form.save()
         return redirect(
             'recipe', username=request.user.username, recipe_id=recipe_id)
-    
     return render(
         request, 'formChangeRecipe.html',
-        {'form': form, 'recipe': recipe,
-        'tag_breakfast': tag_breakfast,
-        'tag_dinner': tag_dinner,
-        'tag_lunch': tag_lunch})
+        {
+            'form': form, 'recipe': recipe, 'tag_breakfast': tag_breakfast,
+            'tag_dinner': tag_dinner, 'tag_lunch': tag_lunch
+        })
 
 
 def shop_list(request):
     count_purchase = Purchases.objects.all().count()
     purchases = Purchases.objects.all()
+    print(Recipe.objects.filter(id=43))
+    for i in Recipe.objects.filter(id=43):
+        print(i.ingredients)
+
+    list_id_recipes_purchases=Purchases.objects.values_list('recipe', flat=True)
+    list_purchases=[]
+    for i in list_id_recipes_purchases:
+        print(Recipe.objects.filter(id=i))
+
     return render(
         request, 'shopList.html', {
             "purchases": purchases,
             "count_purchase": count_purchase})
+
+
+
