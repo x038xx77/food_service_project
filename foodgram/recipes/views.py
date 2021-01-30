@@ -5,7 +5,9 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView
 from .forms import RecipeForm
 from .utils import ingredient_arrey
+from django.http import HttpResponse
 import json # noqa
+import csv
 
 
 class Diets:
@@ -62,23 +64,44 @@ class FilterDietView(Diets, ListView):
         return queryset
 
 
+class FilterAuthorDietView(Diets, ListView):
+    template_name = "author_filter.html"
+    context_object_name = 'author_filter'
+    paginate_by = 6
+    """Фильтр author_diet"""
+    def get_queryset(self):
+        user = get_object_or_404(User, username=self.kwargs.get('username'))
+        print(user)
+        queryset = Recipe.objects.filter(
+            diets__in=self.request.GET.getlist('diet'), author=user)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super(
+            FilterAuthorDietView, self).get_context_data(**kwargs)
+        context['author_filter_recipe'] = get_object_or_404(
+            User, username=self.kwargs.get('username'))
+        return context
+
+
+class FilterFollowAuthorDietView(Diets, ListView):
+    # template_name = "filter.html"
+    # context_object_name = 'follow_author_filter'
+    paginate_by = 6
+    """Фильтр follow_author_diet"""
+    def get_queryset(self):
+        pk = FollowRecipe.objects.filter(
+            user=self.request.user).values('following_recipe')
+        queryset = Recipe.objects.filter(
+            id__in=pk, diets__in=self.request.GET.getlist('diet'))
+        print(queryset)
+        return queryset
+
+
 class FavoritesView(Diets, ListView):
     model = FollowRecipe
     queryset = FollowRecipe.objects.all()
     paginate_by = 6
-
-
-def page_not_found(request, exception):
-    return render(
-        request,
-        "misc/404.html",
-        {"path": request.path},
-        status=404
-    )
-
-
-def server_error(request):
-    return render(request, "misc/500.html", status=500)
 
 
 def recipe_view(request, recipe_id, username):
@@ -100,15 +123,22 @@ def recipe_view(request, recipe_id, username):
 
 
 class AuthorRecipeViev(LoginRequiredMixin, Diets, ListView):
-    model = Recipe
-    queryset = Recipe.objects.all()
+
     template_name = "recipes/authorRecipe.html"
+    context_object_name = 'author_recipes'
     paginate_by = 6
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
         recepe_author = get_object_or_404(User, username=user)
         return recepe_author.recipes.all()
+
+    def get_context_data(self, **kwargs):
+        context = super(
+            AuthorRecipeViev, self).get_context_data(**kwargs)
+        context['author_recipe'] = get_object_or_404(
+            User, username=self.kwargs.get('username'))
+        return context
 
 
 class MyFollowView(LoginRequiredMixin, ListView):
@@ -143,14 +173,15 @@ def create_recipe(request):
                         list_diet.append(i)
                 except KeyError:
                     pass
-            print("list====", len(list_diet))
             if len(ingredient_arrey(
                 request.POST.dict())) == 0 or len(
                     list_diet) == 0:
                 recipe.delete()
                 return render(
                     request, 'formRecipe.html', {
-                        'form': form, "error_ingredient": "Введите ингредиенты"
+                        'form': form,
+                        "error_ingredient":
+                        "Ошибка введите ингредиенты и поставьте галочки"
                         })
             Recipe.objects.filter(
                 author=recipe.author, id=recipe.id
@@ -192,7 +223,8 @@ def shop_list(request):
     for i in Recipe.objects.filter(id=43):
         print(i.ingredients)
 
-    list_id_recipes_purchases=Purchases.objects.values_list('recipe', flat=True)
+    list_id_recipes_purchases = Purchases.objects.values_list(
+        'recipe', flat=True)
     list_purchases=[]
     for i in list_id_recipes_purchases:
         print(Recipe.objects.filter(id=i))
@@ -203,4 +235,35 @@ def shop_list(request):
             "count_purchase": count_purchase})
 
 
+def purcheses_download(request):
+    items = {
+        'nameIngredient': 'Яйцо',
+        'valueIngredient': '5', 'unitsIngredient': 'ml'}
+    response = HttpResponse(content_type='text/plain')
+    response['Content-Type'] = 'text/plain'
+    response[
+        'Content-Disposition'
+        ] = 'attachment; filename=DownloadedPurchases_list.txt'
 
+    writer = csv.writer(response)
+    writer.writerow(['nameingridient', 'valueingredient', 'unitingredient'])
+    for key in items:
+        print(items['nameIngredient'], items['valueIngredient'], items['unitsIngredient'])
+        writer.writerow([
+            items['nameIngredient'],
+            items['valueIngredient'],
+            items['unitsIngredient']])
+    return response
+
+
+def page_not_found(request, exception):
+    return render(
+        request,
+        "misc/404.html",
+        {"path": request.path},
+        status=404
+    )
+
+
+def server_error(request):
+    return render(request, "misc/500.html", status=500)

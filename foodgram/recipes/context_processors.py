@@ -66,6 +66,8 @@ def get_tags(self):
         url_list = url_list[0]
     except IndexError:
         pass
+    
+    
     return {
         "tag_breakfast": is_breakfast,
         "tag_lunch": is_lunch,

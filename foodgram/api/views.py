@@ -1,20 +1,12 @@
-import json # noqa
+import json
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views import View
 from django.shortcuts import render
+from django.http import HttpResponse
 
-
-
-from recipes.models import (
-    Recipe,
-    FollowRecipe,
-    FollowUser,
-    User,
-    Purchases,
-    Unit
-)
+from recipes.models import Recipe, FollowRecipe, FollowUser, User, Purchases, Unit
 
 
 class Purchases_shop(View):
@@ -99,15 +91,20 @@ def get_ingredients(request):
             dimension.append(dimension_1)
     except IndexError:
         pass
-    if dimension[0] is not None:
-        dimension = dimension[0]
-    else:
-        dimension = "шт"
-    # unit_value = ([{
-    #         "title": part_product_name,
-    #         "dimension": dimension}])
-    unit_value= [{"title": "гренадин", "dimension": "г"}]
-    print("===", dimension)
-    #return HttpResponse(unit_value)
-    #return JsonResponse({"success": True})
-    return render(request, 'formRecipe.html', {'dimension': dimension})
+    try:
+        if dimension[0] is not None:
+            dimension = dimension[0]
+        else:
+            dimension = "шт"
+    except IndexError:
+        pass
+    unit_value = {
+            "title": part_product_name,
+            "dimension": dimension}
+    #unit_value = {"title": part_product_name, "dimension": dimension}
+    print("=fg==", dimension)
+    # return HttpResponse(unit_value)
+    print("unt===", unit_value)
+    #return JsonResponse(unit_value)
+    
+    return render(request, 'formRecipe.html', {"nameIngredient": unit_value, "dimension": dimension})

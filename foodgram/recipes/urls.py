@@ -4,6 +4,17 @@ from . import views
 urlpatterns = [
     path('', views.RecipesView.as_view(), name='index'),
     path('filter/', views.FilterDietView.as_view(), name='filter'),
+    path(
+        '<username>/author_filter/',
+        views.FilterAuthorDietView.as_view(), name='author_filter'),
+    path(
+        'follow_author_filter/',
+        views.FilterFollowAuthorDietView.as_view(),
+        name='follow_author_filter'),
+    path(
+        'purcheses_download/',
+        views.purcheses_download, name='purcheses_download'
+        ),
     path('myfollow/', views.MyFollowView.as_view(), name='myfollow'),
     path('shop_list/', views.shop_list, name='shop_list'),
     path('create_recipe/', views.create_recipe, name='create_recipe'),
