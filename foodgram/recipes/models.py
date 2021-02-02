@@ -9,6 +9,7 @@ User = get_user_model()
 class Recipe(models.Model):
     title = models.TextField(blank=True)
     ingredients = JSONField(null=True)
+    # slug = models.SlugField(max_length=150,  unique=True)
     pub_date = models.DateTimeField("date published", auto_now_add=True)
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="recipes")
@@ -17,6 +18,9 @@ class Recipe(models.Model):
     description = models.TextField(blank=True)
     cooking_time = models.IntegerField()
     image = models.ImageField(upload_to='recipec/', blank=True, null=True)
+
+    def get_absolute_url(self):
+        return f'/{self.author}/'
 
     class Meta:
         ordering = ["-pub_date"]
@@ -60,13 +64,10 @@ class Purchases(models.Model):
         related_name='recipe_shoping_list')
 
 
-class Unit(models.Model):
+class UnitIngredients(models.Model):
     ingredients_unit = models.CharField(max_length=200)
-    dimension = models.CharField(max_length=200)
+    dimension_unit = models.CharField(max_length=200)
 
 
 class Tag(models.Model):
     demension = models.CharField(max_length=200)
-    is_breakfast = models.BooleanField(default=True)
-    is_lunch = models.BooleanField(default=True)
-    is_dinner = models.BooleanField(default=True)

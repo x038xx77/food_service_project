@@ -3,36 +3,36 @@
 <form action="" method="get">
    <ul class="tags">  
       
-    {{url_list }}
-    {% if request.resolver_match.url_name == "index" %}
-    --TEST INDEX--
-    {% elif request.resolver_match.url_name == "favorite_list" %}
+
+    {% if request.resolver_match.url_name == "index"%}
+    --TEST INDEX-- FILTER {{url_list}}
+    {% elif request.resolver_match.url_name == "favorite_list"%}
     --TEST FAVORITE--
     {% elif request.resolver_match.url_name == "author_recipe" %}
     {{author_recipe.username}}
     --TEST AUTHOR--
     {% endif %}
-
+{{author_filter_recipe}}dfh{{url_author_filter_recipe}}
+{{ request.get_full_path }} 
         <li class="tags__item">
             {%for diet in view.get_diet %}
             {% if diet.title == "Завтрак" and tag_breakfast %}
-            <a id="breakfast" class="tags__checkbox tags__checkbox_style_orange tags__checkbox_active"  href="{% url  'author_filter' 'author_recipe' %}?{% query_transform request diet=1 %}"></a>
+            <a id="breakfast" class="tags__checkbox tags__checkbox_style_orange tags__checkbox_active"  href="{% url 'index' %}?{% query_transform request diet=1 %} "></a>
             {% elif diet.title == "Завтрак" %}
-            <a id="breakfast" class="tags__checkbox tags__checkbox_style_orange " href="{% url 'filter' %}?{% query_transform request diet=1 %}"></a>
+            <a id="breakfast" class="tags__checkbox tags__checkbox_style_orange " href="{% url 'index' %}?{% query_transform request diet=1 %}"></a>
             {% elif diet.title == "Ужин" and tag_dinner %}
-            <a id="dinner" class="tags__checkbox tags__checkbox_style_purple tags__checkbox_active" href="{% url 'filter' %}?{% query_transform request diet=3 %}"></a>
+            <a id="dinner" class="tags__checkbox tags__checkbox_style_purple tags__checkbox_active" href="{% url 'index' %}?{% query_transform request diet=3 %}"></a>
             {% elif diet.title == "Ужин" %}
-            <a id="dinner" class="tags__checkbox tags__checkbox_style_purple " href="{% url 'filter' %}?{% query_transform request diet=3 %}"></a>
-        
-            
+            <a id="dinner" class="tags__checkbox tags__checkbox_style_purple " href="{% url 'index' %}?{% query_transform request diet=3 %}"></a>
             {% elif diet.title == "Обед" and tag_lunch %}
-            <a id="lunch" class="tags__checkbox tags__checkbox_style_green tags__checkbox_active" href="{% url 'filter' %}?{% query_transform request diet=2 %}"></a>
+            <a id="lunch" class="tags__checkbox tags__checkbox_style_green tags__checkbox_active" href="{% url 'index' %}?{% query_transform request diet=2 %}"></a>
             {% else %}
-            <a id="lunch" class="tags__checkbox tags__checkbox_style_green " href="{% url 'filter' %}?{% query_transform request diet=2 %}"></a>
+            <a id="lunch" class="tags__checkbox tags__checkbox_style_green " href="{% url 'index' %}?{% query_transform request diet=2 %}"></a>
             {%endif%}
             <label for="{{diet.id}}" class="tags__label">{{diet.title}}</label>
              {%endfor%}              
-        </li>         
+        </li> 
+
     </ul>  
 </div>
 </form>

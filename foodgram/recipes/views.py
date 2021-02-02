@@ -4,8 +4,12 @@ from .models import Recipe, User, FollowUser, FollowRecipe, Diet, Purchases, Tag
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView
 from .forms import RecipeForm
-from .utils import ingredient_arrey
 from django.http import HttpResponse
+from .utils import ingredient_arrey, tag_check, follow_id
+from .context_processors import get_tags
+
+#from api.views import get_ingredients
+
 import json # noqa
 import csv
 
@@ -16,62 +20,33 @@ class Diets:
 
 
 class RecipesView(Diets, ListView):
-    """Список """
-    model = Recipe
-    queryset = Recipe.objects.all()
+    """Список рецептов """
+
     paginate_by = 6
 
-
-class FilterDietView(Diets, ListView):
-    template_name = "filter.html"
-    # context_object_name = 'filter_diet'
-    paginate_by = 6
-    """Фильтр diet"""
     def get_queryset(self):
+        tag_check(self.request)
+        print("tag_list", get_tags(self)['url_list'])
         queryset = Recipe.objects.filter(
-            diets__in=self.request.GET.getlist('diet'))
-        print("get==", self.request.GET.getlist('diet'))
-
-        display_type = self.request.GET.getlist('diet', None)
-        print(display_type)
-        if (
-            Tag.objects.filter(demension=display_type[0]) and
-            str(display_type[0]) == str('1')
-            ): # noqa
-            Tag.objects.filter(demension=display_type[0]).delete()
-        elif display_type[0] == str("1"):
-            Tag.objects.create(
-                demension=display_type[0],
-                is_breakfast=True, is_lunch=False, is_dinner=False)
-        elif (
-            Tag.objects.filter(demension=display_type[0]) and
-            str(display_type[0]) == str('2')
-            ): # noqa
-            Tag.objects.filter(demension=display_type[0]).delete()
-        elif display_type[0] == str("2"):
-            Tag.objects.create(
-                demension=display_type[0],
-                is_breakfast=True, is_lunch=False, is_dinner=False)
-        elif (
-            Tag.objects.filter(demension=display_type[0]) and
-            str(display_type[0]) == str('3')
-            ): # noqa
-            Tag.objects.filter(demension=display_type[0]).delete()
-        elif display_type[0] == str("3"):
-            Tag.objects.create(
-                demension=display_type[0],
-                is_breakfast=True, is_lunch=False, is_dinner=False)
+            diets__in=get_tags(self)['url_list'])
         return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super(
+            RecipesView, self).get_context_data(**kwargs)
+        quer = Recipe.objects.filter(
+            diets__in=get_tags(self)['url_list'])
+        context['follow_recipe_list'] = follow_id(quer)
+        return context
 
 
 class FilterAuthorDietView(Diets, ListView):
-    template_name = "author_filter.html"
-    context_object_name = 'author_filter'
+    # template_name = "author_filter.html"
+    # context_object_name = 'author_filter'
     paginate_by = 6
-    """Фильтр author_diet"""
+    """Фильтр рациона автора"""
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
-        print(user)
         queryset = Recipe.objects.filter(
             diets__in=self.request.GET.getlist('diet'), author=user)
         return queryset
@@ -81,6 +56,7 @@ class FilterAuthorDietView(Diets, ListView):
             FilterAuthorDietView, self).get_context_data(**kwargs)
         context['author_filter_recipe'] = get_object_or_404(
             User, username=self.kwargs.get('username'))
+        context['url_author_filter_recipe'] = self.request.get_full_path()
         return context
 
 
@@ -88,13 +64,12 @@ class FilterFollowAuthorDietView(Diets, ListView):
     # template_name = "filter.html"
     # context_object_name = 'follow_author_filter'
     paginate_by = 6
-    """Фильтр follow_author_diet"""
+    """Фильтр рациона избранного"""
     def get_queryset(self):
         pk = FollowRecipe.objects.filter(
             user=self.request.user).values('following_recipe')
         queryset = Recipe.objects.filter(
             id__in=pk, diets__in=self.request.GET.getlist('diet'))
-        print(queryset)
         return queryset
 
 
@@ -125,19 +100,27 @@ def recipe_view(request, recipe_id, username):
 class AuthorRecipeViev(LoginRequiredMixin, Diets, ListView):
 
     template_name = "recipes/authorRecipe.html"
-    context_object_name = 'author_recipes'
+    # context_object_name = 'author_recipes'
     paginate_by = 6
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
+        print("user==", user)
         recepe_author = get_object_or_404(User, username=user)
         return recepe_author.recipes.all()
 
     def get_context_data(self, **kwargs):
         context = super(
             AuthorRecipeViev, self).get_context_data(**kwargs)
-        context['author_recipe'] = get_object_or_404(
+        context['author_recipe_name'] = get_object_or_404(
             User, username=self.kwargs.get('username'))
+        follow_user = get_object_or_404(
+            User, username=self.kwargs.get('username'))
+        context['author_follow'] = FollowUser.objects.filter(
+             author=follow_user)
+        quer = Recipe.objects.filter(
+            diets__in=get_tags(self)['url_list'])
+        context['follow_recipe_list'] = follow_id(quer)
         return context
 
 
@@ -149,9 +132,11 @@ class MyFollowView(LoginRequiredMixin, ListView):
 
 @login_required
 def create_recipe(request):
+
     if request.method == 'POST':
         form = RecipeForm(request.POST, files=request.FILES or None)
         recipe_dict = request.POST.dict()
+        #print("get-ing=", get_ingredients(request))
         if form.is_valid():
             recipe = form.save(commit=False)
             recipe.author = request.user
@@ -219,16 +204,6 @@ def recipe_edit(request, username, recipe_id):
 def shop_list(request):
     count_purchase = Purchases.objects.all().count()
     purchases = Purchases.objects.all()
-    print(Recipe.objects.filter(id=43))
-    for i in Recipe.objects.filter(id=43):
-        print(i.ingredients)
-
-    list_id_recipes_purchases = Purchases.objects.values_list(
-        'recipe', flat=True)
-    list_purchases=[]
-    for i in list_id_recipes_purchases:
-        print(Recipe.objects.filter(id=i))
-
     return render(
         request, 'shopList.html', {
             "purchases": purchases,

@@ -3,7 +3,6 @@ from . import views
 
 urlpatterns = [
     path('', views.RecipesView.as_view(), name='index'),
-    path('filter/', views.FilterDietView.as_view(), name='filter'),
     path(
         '<username>/author_filter/',
         views.FilterAuthorDietView.as_view(), name='author_filter'),

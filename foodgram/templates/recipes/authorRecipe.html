@@ -7,24 +7,23 @@
 {%endblock%}
 {% block content %}
 <div class="main__header">
-    <h1 class="main__title"> {{author_recipe.get_full_name}} </h1>
+    <h1 class="main__title"> {{author_recipe_name.get_full_name}}</h1>
     {% include "menu_diet.html" %}
     <!--        <p style="padding: 0 0 2em 0;"><a class="button button_style_light-blue" href="#">Подписаться на автора</a></p>-->
    
-    <div class="author-subscribe" data-author={{recipe.id}}>
+    <div class="author-subscribe" data-author={{author_recipe_name.id}}>
        
-        {%if follow_author%}
+        {% if not author_follow %}
         <p style="padding: 0 0 2em 0;"><button class="button button_style_light-blue button_size_subscribe" name="subscribe" data-out>Подписаться на автора</button></p>
-        {{follow_author}}
         {%else%}
-        <p style="padding: 0 0 2em 0;"><button class="button button_style_light-blue button_size_subscribe" name="subscribe" data-out>Подписаться на автора</button></p>
+        <p style="padding: 0 0 2em 0;"><button class="button button_style_light-blue button_size_subscribe" name="subscribe" >Отписаться от автора</button></p>
         {%endif%}
        
     </div>
     <div class="card-list">
        
-  {% for recipe in author_recipes %}
-            {% include "includes/recipe_item.html" with following_recipe=recipe %}
+  {% for recipe in recipe_list %}
+            {% include "includes/recipe_item.html" with author_recipes=recipe %}
         {%endfor%}    
     </div> 
         {% include "paginator.html" with items=page paginator=paginator%}

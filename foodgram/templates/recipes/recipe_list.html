@@ -2,7 +2,7 @@
 {% load static %}
 {% block head %}
 {% csrf_token %} 
-<title>Рецепты</title>
+<title>Рецепты {{following_recipe}}</title>
 <link rel="stylesheet" href="{% static './pages/index.css' %}">
 {%endblock%}
 {% block content %}
@@ -13,7 +13,7 @@
         
         {% for recipe in recipe_list %}
         
-            {% include "includes/recipe_item.html" with following_recipe=recipe %}
+            {% include "includes/recipe_item.html"  %}
         {%endfor%}
                    
     </div> 

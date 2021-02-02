@@ -1,42 +1,28 @@
 import json
-
-from .models import Unit
-
-# data_1 = {'рис': '2', 'Яйцо': '3', 'Молоко': '3'}
+from .models import FollowRecipe, Recipe, Tag
 
 
-# def get_unit(data):
-#     dimension = []
-#     for i in data:
-#         print(i)
-#         try:
-#             unit_dimension = Unit.objects.filter(
-#                 ingredients_unit__icontains=i)
-#             dimension_1 = unit_dimension[0].dimension
-#             if dimension_1 is not None:
-#                 dimension.append(dimension_1)
-#         except IndexError:
-#             pass
-#         if dimension[0] is not None:
-#             dimension = dimension[0]
-#         else:
-#             dimension = "шт"
-# #     return dimension
+def follow_id(queryset):
+    follow_list = []
+    for is_following in queryset:
+        id_follow_recipe = FollowRecipe.objects.filter(
+            following_recipe_id=is_following.id
+            ).exists()
+        if id_follow_recipe:
+            follow_list.append(is_following.id)
+    return follow_list
 
 
-# print(get_unit(data_1))
-
-
-def add_out(data):
-    if "image" not in data:
-        data["image"] = "test"
-    if "breakfast" not in data:
-        data["breakfast"] = "test"
-    if "dinner" not in data:
-        data["dinner"] = "test"
-    if "lunch" not in data:
-        data["lunch"] = "test"
-    return data
+def tag_check(request):
+    display_type = request.GET.getlist('diet', None)
+    print("disp=", display_type)
+    if display_type is not None:
+        for i in display_type:
+            tag = Tag.objects.filter(demension=i)
+            if len(tag) == 0:
+                Tag.objects.create(demension=i)
+            else:
+                Tag.objects.filter(demension=i).delete()
 
 
 def ingredient_arrey(request):

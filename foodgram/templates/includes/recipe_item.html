@@ -24,8 +24,12 @@
                     </div>
                 </div>
                 <div class="card__footer">
+                    {% if not recipe.id in list_purchases%}
                     <button class="button button_style_light-blue" name="purchases" data-out ><span class="icon-plus button__icon"></span>Добавить в покупки</button>
-                    {% if following_recipe %}
+                    {%else%}
+                    <button class="button button_style_light-blue" name="purchases"  ><span class="icon-plus "></span> Рецепт добавлен</button>
+                    {%endif%}
+                    {% if recipe.id not in follow_recipe_list %}
                     <button class="button button_style_none" name="favorites" data-out><span class="icon-favorite"></span></button> 
                     {% else %}  
                     <button class="button button_style_none" name="favorites"><span class="icon-favorite icon-favorite_active"></span></button>
