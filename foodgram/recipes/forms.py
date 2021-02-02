@@ -11,11 +11,6 @@ class RecipeForm(forms.ModelForm):
             'description',
             'image']
 
-        # def __init__(self, *args, **kwargs):
-        #     super(RecipeForm, self).__init__(*args, **kwargs)
-        #     for visible in self.visible_fields():
-        #         visible.field.widget.attrs['class'] = 'form-control'
-
         widgets = {
                   'title': forms.TextInput(
                       attrs={"class": "form__input"}),

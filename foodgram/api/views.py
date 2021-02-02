@@ -3,11 +3,14 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views import View
-from django.shortcuts import render, redirect
-from django.http import HttpResponse
-from recipes.forms import RecipeForm
 
-from recipes.models import Recipe, FollowRecipe, FollowUser, User, Purchases, UnitIngredients
+from recipes.models import (
+    Recipe,
+    FollowRecipe,
+    FollowUser,
+    User,
+    Purchases,
+    UnitIngredients)
 
 
 class Purchases_shop(View):
@@ -81,48 +84,16 @@ class Favorites(LoginRequiredMixin, View):
 
 def get_ingredients(request):
     part_product_name = request.GET.get('query', None)
-    print(part_product_name)
-    # manager = request.GET["query"]
-    dimension = []
+    unit_value = {}
+    list_unit_value = []
     try:
         unit_dimension = UnitIngredients.objects.filter(
             ingredients_unit__icontains=part_product_name)
-        dimension_1 = unit_dimension[0].dimension_unit
-        unit_title = part_product_name
-        if dimension_1 is not None:
-            dimension.append(dimension_1)
+        for i in unit_dimension:
+            unit_value['title'] = i.ingredients_unit
+            unit_value['dimension'] = i.dimension_unit
+            list_unit_value.append(unit_value)
     except IndexError:
         pass
-    try:
-        if dimension[0] is not None:
-            dimension = dimension[0]
-        else:
-            dimension = "шт"
-    except IndexError:
-        pass
-    unit_value = [{
-            "title": part_product_name,
-            "dimension": dimension}]
-    #unit_value = {"title": part_product_name, "dimension": dimension}
-    print("=fg==", dimension)
-    
-    print("unt===", unit_value)
-    dimension_unit=dimension
-    #return JsonResponse(unit_value)
-    print("===", HttpResponse( {
-            "title": part_product_name,
-            "dimension": dimension}))
-    
-
-    return HttpResponse({
-            "title": part_product_name,
-            "dimension": dimension})
-    # return JsonResponse({
-    #         "title": part_product_name,
-    #         "dimension": dimension})
-    
-        # print("============++++++++++++++++++", dimension)
-    
-    # return render(request, 'formRecipe.html', {
-    #         "title": part_product_name,
-    #         "dimension": dimension})
+    return JsonResponse(
+        list_unit_value, safe=False)

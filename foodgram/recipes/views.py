@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView
 from .forms import RecipeForm
 from django.http import HttpResponse
-from .utils import ingredient_arrey, tag_check, follow_id
+from .utils import ingredient_arrey, tag_check, follow_id, is_tag
 from .context_processors import get_tags
 
 #from api.views import get_ingredients
@@ -26,9 +26,10 @@ class RecipesView(Diets, ListView):
 
     def get_queryset(self):
         tag_check(self.request)
-        print("tag_list", get_tags(self)['url_list'])
+
         queryset = Recipe.objects.filter(
             diets__in=get_tags(self)['url_list'])
+        print(is_tag(queryset))
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -186,7 +187,6 @@ def recipe_edit(request, username, recipe_id):
     tag_breakfast = recipe.diets.filter(slug="breakfast")
     tag_lunch = recipe.diets.filter(slug="lunch")
     tag_dinner = recipe.diets.filter(slug="dinner")
-    print(tag_breakfast, tag_lunch, tag_dinner)
     form = RecipeForm(
         request.POST or None, files=request.FILES or None, instance=recipe)
     if form.is_valid():

@@ -4,19 +4,19 @@
                 <a href="{% url 'recipe' recipe.author.username recipe.id %}" class="link" target="_blank"><img src="{{ im.url }}" alt="Какой-то текст" class="card__image"></a>
                 {% endthumbnail %}
                 <div class="card__body">
-                    <a class="card__title link" href="#" target="_blank">{{recipe.title}}</a>
-                    <ul class="card__items">
-                         <!-- {{recipe}}
-                        {% for i in diets %}
-                         {{i}}
-                        {% endfor %}
-                        <li class="card__item"><span class="badge badge_style_green">{{diet_breakfast}}</span></li>
-                        
-                        <li class="card__item"><span class="badge badge_style_orange">{{diet_lunch}}</span></li>
-                       
-                        <li class="card__item"><span class="badge badge_style_purple">{{diet_dinner}}</span></li> -->
-                       
-                       
+                    <a class="card__title link" href="{% url 'recipe' recipe.author.username recipe.id %}" target="_blank">{{recipe.title}}</a>
+                    <ul class="card__items">                        
+                        {% for tag in recipe.diets.all %}
+                        {% if tag.title == "Обед" %}
+                        <li class="card__item"><span class="badge badge_style_green " >{{tag.title}}</span></li>
+                        {%endif%}
+                        {% if tag.title == "Завтрак" %}
+                        <li class="card__item"><span class="badge badge_style_orange">{{tag.title}}</span></li>
+                        {%endif%}
+                        {% if tag.title == "Ужин" %}
+                        <li class="card__item"><span class="badge badge_style_purple">{{tag.title}}</span></li> 
+                        {%endif%}
+                        {% endfor %}                    
                     </ul>
                     <div class="card__items card__items_column">
                         <p class="card__text"><span class="icon-time"></span> {{recipe.cooking_time}} мин.</p>
@@ -27,7 +27,7 @@
                     {% if not recipe.id in list_purchases%}
                     <button class="button button_style_light-blue" name="purchases" data-out ><span class="icon-plus button__icon"></span>Добавить в покупки</button>
                     {%else%}
-                    <button class="button button_style_light-blue" name="purchases"  ><span class="icon-plus "></span> Рецепт добавлен</button>
+                    <button class="button button_style_light-blue" name="purchases"  data-out><span class="icon-plus "></span> Рецепт добавлен</button>
                     {%endif%}
                     {% if recipe.id not in follow_recipe_list %}
                     <button class="button button_style_none" name="favorites" data-out><span class="icon-favorite"></span></button> 
