@@ -92,7 +92,6 @@ def get_ingredients(request):
             ingredients_unit__icontains=part_product_name)
         j = 1
         for i in unit_dimension:
-            print(i.ingredients_unit, i.dimension_unit)
             unit_value['nameIngredient_unit_' + str(j)] = i.ingredients_unit
             unit_value['valueIngredient_unit_' + str(j)] = i.dimension_unit
             j += 1
@@ -111,7 +110,6 @@ def get_ingredients(request):
                 new_dict[new_list_key[t]] = value
                 t += 1
             list_unit_value.append(new_dict)
-        print(list_unit_value)
     except IndexError:
         pass
     return JsonResponse(

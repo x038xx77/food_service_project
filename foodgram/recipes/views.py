@@ -133,11 +133,9 @@ class MyFollowView(LoginRequiredMixin, ListView):
 
 @login_required
 def create_recipe(request):
-
     if request.method == 'POST':
         form = RecipeForm(request.POST, files=request.FILES or None)
         recipe_dict = request.POST.dict()
-        #print("get-ing=", get_ingredients(request))
         if form.is_valid():
             recipe = form.save(commit=False)
             recipe.author = request.user
@@ -189,10 +187,40 @@ def recipe_edit(request, username, recipe_id):
     tag_dinner = recipe.diets.filter(slug="dinner")
     form = RecipeForm(
         request.POST or None, files=request.FILES or None, instance=recipe)
+    recipe_dict = request.POST.dict()
     if form.is_valid():
+        list_diet = []
+        for i in recipe_dict:
+            try:
+                if i == "breakfast":
+                    diet_breakfast = Diet.objects.get(slug=i)
+                    recipe.diets.add(diet_breakfast)
+                    list_diet.append(i)
+                elif i == "lunch":
+                    diet_lunch = Diet.objects.get(slug=i)
+                    recipe.diets.add(diet_lunch)
+                    list_diet.append(i)
+                elif i == "dinner":
+                    diet_dinner = Diet.objects.get(slug=i)
+                    recipe.diets.add(diet_dinner)
+                    list_diet.append(i)
+            except KeyError:
+                pass
+        if len(ingredient_arrey(
+            request.POST.dict())) == 0 or len(
+                list_diet) == 0:
+            return render(
+                request, 'formRecipe.html', {
+                    'form': form,
+                    "error_ingredient":
+                    "Ошибка введите ингредиенты и поставьте галочки"
+                    })
+        print("uuuuuuuu", list_diet)
         form.save()
-        return redirect(
-            'recipe', username=request.user.username, recipe_id=recipe_id)
+        Recipe.objects.filter(
+            author=recipe.author, id=recipe.id
+            ).update(ingredients=ingredient_arrey(request.POST.dict()))
+        return redirect('index')
     return render(
         request, 'formChangeRecipe.html',
         {
@@ -220,7 +248,6 @@ def purcheses_download(request):
     response[
         'Content-Disposition'
         ] = 'attachment; filename=DownloadedPurchases_list.txt'
-
     writer = csv.writer(response)
     writer.writerow(['nameingridient', 'valueingredient', 'unitingredient'])
     for key in items:
