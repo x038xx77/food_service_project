@@ -18,4 +18,6 @@ class RecipeForm(forms.ModelForm):
                       attrs={'class': 'form__input'}),
                   'description': forms.Textarea(
                       attrs={'class': 'form__textarea', 'rows': 8}),
-              }
+                   'image': forms.FileInput(
+                    attrs={'class': 'form__file-button'})
+                    }

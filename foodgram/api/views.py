@@ -3,6 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views import View
+from recipes.utils import ingredient_arrey
 
 from recipes.models import (
     Recipe,
@@ -89,10 +90,28 @@ def get_ingredients(request):
     try:
         unit_dimension = UnitIngredients.objects.filter(
             ingredients_unit__icontains=part_product_name)
+        j = 1
         for i in unit_dimension:
-            unit_value['title'] = i.ingredients_unit
-            unit_value['dimension'] = i.dimension_unit
-            list_unit_value.append(unit_value)
+            print(i.ingredients_unit, i.dimension_unit)
+            unit_value['nameIngredient_unit_' + str(j)] = i.ingredients_unit
+            unit_value['valueIngredient_unit_' + str(j)] = i.dimension_unit
+            j += 1
+        update = []
+        items = list(unit_value.items())
+        for i in range(len(items) // 2):
+            _tmp = items[2 * i:2 * (i + 1)]
+            update.append(_tmp)
+        new_list_key = ["title", "dimension"]
+        old_arrey = update
+        list_unit_value = []
+        for i in old_arrey:
+            new_dict = {}
+            t = 0
+            for key, value in dict(i).items():
+                new_dict[new_list_key[t]] = value
+                t += 1
+            list_unit_value.append(new_dict)
+        print(list_unit_value)
     except IndexError:
         pass
     return JsonResponse(

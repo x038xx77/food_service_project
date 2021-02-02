@@ -4,7 +4,7 @@
    <ul class="tags">  
       
 
-    {% if request.resolver_match.url_name == "index"%}
+    <!-- {% if request.resolver_match.url_name == "index"%}
     --TEST INDEX-- FILTER {{url_list}}
     {% elif request.resolver_match.url_name == "favorite_list"%}
     --TEST FAVORITE--
@@ -13,7 +13,7 @@
     --TEST AUTHOR--
     {% endif %}
 {{author_filter_recipe}}dfh{{url_author_filter_recipe}}
-{{ request.get_full_path }} 
+{{ request.get_full_path }}  -->
         <li class="tags__item">
             {%for diet in view.get_diet %}
             {% if diet.title == "Завтрак" and tag_breakfast %}

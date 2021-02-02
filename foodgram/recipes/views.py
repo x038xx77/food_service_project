@@ -203,6 +203,7 @@ def recipe_edit(request, username, recipe_id):
 
 def shop_list(request):
     count_purchase = Purchases.objects.all().count()
+    print("================================", count_purchase)
     purchases = Purchases.objects.all()
     return render(
         request, 'shopList.html', {
