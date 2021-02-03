@@ -29,10 +29,12 @@
                     {%else%}
                     <button class="button button_style_light-blue" name="purchases"  data-out><span class="icon-plus "></span> Рецепт добавлен</button>
                     {%endif%}
+                    {% if user.is_authenticated %}
                     {% if recipe.id not in follow_recipe_list %}
                     <button class="button button_style_none" name="favorites" data-out><span class="icon-favorite"></span></button> 
                     {% else %}  
                     <button class="button button_style_none" name="favorites"><span class="icon-favorite icon-favorite_active"></span></button>
+                    {%endif%}
                     {%endif%}
                     
                 </div>    

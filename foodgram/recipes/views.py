@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Recipe, User, FollowUser, FollowRecipe, Diet, Purchases, Tag
+from .models import (
+    Recipe, User,
+    FollowUser, FollowRecipe, Diet, Purchases)
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView
 from .forms import RecipeForm
@@ -8,12 +10,9 @@ from django.http import HttpResponse
 from .utils import (
     ingredient_arrey,
     tag_check, follow_id,
-    is_tag, tag_create_chenge_template,
+    tag_create_chenge_template,
     print_list_purchases)
 from .context_processors import get_tags
-
-#from api.views import get_ingredients
-
 import json # noqa
 import csv
 
@@ -100,7 +99,7 @@ def recipe_view(request, recipe_id, username):
             })
 
 
-class AuthorRecipeViev(LoginRequiredMixin, Diets, ListView):
+class AuthorRecipeViev(Diets, ListView):
 
     template_name = "recipes/authorRecipe.html"
     # context_object_name = 'author_recipes'
@@ -210,9 +209,7 @@ def recipe_delete(request, username, recipe_id):
 
 
 def shop_list(request):
-    print(request)
     count_purchase = Purchases.objects.all().count()
-    print("================================", count_purchase)
     purchases = Purchases.objects.all()
     return render(
         request, 'shopList.html', {
@@ -220,6 +217,7 @@ def shop_list(request):
             "count_purchase": count_purchase})
 
 
+@login_required
 def purcheses_download(request):
     purchases = Purchases.objects.all()
     list_all_purchases = []

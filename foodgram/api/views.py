@@ -14,11 +14,12 @@ from recipes.models import (
     UnitIngredients)
 
 
-class Purchases_shop(View):
+class Purchases_shop(LoginRequiredMixin, View):
 
     template_name = "shopList.html"
 
     def post(self, request):
+        print(dir(request.GET))
         reg = json.loads(request.body)
         recipe_id = reg.get("id", None)
         if recipe_id is not None:

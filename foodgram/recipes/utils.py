@@ -1,5 +1,5 @@
-import json
-from .models import Diet, FollowRecipe, Recipe, Tag
+import json # noqa
+from .models import Diet, FollowRecipe, Tag
 
 
 def print_list_purchases(list_all_purchases):
@@ -64,20 +64,17 @@ def tag_check(request):
                 Tag.objects.filter(demension=i).delete()
 
 
-def is_tag(queryset):
-    list_is_tag = []
-    for recipe in queryset:
-        print(recipe.diets.all())
-        is_tag_breakfast = recipe.diets.filter(title="Завтрак")
-        is_tag_lunch = recipe.diets.filter(title="Обед")
-        is_tag_dinner = recipe.diets.filter(title="Ужин")
-        ollowing_recipe = Diet.objects.filter(title=recipe).exists()
-        print(ollowing_recipe)
+# def is_tag(queryset):
+#     list_is_tag = []
+#     for recipe in queryset:
+#         print(recipe.diets.all())
+#         is_tag_breakfast = recipe.diets.filter(title="Завтрак")
+#         is_tag_lunch = recipe.diets.filter(title="Обед")
+#         is_tag_dinner = recipe.diets.filter(title="Ужин")
+#         ollowing_recipe = Diet.objects.filter(title=recipe).exists()
+#         print(ollowing_recipe)
 
-        print(list_is_tag)
-
-
-        # print("is_tag==", list_is_tag_breakfast, list_is_tag_lunch, list_is_tag_dinner)
+#         print(list_is_tag)
 
 
 def ingredient_arrey(request):

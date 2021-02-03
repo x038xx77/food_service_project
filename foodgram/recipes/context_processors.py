@@ -1,5 +1,4 @@
-from .models import Diet, Purchases, FollowRecipe, FollowUser, Recipe, Tag
-from django.shortcuts import get_object_or_404
+from .models import Purchases, Tag
 
 
 def purchases(self):
@@ -18,7 +17,8 @@ def is_purchases(self):
 
 
 # def is_diets(self):
-#     recipe = get_object_or_404(Recipe, pk=recipe_id, author__username=username)
+#     recipe = get_object_or_404(
+# Recipe, pk=recipe_id, author__username=username)
 #     is_tag_breakfast = recipe.diets.filter(slug="breakfast")
 #     is_tag_lunch = recipe.diets.filter(slug="lunch")
 #     is_tag_dinner = recipe.diets.filter(slug="dinner")
@@ -38,7 +38,6 @@ def get_tags(self):
         tag_dinner = Tag.objects.filter(demension="3")
         if tag_dinner:
             is_dinner = 3
-        print("con-proces===", is_breakfast, is_lunch, is_dinner)
     except IndexError:
         pass
 

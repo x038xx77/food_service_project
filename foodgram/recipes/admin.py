@@ -12,7 +12,7 @@ from .models import (
 
 class RecipeAdmin(admin.ModelAdmin):
     list_display = ("id", "title", "pub_date", "author", "ingredients")
-    list_filter = ("pub_date",)
+    list_filter = ("pub_date")
     empty_value_display = "-пусто-"
 
     list_filter = ('title', 'author')
@@ -21,7 +21,9 @@ class RecipeAdmin(admin.ModelAdmin):
 
 class UnitIngredientsAdmin(admin.ModelAdmin):
     list_display = ("id", "ingredients_unit", "dimension_unit")
-    search_fields = ("ingredients_unit", "dimension_unit")
+    list_filter = ("pub_date")
+    list_filter = ('ingredients_unit')
+    search_fields = ("ingredients unit", "Dimension unit")
 
 
 admin.site.register(FollowRecipe)
