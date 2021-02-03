@@ -16,14 +16,6 @@ def is_purchases(self):
     return {'list_purchases': list_purchases}
 
 
-# def is_diets(self):
-#     recipe = get_object_or_404(
-# Recipe, pk=recipe_id, author__username=username)
-#     is_tag_breakfast = recipe.diets.filter(slug="breakfast")
-#     is_tag_lunch = recipe.diets.filter(slug="lunch")
-#     is_tag_dinner = recipe.diets.filter(slug="dinner")
-
-
 def get_tags(self):
     is_breakfast = None
     is_lunch = None
@@ -43,7 +35,7 @@ def get_tags(self):
 
     url_list = []
     try:
-        if is_breakfast == int("1") and is_lunch == None and is_dinner == None: # noqa
+        if is_breakfast == int("1") and is_lunch==None and is_dinner==None: # noqa
             url_list.append("1")
         elif is_lunch==int("2") and is_breakfast==None and is_dinner==None: # noqa
             url_list.append("2")
@@ -62,11 +54,10 @@ def get_tags(self):
             url_list.append("1")
             url_list.append("2")
             url_list.append("3")
-        elif is_breakfast == None and is_lunch == None and is_dinner == None:
+        elif is_breakfast == None and is_lunch==None and is_dinner==None: # noqa
             print("CP-url_list==", url_list)
     except IndexError:
         pass
-    print("CP-url_list==", url_list)
     return {
         "tag_breakfast": is_breakfast,
         "tag_lunch": is_lunch,

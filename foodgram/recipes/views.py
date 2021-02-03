@@ -42,43 +42,17 @@ class RecipesView(Diets, ListView):
         return context
 
 
-class FilterAuthorDietView(Diets, ListView):
-    # template_name = "author_filter.html"
-    # context_object_name = 'author_filter'
+class FavoritesView(Diets, ListView):
+    model = FollowRecipe
     paginate_by = 6
-    """Фильтр рациона автора"""
+
     def get_queryset(self):
-        user = get_object_or_404(User, username=self.kwargs.get('username'))
-        queryset = Recipe.objects.filter(
-            diets__in=self.request.GET.getlist('diet'), author=user)
-        return queryset
-
-    def get_context_data(self, **kwargs):
-        context = super(
-            FilterAuthorDietView, self).get_context_data(**kwargs)
-        context['author_filter_recipe'] = get_object_or_404(
-            User, username=self.kwargs.get('username'))
-        context['url_author_filter_recipe'] = self.request.get_full_path()
-        return context
-
-
-class FilterFollowAuthorDietView(Diets, ListView):
-    # template_name = "filter.html"
-    # context_object_name = 'follow_author_filter'
-    paginate_by = 6
-    """Фильтр рациона избранного"""
-    def get_queryset(self):
+        tag_check(self.request)
         pk = FollowRecipe.objects.filter(
             user=self.request.user).values('following_recipe')
         queryset = Recipe.objects.filter(
-            id__in=pk, diets__in=self.request.GET.getlist('diet'))
+            id__in=pk, diets__in=get_tags(self)['url_list'])
         return queryset
-
-
-class FavoritesView(Diets, ListView):
-    model = FollowRecipe
-    queryset = FollowRecipe.objects.all()
-    paginate_by = 6
 
 
 def recipe_view(request, recipe_id, username):
@@ -106,10 +80,11 @@ class AuthorRecipeViev(Diets, ListView):
     paginate_by = 6
 
     def get_queryset(self):
+        tag_check(self.request)
         user = get_object_or_404(User, username=self.kwargs.get('username'))
-
-        recepe_author = get_object_or_404(User, username=user)
-        return recepe_author.recipes.all()
+        queryset = Recipe.objects.filter(
+            diets__in=get_tags(self)['url_list'], author=user)
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super(
