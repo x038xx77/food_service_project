@@ -2,6 +2,24 @@ import json
 from .models import Diet, FollowRecipe, Recipe, Tag
 
 
+def print_list_purchases(list_all_purchases):
+    list_name_set = set()
+    list_out = {}
+    purchases_out = {}
+    for i in list_all_purchases:
+        list_out[i[
+            'nameIngredient']] = str(
+                i['nameIngredient']) + "(" + str(i['unitsIngredient'] + ") - ")
+        list_name_set.add(i['nameIngredient'])
+    for j in list_name_set:
+        weight = 0
+        for i in list_all_purchases:
+            if i['nameIngredient'] == j:
+                weight += int(i['valueIngredient'])
+        purchases_out[list_out[j]] = weight
+    return purchases_out
+
+
 def tag_create_chenge_template(recipe, recipe_dict):
     list_diet = []
     for i in recipe_dict:

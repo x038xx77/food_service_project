@@ -8,7 +8,8 @@ from django.http import HttpResponse
 from .utils import (
     ingredient_arrey,
     tag_check, follow_id,
-    is_tag, tag_create_chenge_template)
+    is_tag, tag_create_chenge_template,
+    print_list_purchases)
 from .context_processors import get_tags
 
 #from api.views import get_ingredients
@@ -107,7 +108,7 @@ class AuthorRecipeViev(LoginRequiredMixin, Diets, ListView):
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
-       
+
         recepe_author = get_object_or_404(User, username=user)
         return recepe_author.recipes.all()
 
@@ -209,6 +210,7 @@ def recipe_delete(request, username, recipe_id):
 
 
 def shop_list(request):
+    print(request)
     count_purchase = Purchases.objects.all().count()
     print("================================", count_purchase)
     purchases = Purchases.objects.all()
@@ -219,22 +221,19 @@ def shop_list(request):
 
 
 def purcheses_download(request):
-    items = {
-        'nameIngredient': 'Яйцо',
-        'valueIngredient': '5', 'unitsIngredient': 'ml'}
+    purchases = Purchases.objects.all()
+    list_all_purchases = []
+    for i in purchases:
+        list_all_purchases += i.recipe.ingredients
     response = HttpResponse(content_type='text/plain')
     response['Content-Type'] = 'text/plain'
     response[
         'Content-Disposition'
         ] = 'attachment; filename=DownloadedPurchases_list.txt'
     writer = csv.writer(response)
-    writer.writerow(['nameingridient', 'valueingredient', 'unitingredient'])
-    for key in items:
-        print(items['nameIngredient'], items['valueIngredient'], items['unitsIngredient'])
-        writer.writerow([
-            items['nameIngredient'],
-            items['valueIngredient'],
-            items['unitsIngredient']])
+    writer.writerow(['Наименование', 'Кол-во'])
+    for key, value in print_list_purchases(list_all_purchases).items():
+        writer.writerow([str(key) + str(value)])
     return response
 
 
