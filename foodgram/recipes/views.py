@@ -59,6 +59,8 @@ def recipe_view(request, recipe_id, username):
     recipe = get_object_or_404(
         Recipe, pk=recipe_id, author__username=username)
     user = request.user
+    author_follow = FollowUser.objects.filter(
+             author=recipe.author)
     if user.is_authenticated:
         following_recipe = FollowRecipe.objects.filter(
             user=user, following_recipe=recipe).exists()
@@ -69,7 +71,8 @@ def recipe_view(request, recipe_id, username):
         'singlePage.html',
         {
             'recipe': recipe, 'author': recipe.author,
-            'following_recipe': following_recipe
+            'following_recipe': following_recipe,
+            'author_follow': author_follow
             })
 
 

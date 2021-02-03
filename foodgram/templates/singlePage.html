@@ -26,13 +26,15 @@
                     </div>
                 </div>
                 <ul class="single-card__items">
-                    {% if recipe.diets == "Обед" %}
-                    <li class="single-card__item"><span class="badge badge_style_green">{{recipe.diets}}</span></li>
-                    {% elif recipe.diets == "Завтрак" %}
-                    <li class="single-card__item"><span class="badge badge_style_orange">{{recipe.diets}}</span></li>
+                    {% for tag in recipe.diets.all %}
+                    {% if tag == "Обед" %}
+                    <li class="single-card__item"><span class="badge badge_style_green">{{tag}}</span></li>
+                    {% elif tag == "Завтрак" %}
+                    <li class="single-card__item"><span class="badge badge_style_orange">{{tag}}</span></li>
                     {% else %}
-                    <li class="single-card__item"><span class="badge badge_style_purple">{{recipe.diets}}</span></li>
+                    <li class="single-card__item"><span class="badge badge_style_purple">{{tag}}</span></li>
                     {%endif%}
+                    {% endfor %}
      
                 </ul>
                 <div class="single-card__items single-card__items_column">
@@ -46,18 +48,23 @@
                 </div>
                 <ul class="single-card__items" >
                     {% csrf_token %} 
+                    {% if not recipe.id in list_purchases%}
                     <li class="single-card__item"><button class="button button_style_blue" name="purchases" data-out><span class="icon-plus"></span> Добавить в покупки</button></li>
+                    {%else%}
+                    <li class="single-card__item"><button class="button button_style_blue" name="purchases" ><span class="icon-plus"></span> Рецепт добавлен</button></li>
+                    {%endif%}
                     {% if user.is_authenticated %}
+                    {% if not author_follow %}
                     <li class="single-card__item"><button class="button button_style_light-blue button_size_subscribe" name="subscribe" data-out>Подписаться на автора</button></li>
+                    {%else%}
+                    <li style="padding: 0 0 2em 0;"><button class="button button_style_light-blue button_size_subscribe" name="subscribe" >Отписаться от автора</button></li>
+                    {%endif%}
                     {%endif%}
                 </ul>
                 <div class="single-card__section">
                     <h3 class="single-card__section-title">Ингридиенты:</h3>
                     <div class="single-card__items single-card__items_column">
-                        
-                                  
                         {%for i in recipe.ingredients %}     
-                        
                         <p class=" single-card__section-item"> {{ i|get_value_from_dict:"nameIngredient" }} - {{ i|get_value_from_dict:"valueIngredient" }} {{ i|get_value_from_dict:"unitsIngredient" }} </p>
                         {%endfor%}
                     </div>

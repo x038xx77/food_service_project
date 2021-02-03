@@ -60,6 +60,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
     "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
@@ -80,7 +81,6 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'recipes.context_processors.purchases',
                 'recipes.context_processors.is_purchases',
-                # 'recipes.context_processors.is_diets',
                 'recipes.context_processors.get_tags',
             ],
         },
