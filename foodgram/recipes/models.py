@@ -9,7 +9,6 @@ User = get_user_model()
 class Recipe(models.Model):
     title = models.TextField(blank=True)
     ingredients = JSONField(null=True)
-    # slug = models.SlugField(max_length=150,  unique=True)
     pub_date = models.DateTimeField("date published", auto_now_add=True)
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="recipes")

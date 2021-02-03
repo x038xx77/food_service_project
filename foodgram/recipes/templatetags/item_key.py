@@ -2,7 +2,7 @@ from django.template.defaulttags import register
 from django import template
 
 
-register = template.Library()
+register = template.Library() # noqa
 
 
 @register.filter('get_value_from_dict')
