@@ -2,6 +2,27 @@ import json
 from .models import Diet, FollowRecipe, Recipe, Tag
 
 
+def tag_create_chenge_template(recipe, recipe_dict):
+    list_diet = []
+    for i in recipe_dict:
+        try:
+            if i == "breakfast":
+                diet_breakfast = Diet.objects.get(slug=i)
+                recipe.diets.add(diet_breakfast)
+                list_diet.append(i)
+            elif i == "lunch":
+                diet_lunch = Diet.objects.get(slug=i)
+                recipe.diets.add(diet_lunch)
+                list_diet.append(i)
+            elif i == "dinner":
+                diet_dinner = Diet.objects.get(slug=i)
+                recipe.diets.add(diet_dinner)
+                list_diet.append(i)
+        except KeyError:
+            pass
+    return list_diet
+
+
 def follow_id(queryset):
     follow_list = []
     for is_following in queryset:
@@ -24,8 +45,9 @@ def tag_check(request):
             else:
                 Tag.objects.filter(demension=i).delete()
 
+
 def is_tag(queryset):
-    list_is_tag=[]
+    list_is_tag = []
     for recipe in queryset:
         print(recipe.diets.all())
         is_tag_breakfast = recipe.diets.filter(title="Завтрак")
@@ -38,7 +60,6 @@ def is_tag(queryset):
 
 
         # print("is_tag==", list_is_tag_breakfast, list_is_tag_lunch, list_is_tag_dinner)
-
 
 
 def ingredient_arrey(request):

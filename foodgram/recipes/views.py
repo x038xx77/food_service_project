@@ -5,7 +5,10 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView
 from .forms import RecipeForm
 from django.http import HttpResponse
-from .utils import ingredient_arrey, tag_check, follow_id, is_tag
+from .utils import (
+    ingredient_arrey,
+    tag_check, follow_id,
+    is_tag, tag_create_chenge_template)
 from .context_processors import get_tags
 
 #from api.views import get_ingredients
@@ -26,10 +29,8 @@ class RecipesView(Diets, ListView):
 
     def get_queryset(self):
         tag_check(self.request)
-
         queryset = Recipe.objects.filter(
             diets__in=get_tags(self)['url_list'])
-        print(is_tag(queryset))
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -106,7 +107,7 @@ class AuthorRecipeViev(LoginRequiredMixin, Diets, ListView):
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
-        print("user==", user)
+       
         recepe_author = get_object_or_404(User, username=user)
         return recepe_author.recipes.all()
 
@@ -140,23 +141,7 @@ def create_recipe(request):
             recipe = form.save(commit=False)
             recipe.author = request.user
             recipe.save()
-            list_diet = []
-            for i in recipe_dict:
-                try:
-                    if i == "breakfast":
-                        diet_breakfast = Diet.objects.get(slug=i)
-                        recipe.diets.add(diet_breakfast)
-                        list_diet.append(i)
-                    elif i == "lunch":
-                        diet_lunch = Diet.objects.get(slug=i)
-                        recipe.diets.add(diet_lunch)
-                        list_diet.append(i)
-                    elif i == "dinner":
-                        diet_dinner = Diet.objects.get(slug=i)
-                        recipe.diets.add(diet_dinner)
-                        list_diet.append(i)
-                except KeyError:
-                    pass
+            list_diet = tag_create_chenge_template(recipe, recipe_dict)
             if len(ingredient_arrey(
                 request.POST.dict())) == 0 or len(
                     list_diet) == 0:
@@ -189,23 +174,8 @@ def recipe_edit(request, username, recipe_id):
         request.POST or None, files=request.FILES or None, instance=recipe)
     recipe_dict = request.POST.dict()
     if form.is_valid():
-        list_diet = []
-        for i in recipe_dict:
-            try:
-                if i == "breakfast":
-                    diet_breakfast = Diet.objects.get(slug=i)
-                    recipe.diets.add(diet_breakfast)
-                    list_diet.append(i)
-                elif i == "lunch":
-                    diet_lunch = Diet.objects.get(slug=i)
-                    recipe.diets.add(diet_lunch)
-                    list_diet.append(i)
-                elif i == "dinner":
-                    diet_dinner = Diet.objects.get(slug=i)
-                    recipe.diets.add(diet_dinner)
-                    list_diet.append(i)
-            except KeyError:
-                pass
+        recipe.diets.clear()
+        list_diet = tag_create_chenge_template(recipe, recipe_dict)
         if len(ingredient_arrey(
             request.POST.dict())) == 0 or len(
                 list_diet) == 0:
@@ -215,7 +185,6 @@ def recipe_edit(request, username, recipe_id):
                     "error_ingredient":
                     "Ошибка введите ингредиенты и поставьте галочки"
                     })
-        print("uuuuuuuu", list_diet)
         form.save()
         Recipe.objects.filter(
             author=recipe.author, id=recipe.id
@@ -227,6 +196,16 @@ def recipe_edit(request, username, recipe_id):
             'form': form, 'recipe': recipe, 'tag_breakfast': tag_breakfast,
             'tag_dinner': tag_dinner, 'tag_lunch': tag_lunch
         })
+
+
+@login_required
+def recipe_delete(request, username, recipe_id):
+    recipe = get_object_or_404(Recipe, pk=recipe_id, author__username=username)
+    if request.user != recipe.author:
+        return redirect(
+            'recipe', username=request.user.username, recipe_id=recipe_id)
+    recipe.delete()
+    return redirect('index')
 
 
 def shop_list(request):
