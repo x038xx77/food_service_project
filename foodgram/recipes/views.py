@@ -2,20 +2,15 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import (
     Recipe, User,
-    FollowUser, FollowRecipe, Diet, Purchases)
+    FollowUser, FollowRecipe, Diet, Purchases, Ingredient)
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView
 from .forms import RecipeForm
 from django.http import HttpResponse
-from .utils import (
-    ingredient_arrey,
-    tag_check, follow_id,
-    tag_create_chenge_template,
-    print_list_purchases)
-from .context_processors import get_tags
+
 import json # noqa
 import csv
-
+from .forms import MyForm
 
 class Diets:
     def get_diet(self):
@@ -28,31 +23,92 @@ class RecipesView(Diets, ListView):
     paginate_by = 6
 
     def get_queryset(self):
-        tag_check(self.request)
-        queryset = Recipe.objects.filter(
-            diets__in=get_tags(self)['url_list'])
+
+        queryset = Recipe.objects.all()
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super(
             RecipesView, self).get_context_data(**kwargs)
-        quer = Recipe.objects.filter(
-            diets__in=get_tags(self)['url_list'])
-        context['follow_recipe_list'] = follow_id(quer)
-        return context
+        form = MyForm(self.request.GET or None)
+        print("========")
+        tag_lunch = Diet.objects.filter(slug='lunch')
+        tag_dinner = Diet.objects.filter(slug='dinner')
+        tag_breakfast = Diet.objects.filter(slug='breakfast')
+        url_breakfast = 'breakfast=on'
+        url_lunch = 'lunch=on'
+        url_dinner = 'dinner=on'
+        breakfast = self.request.GET.getlist('breakfast')
+        lunch = self.request.GET.getlist('lunch')
+        dinner = self.request.GET.getlist('dinner')
+        diet = self.request.GET.getlist('diet')
+        print("getlist", breakfast, lunch, dinner, diet)
+    
+        try:
+            for i in breakfast:
+                if i == 'on':
+                    if tag_breakfast.filter(published=True).exists():
+                        tag_breakfast.update(published=False)
+                    else:
+                        tag_breakfast.update(published=True)
+            for i in lunch:
+                if i == 'on':
+                    if tag_lunch.filter(published=True).exists():
+                        tag_lunch.update(published=False)
+                    else:
+                        tag_lunch.update(published=True)
+            for i in dinner:
+                if i == 'on':
+                    if tag_dinner.filter(published=True).exists():
+                        tag_dinner.update(published=False)
+                    else:
+                        tag_dinner.update(published=True)
+        except IndexError:
+            pass
+        if tag_breakfast.filter(published=True).exists():
+            is_breakfast = True
+        else:
+            is_breakfast = False
+        if tag_lunch.filter(published=True).exists():
+            is_lunch = True
+        else:
+            is_lunch = False
+        if tag_dinner.filter(published=True).exists():
+            is_dinner = True
+        else:
+            is_dinner = False
+        url_param = []
+        try:
+            # if tag_breakfast.filter(published=False).exists():
+            #     url_param = ['diet=1']
+            # if tag_lunch.filter(published=False).exists():
+            #     url_param = ['diet=2']
+            # if tag_dinner.filter(published=False).exists():
+            #     url_param = ['diet=3']
+            if tag_breakfast.filter(published=True).exists() and tag_lunch.filter(published=True).exists():
+                url_param = ['diet=1&diet=2']
+            if tag_breakfast.filter(published=True).exists() and tag_dinner.filter(published=True).exists():
+                url_param = ['diet=1&diet=3']
+            if tag_lunch.filter(published=True).exists() and tag_dinner.filter(published=True).exists():
+                url_param = ['diet=2&diet=3']
+            if tag_breakfast.filter(published=True).exists() and tag_lunch.filter(published=True).exists() and tag_dinner.filter(published=True).exists():
+                url_param = ['diet=1&diet=2&diet=3']
+        except IndexError:
+            pass
 
+        context['tag_breakfast'] = is_breakfast
+        context['tag_lunch'] = is_lunch
+        context['tag_dinner'] = is_dinner
+        context['url_breakfast'] = url_breakfast
+        context['url_lunch'] = url_lunch
+        context['url_dinner'] = url_dinner
+        context['url_param'] = url_param
+        context['form'] = form
+        return context
 
 class FavoritesView(Diets, ListView):
     model = FollowRecipe
     paginate_by = 6
-
-    def get_queryset(self):
-        tag_check(self.request)
-        pk = FollowRecipe.objects.filter(
-            user=self.request.user).values('following_recipe')
-        queryset = Recipe.objects.filter(
-            id__in=pk, diets__in=get_tags(self)['url_list'])
-        return queryset
 
 
 def recipe_view(request, recipe_id, username):
@@ -82,26 +138,6 @@ class AuthorRecipeViev(Diets, ListView):
     # context_object_name = 'author_recipes'
     paginate_by = 6
 
-    def get_queryset(self):
-        tag_check(self.request)
-        user = get_object_or_404(User, username=self.kwargs.get('username'))
-        queryset = Recipe.objects.filter(
-            diets__in=get_tags(self)['url_list'], author=user)
-        return queryset
-
-    def get_context_data(self, **kwargs):
-        context = super(
-            AuthorRecipeViev, self).get_context_data(**kwargs)
-        context['author_recipe_name'] = get_object_or_404(
-            User, username=self.kwargs.get('username'))
-        follow_user = get_object_or_404(
-            User, username=self.kwargs.get('username'))
-        context['author_follow'] = FollowUser.objects.filter(
-             author=follow_user)
-        quer = Recipe.objects.filter(
-            diets__in=get_tags(self)['url_list'])
-        context['follow_recipe_list'] = follow_id(quer)
-        return context
 
 
 class MyFollowView(LoginRequiredMixin, ListView):
