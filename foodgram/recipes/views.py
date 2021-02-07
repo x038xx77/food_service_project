@@ -1,16 +1,16 @@
-from django.db import models
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls.base import reverse, reverse_lazy
+from django.urls.base import reverse_lazy
 from .models import (
-    Recipe, User,
+    Recipe,
     FollowUser, FollowRecipe, Diet, Purchases,
     RecipeIngridient,
     Ingredient)
 from django.contrib.auth.decorators import login_required
 from django.views.generic import (
     ListView,
-    DetailView, CreateView, UpdateView)
+    DetailView, CreateView,
+    UpdateView, DeleteView)
 from .forms import RecipeForm
 from django.http import HttpResponse
 from .utils import (
@@ -186,8 +186,29 @@ class RecipeUpdateView(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         obj = form.save(commit=False)
         obj.author = self.request.user
-        obj.save
+
         self.object = form.save()
+        recipe_dict = self.request.POST.dict()
+        if form.is_valid():
+            obj.diets.clear()
+            list_diet = tag_create_change_template(obj, recipe_dict)
+            if len(ingredient_array(
+                self.request.POST.dict())) == 0 or len(
+                    list_diet) == 0:
+                return render(
+                    self.request, 'formRecipe.html', {
+                        'form': form,
+                        "error_ingredient":
+                        "Ошибка введите ингредиенты и поставьте галочки"
+                        })
+        obj.save
+        for ingredient in ingredient_array(self.request.POST.dict()):
+            ingredient_recipe = get_object_or_404(
+                Ingredient, title=ingredient['nameIngredient'])
+            RecipeIngridient.objects.get_or_create(
+                recipe=obj, ingredient=ingredient_recipe,
+                amount=ingredient['valueIngredient']
+                )
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
@@ -204,44 +225,6 @@ class RecipeUpdateView(LoginRequiredMixin, UpdateView):
         context['tag_dinner'] = tag_dinner
         context['ingredient_recipe'] = ingredient_recipe
         return context
-
-
-
-# @login_required
-# def recipe_edit(request, username, recipe_id):
-#     recipe = get_object_or_404(Recipe, pk=recipe_id, author__username=username)
-#     if request.user != recipe.author:
-#         return redirect(
-#             'recipe', username=request.user.username, recipe_id=recipe_id)
-#     tag_breakfast = recipe.diets.filter(slug="breakfast")
-#     tag_lunch = recipe.diets.filter(slug="lunch")
-#     tag_dinner = recipe.diets.filter(slug="dinner")
-#     form = RecipeForm(
-#         request.POST or None, files=request.FILES or None, instance=recipe)
-#     recipe_dict = request.POST.dict()
-#     if form.is_valid():
-#         recipe.diets.clear()
-#         list_diet = tag_create_change_template(recipe, recipe_dict)
-#         if len(ingredient_array(
-#             request.POST.dict())) == 0 or len(
-#                 list_diet) == 0:
-#             return render(
-#                 request, 'formRecipe.html', {
-#                     'form': form,
-#                     "error_ingredient":
-#                     "Ошибка введите ингредиенты и поставьте галочки"
-#                     })
-#         form.save()
-#         Recipe.objects.filter(
-#             author=recipe.author, id=recipe.id
-#             ).update(ingredients=ingredient_arrey(request.POST.dict()))
-#         return redirect('index')
-#     return render(
-#         request, 'formChangeRecipe.html',
-#         {
-#             'form': form, 'recipe': recipe, 'tag_breakfast': tag_breakfast,
-#             'tag_dinner': tag_dinner, 'tag_lunch': tag_lunch
-#         })
 
 
 @login_required

@@ -98,8 +98,3 @@ def ingredient_array(request):
             t += 1
         new_arrey_list.append(new_dict)
     return new_arrey_list
-
-
-# def add_ingredient_recipe(request):
-
-

@@ -5,6 +5,9 @@ from . import views
 urlpatterns = [
     path('', views.RecipesView.as_view(), name='index'),
     path(
+        '<str:username>/<int:recipe_id>/delete/',
+        views.recipe_delete, name='recipe_delete'),
+    path(
         'purcheses_download/',
         views.purcheses_download, name='purcheses_download'
         ),
@@ -25,7 +28,4 @@ urlpatterns = [
     path(
         '<str:username>/<int:recipe_id>/edit/',
         views.RecipeUpdateView.as_view(), name='recipe_edit'),
-    path(
-        '<str:username>/<int:recipe_id>/delete/',
-        views.recipe_delete, name='recipe_delete'),
 ]
