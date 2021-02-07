@@ -12,7 +12,7 @@ urlpatterns = [
         views.purcheses_download, name='purcheses_download'
         ),
     path('myfollow/', views.MyFollowView.as_view(), name='myfollow'),
-    path('shop_list/', views.shop_list, name='shop_list'),
+    path('shop_list/', views.ShopListView.as_view(), name='shop_list'),
     path(
         'create_recipe/',
         views.CreateRecipeView.as_view(), name='create_recipe'),

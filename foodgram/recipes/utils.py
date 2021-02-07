@@ -98,3 +98,29 @@ def ingredient_array(request):
             t += 1
         new_arrey_list.append(new_dict)
     return new_arrey_list
+
+
+def data_conversion_get_unitsIngredient(unit_dimension):
+    unit_value = {}
+    list_unit_value = []
+    forloop_i = 1
+    for i in unit_dimension:
+        unit_value['title_' + str(forloop_i)] = i.title
+        unit_value['dimension_' + str(forloop_i)] = i.dimension
+        forloop_i += 1
+    update = []
+    items = list(unit_value.items())
+    for split_parts in range(len(items) // 2):
+        _tmp = items[2 * split_parts:2 * (split_parts + 1)]
+        update.append(_tmp)
+    new_list_key = ["title", "dimension"]
+    old_arrey = update
+    list_unit_value = []
+    for i in old_arrey:
+        new_dict = {}
+        counter_new_value = 0
+        for key, value in dict(i).items():
+            new_dict[new_list_key[counter_new_value]] = value
+            counter_new_value += 1
+        list_unit_value.append(new_dict)
+    return list_unit_value

@@ -3,6 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views import View
+from recipes.utils import data_conversion_get_unitsIngredient
 
 from recipes.models import (
     Recipe,
@@ -18,7 +19,6 @@ class Purchases_shop(LoginRequiredMixin, View):
     template_name = "shopList.html"
 
     def post(self, request):
-        print(dir(request.GET))
         reg = json.loads(request.body)
         recipe_id = reg.get("id", None)
         if recipe_id is not None:
@@ -84,32 +84,12 @@ class Favorites(LoginRequiredMixin, View):
 
 
 def get_ingredients(request):
-    part_product_name = request.GET.get('query', None)
-    unit_value = {}
     list_unit_value = []
+    part_product_name = request.GET.get('query', None)
     try:
         unit_dimension = Ingredient.objects.filter(
             title__icontains=part_product_name)
-        j = 1
-        for i in unit_dimension:
-            unit_value['title_' + str(j)] = i.title
-            unit_value['dimension_' + str(j)] = i.dimension
-            j += 1
-        update = []
-        items = list(unit_value.items())
-        for i in range(len(items) // 2):
-            _tmp = items[2 * i:2 * (i + 1)]
-            update.append(_tmp)
-        new_list_key = ["title", "dimension"]
-        old_arrey = update
-        list_unit_value = []
-        for i in old_arrey:
-            new_dict = {}
-            t = 0
-            for key, value in dict(i).items():
-                new_dict[new_list_key[t]] = value
-                t += 1
-            list_unit_value.append(new_dict)
+        list_unit_value = data_conversion_get_unitsIngredient(unit_dimension)
     except IndexError:
         pass
     return JsonResponse(

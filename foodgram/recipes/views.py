@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls.base import reverse_lazy
 from .models import (
-    Recipe,
+    Recipe, User,
     FollowUser, FollowRecipe, Diet, Purchases,
     RecipeIngridient,
     Ingredient)
@@ -10,13 +10,14 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic import (
     ListView,
     DetailView, CreateView,
-    UpdateView, DeleteView)
+    UpdateView)
 from .forms import RecipeForm
 from django.http import HttpResponse
 from .utils import (
     tag_create_change_template,
     ingredient_array,
-    print_list_purchases)
+    print_list_purchases,
+    follow_id)
 
 import json # noqa
 import csv
@@ -42,6 +43,9 @@ class RecipesView(Diets, ListView):
     def get_context_data(self, **kwargs):
         context = super(
             RecipesView, self).get_context_data(**kwargs)
+        quer = Recipe.objects.filter(
+            diets__in=self.request.GET.getlist('diet', None))
+        context['follow_recipe_list'] = follow_id(quer)
         form = MyForm(self.request.GET or None)
         print("========")
         tag_lunch = Diet.objects.filter(slug='lunch')
@@ -112,6 +116,13 @@ class FavoritesView(Diets, ListView):
     model = FollowRecipe
     paginate_by = 6
 
+    def get_queryset(self):
+        pk = FollowRecipe.objects.filter(
+            user=self.request.user).values('following_recipe')
+        queryset = Recipe.objects.filter(
+            id__in=pk, diets__in=self.request.GET.getlist('diet', None))
+        return queryset
+
 
 class RecipeDetailView(DetailView):
     model = Recipe
@@ -123,11 +134,16 @@ class RecipeDetailView(DetailView):
         recipe = get_object_or_404(
             Recipe, pk=self.kwargs['recipe_id'],
             author__username=self.kwargs['username'])
+        author_follow = FollowUser.objects.filter(
+             author=recipe.author)
         recipe_ingredient = RecipeIngridient.objects.filter(recipe=recipe)
         following_recipe = FollowRecipe.objects.filter(
             following_recipe=recipe).exists()
         context['following_recipe'] = following_recipe
         context['recipe_ingredient'] = recipe_ingredient
+        context['recipe'] = recipe
+        context['author'] = recipe.author
+        context['author_follow'] = author_follow
         return context
 
 
@@ -135,6 +151,26 @@ class AuthorRecipeView(Diets, ListView):
 
     template_name = "recipes/authorRecipe.html"
     paginate_by = 6
+
+    def get_queryset(self):
+        user = get_object_or_404(User, username=self.kwargs.get('username'))
+        queryset = Recipe.objects.filter(
+            diets__in=self.request.GET.getlist('diet', None), author=user)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super(
+            AuthorRecipeView, self).get_context_data(**kwargs)
+        context['author_recipe_name'] = get_object_or_404(
+            User, username=self.kwargs.get('username'))
+        follow_user = get_object_or_404(
+            User, username=self.kwargs.get('username'))
+        context['author_follow'] = FollowUser.objects.filter(
+             author=follow_user)
+        quer = Recipe.objects.filter(
+            diets__in=self.request.GET.getlist('diet', None))
+        context['follow_recipe_list'] = follow_id(quer)
+        return context
 
 
 class MyFollowView(LoginRequiredMixin, ListView):
@@ -227,23 +263,11 @@ class RecipeUpdateView(LoginRequiredMixin, UpdateView):
         return context
 
 
-@login_required
-def recipe_delete(request, username, recipe_id):
-    recipe = get_object_or_404(Recipe, pk=recipe_id, author__username=username)
-    if request.user != recipe.author:
-        return redirect(
-            'recipe', username=request.user.username, recipe_id=recipe_id)
-    recipe.delete()
-    return redirect('index')
-
-
-def shop_list(request):
-    count_purchase = Purchases.objects.all().count()
-    purchases = Purchases.objects.all()
-    return render(
-        request, 'shopList.html', {
-            "purchases": purchases,
-            "count_purchase": count_purchase})
+class ShopListView(ListView):
+    model = Purchases
+    template_name = 'shopList.html'
+    paginate_by = 6
+    context_object_name = 'purchases'
 
 
 @login_required
@@ -262,6 +286,16 @@ def purcheses_download(request):
     for key, value in print_list_purchases(list_all_purchases).items():
         writer.writerow([str(key) + str(value)])
     return response
+
+
+@login_required
+def recipe_delete(request, username, recipe_id):
+    recipe = get_object_or_404(Recipe, pk=recipe_id, author__username=username)
+    if request.user != recipe.author:
+        return redirect(
+            'recipe', username=request.user.username, recipe_id=recipe_id)
+    recipe.delete()
+    return redirect('index')
 
 
 def page_not_found(request, exception):
