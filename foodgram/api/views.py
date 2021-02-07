@@ -9,6 +9,7 @@ from recipes.models import (
     FollowRecipe,
     FollowUser,
     User,
+    Ingredient,
     Purchases)
 
 
@@ -83,4 +84,33 @@ class Favorites(LoginRequiredMixin, View):
 
 
 def get_ingredients(request):
-    pass
+    part_product_name = request.GET.get('query', None)
+    unit_value = {}
+    list_unit_value = []
+    try:
+        unit_dimension = Ingredient.objects.filter(
+            title__icontains=part_product_name)
+        j = 1
+        for i in unit_dimension:
+            unit_value['title_' + str(j)] = i.title
+            unit_value['dimension_' + str(j)] = i.dimension
+            j += 1
+        update = []
+        items = list(unit_value.items())
+        for i in range(len(items) // 2):
+            _tmp = items[2 * i:2 * (i + 1)]
+            update.append(_tmp)
+        new_list_key = ["title", "dimension"]
+        old_arrey = update
+        list_unit_value = []
+        for i in old_arrey:
+            new_dict = {}
+            t = 0
+            for key, value in dict(i).items():
+                new_dict[new_list_key[t]] = value
+                t += 1
+            list_unit_value.append(new_dict)
+    except IndexError:
+        pass
+    return JsonResponse(
+        list_unit_value, safe=False)

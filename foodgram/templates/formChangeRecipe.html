@@ -69,14 +69,12 @@
                         <label for="cantidad" class="form__label" id="cantidadVal">шт.</label>
                     </div>
                     <div class="form__field-group-ingredientes-container">
-                        {%for i in recipe.ingredients%}
-                        {{ingredient}}
-                        <div class="form__field-item-ingredient" id="{{ forloop.counter|add:1  }}">
-                            <span> {{ i|get_value_from_dict:'nameIngredient' }} {{ i|get_value_from_dict:'valueIngredient' }}{{ i|get_value_from_dict:'unitsIngredient' }}.</span>
-                            <span class="form__field-item-delete"></span>
-                            <input id="nameIngredient_{{ forloop.counter|add:1  }}" name="nameIngredient_{{ forloop.counter|add:1  }}" type="hidden" value="{{ i|get_value_from_dict:'nameIngredient'}}">
-                            <input id="valueIngredient_{{ forloop.counter|add:1  }}" name="valueIngredient_{{ forloop.counter|add:1  }}" type="hidden" value="{{ i|get_value_from_dict:'valueIngredient'}}">
-                            <input id="unitsIngredient_{{ forloop.counter|add:1  }}" name="unitsIngredient_{{ forloop.counter|add:1  }}" type="hidden" value="{{ i|get_value_from_dict:'unitsIngredient'}}">
+                        {%for item in  ingredient_recipe %}
+                        <div id="ing_{{ forloop.counter }}" class="form__field-item-ingredient">
+                            <span>{{ item.ingredient.title }} {{ item.amount }} {{ item.ingredient.dimension }}</span><span class="form__field-item-delete"></span>
+                            <input id="nameIngredient_{{ forloop.counter }}" name="nameIngredient_{{ forloop.counter }}" type="hidden" value="{{ item.ingredient.title }}">
+                            <input id="valueIngredient_{{ forloop.counter }}" name="valueIngredient_{{ forloop.counter }}" type="hidden" value="{{ item.amount }}">
+                            <input id="unitsIngredient_{{ forloop.counter }}" name="unitsIngredient_{{ forloop.counter }}" type="hidden" value="{{ item.ingredient.dimension }}">
                         </div>
                         {%endfor%}
                     </div>

@@ -1,16 +1,27 @@
+from django.db import models
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls.base import reverse, reverse_lazy
 from .models import (
     Recipe, User,
-    FollowUser, FollowRecipe, Diet, Purchases, Ingredient)
+    FollowUser, FollowRecipe, Diet, Purchases,
+    RecipeIngridient,
+    Ingredient)
 from django.contrib.auth.decorators import login_required
-from django.views.generic import ListView
+from django.views.generic import (
+    ListView,
+    DetailView, CreateView, UpdateView)
 from .forms import RecipeForm
 from django.http import HttpResponse
+from .utils import (
+    tag_create_change_template,
+    ingredient_array,
+    print_list_purchases)
 
 import json # noqa
 import csv
 from .forms import MyForm
+
 
 class Diets:
     def get_diet(self):
@@ -24,7 +35,8 @@ class RecipesView(Diets, ListView):
 
     def get_queryset(self):
 
-        queryset = Recipe.objects.all()
+        queryset = Recipe.objects.filter(
+            diets__in=self.request.GET.getlist('diet', None))
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -41,9 +53,9 @@ class RecipesView(Diets, ListView):
         breakfast = self.request.GET.getlist('breakfast')
         lunch = self.request.GET.getlist('lunch')
         dinner = self.request.GET.getlist('dinner')
-        diet = self.request.GET.getlist('diet')
-        print("getlist", breakfast, lunch, dinner, diet)
-    
+        url_param_breakfast = []
+        url_param_lunch = []
+        url_param_dinner = []
         try:
             for i in breakfast:
                 if i == 'on':
@@ -67,77 +79,62 @@ class RecipesView(Diets, ListView):
             pass
         if tag_breakfast.filter(published=True).exists():
             is_breakfast = True
+            url_param_breakfast.append('diet=1')
         else:
             is_breakfast = False
+            url_param_breakfast = []
         if tag_lunch.filter(published=True).exists():
+            url_param_lunch.append('diet=2')
             is_lunch = True
         else:
             is_lunch = False
+            url_param_lunch = []
         if tag_dinner.filter(published=True).exists():
             is_dinner = True
+            url_param_dinner.append('diet=3')
         else:
             is_dinner = False
-        url_param = []
-        try:
-            # if tag_breakfast.filter(published=False).exists():
-            #     url_param = ['diet=1']
-            # if tag_lunch.filter(published=False).exists():
-            #     url_param = ['diet=2']
-            # if tag_dinner.filter(published=False).exists():
-            #     url_param = ['diet=3']
-            if tag_breakfast.filter(published=True).exists() and tag_lunch.filter(published=True).exists():
-                url_param = ['diet=1&diet=2']
-            if tag_breakfast.filter(published=True).exists() and tag_dinner.filter(published=True).exists():
-                url_param = ['diet=1&diet=3']
-            if tag_lunch.filter(published=True).exists() and tag_dinner.filter(published=True).exists():
-                url_param = ['diet=2&diet=3']
-            if tag_breakfast.filter(published=True).exists() and tag_lunch.filter(published=True).exists() and tag_dinner.filter(published=True).exists():
-                url_param = ['diet=1&diet=2&diet=3']
-        except IndexError:
-            pass
-
+            url_param_dinner = []
         context['tag_breakfast'] = is_breakfast
         context['tag_lunch'] = is_lunch
         context['tag_dinner'] = is_dinner
         context['url_breakfast'] = url_breakfast
         context['url_lunch'] = url_lunch
         context['url_dinner'] = url_dinner
-        context['url_param'] = url_param
+        context['url_param_breakfast'] = url_param_breakfast
+        context['url_param_lunch'] = url_param_lunch
+        context['url_param_dinner'] = url_param_dinner
         context['form'] = form
         return context
+
 
 class FavoritesView(Diets, ListView):
     model = FollowRecipe
     paginate_by = 6
 
 
-def recipe_view(request, recipe_id, username):
-    recipe = get_object_or_404(
-        Recipe, pk=recipe_id, author__username=username)
-    user = request.user
-    author_follow = FollowUser.objects.filter(
-             author=recipe.author)
-    if user.is_authenticated:
+class RecipeDetailView(DetailView):
+    model = Recipe
+    template_name = "singlePage.html"
+    pk_url_kwarg = 'recipe_id'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        recipe = get_object_or_404(
+            Recipe, pk=self.kwargs['recipe_id'],
+            author__username=self.kwargs['username'])
+        recipe_ingredient = RecipeIngridient.objects.filter(recipe=recipe)
         following_recipe = FollowRecipe.objects.filter(
-            user=user, following_recipe=recipe).exists()
-    else:
-        following_recipe = False
-    return render(
-        request,
-        'singlePage.html',
-        {
-            'recipe': recipe, 'author': recipe.author,
-            'following_recipe': following_recipe,
-            'author_follow': author_follow
-            })
+            following_recipe=recipe).exists()
+        context['following_recipe'] = following_recipe
+        context['recipe_ingredient'] = recipe_ingredient
+        return context
 
 
-class AuthorRecipeViev(Diets, ListView):
+class AuthorRecipeView(Diets, ListView):
 
     template_name = "recipes/authorRecipe.html"
-    # context_object_name = 'author_recipes'
     paginate_by = 6
-
 
 
 class MyFollowView(LoginRequiredMixin, ListView):
@@ -146,70 +143,105 @@ class MyFollowView(LoginRequiredMixin, ListView):
     paginate_by = 6
 
 
-@login_required
-def create_recipe(request):
-    if request.method == 'POST':
-        form = RecipeForm(request.POST, files=request.FILES or None)
-        recipe_dict = request.POST.dict()
-        if form.is_valid():
-            recipe = form.save(commit=False)
-            recipe.author = request.user
-            recipe.save()
-            list_diet = tag_create_chenge_template(recipe, recipe_dict)
-            if len(ingredient_arrey(
-                request.POST.dict())) == 0 or len(
-                    list_diet) == 0:
-                recipe.delete()
-                return render(
-                    request, 'formRecipe.html', {
-                        'form': form,
-                        "error_ingredient":
-                        "Ошибка введите ингредиенты и поставьте галочки"
-                        })
-            Recipe.objects.filter(
-                author=recipe.author, id=recipe.id
-                ).update(ingredients=ingredient_arrey(request.POST.dict()))
-            return redirect('index')
-    else:
-        form = RecipeForm()
-    return render(request, 'formRecipe.html', {'form': form})
+class CreateRecipeView(LoginRequiredMixin, CreateView):
+    form_class = RecipeForm
+    template_name = 'formRecipe.html'
+    pk_url_kwarg = 'recipe_id'
+    success_url = reverse_lazy('index')
 
-
-@login_required
-def recipe_edit(request, username, recipe_id):
-    recipe = get_object_or_404(Recipe, pk=recipe_id, author__username=username)
-    if request.user != recipe.author:
-        return redirect(
-            'recipe', username=request.user.username, recipe_id=recipe_id)
-    tag_breakfast = recipe.diets.filter(slug="breakfast")
-    tag_lunch = recipe.diets.filter(slug="lunch")
-    tag_dinner = recipe.diets.filter(slug="dinner")
-    form = RecipeForm(
-        request.POST or None, files=request.FILES or None, instance=recipe)
-    recipe_dict = request.POST.dict()
-    if form.is_valid():
-        recipe.diets.clear()
-        list_diet = tag_create_chenge_template(recipe, recipe_dict)
-        if len(ingredient_arrey(
-            request.POST.dict())) == 0 or len(
-                list_diet) == 0:
+    def form_valid(self, form):
+        obj = form.save(commit=False)
+        obj.author = self.request.user
+        obj.save
+        self.object = form.save()
+        recipe_dict = self.request.POST.dict()
+        for ingredient in ingredient_array(self.request.POST.dict()):
+            ingredient_recipe = get_object_or_404(
+                Ingredient, title=ingredient['nameIngredient'])
+            RecipeIngridient.objects.get_or_create(
+                recipe=obj, ingredient=ingredient_recipe,
+                amount=ingredient['valueIngredient']
+                )
+        list_diet = tag_create_change_template(obj, recipe_dict)
+        if len(ingredient_array(
+                self.request.POST.dict())) == 0 or len(list_diet) == 0:
+            obj.delete()
             return render(
-                request, 'formRecipe.html', {
+                self.request, 'formRecipe.html', {
                     'form': form,
                     "error_ingredient":
                     "Ошибка введите ингредиенты и поставьте галочки"
-                    })
-        form.save()
-        Recipe.objects.filter(
-            author=recipe.author, id=recipe.id
-            ).update(ingredients=ingredient_arrey(request.POST.dict()))
-        return redirect('index')
-    return render(
-        request, 'formChangeRecipe.html',
-        {
-            'form': form, 'recipe': recipe, 'tag_breakfast': tag_breakfast,
-            'tag_dinner': tag_dinner, 'tag_lunch': tag_lunch
-        })
+                        })
+        return super().form_valid(form)
+
+
+class RecipeUpdateView(LoginRequiredMixin, UpdateView):
+
+    model = Recipe
+    form_class = RecipeForm
+    template_name = 'formChangeRecipe.html'
+    pk_url_kwarg = 'recipe_id'
+    success_url = reverse_lazy('index')
+
+    def form_valid(self, form):
+        obj = form.save(commit=False)
+        obj.author = self.request.user
+        obj.save
+        self.object = form.save()
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super(RecipeUpdateView, self).get_context_data(**kwargs)
+        recipe = get_object_or_404(
+            Recipe, pk=self.kwargs['recipe_id'],
+            author__username=self.kwargs['username'])
+        ingredient_recipe = RecipeIngridient.objects.filter(recipe=recipe)
+        tag_breakfast = recipe.diets.filter(slug="breakfast")
+        tag_lunch = recipe.diets.filter(slug="lunch")
+        tag_dinner = recipe.diets.filter(slug="dinner")
+        context['tag_breakfast'] = tag_breakfast
+        context['tag_lunch'] = tag_lunch
+        context['tag_dinner'] = tag_dinner
+        context['ingredient_recipe'] = ingredient_recipe
+        return context
+
+
+
+# @login_required
+# def recipe_edit(request, username, recipe_id):
+#     recipe = get_object_or_404(Recipe, pk=recipe_id, author__username=username)
+#     if request.user != recipe.author:
+#         return redirect(
+#             'recipe', username=request.user.username, recipe_id=recipe_id)
+#     tag_breakfast = recipe.diets.filter(slug="breakfast")
+#     tag_lunch = recipe.diets.filter(slug="lunch")
+#     tag_dinner = recipe.diets.filter(slug="dinner")
+#     form = RecipeForm(
+#         request.POST or None, files=request.FILES or None, instance=recipe)
+#     recipe_dict = request.POST.dict()
+#     if form.is_valid():
+#         recipe.diets.clear()
+#         list_diet = tag_create_change_template(recipe, recipe_dict)
+#         if len(ingredient_array(
+#             request.POST.dict())) == 0 or len(
+#                 list_diet) == 0:
+#             return render(
+#                 request, 'formRecipe.html', {
+#                     'form': form,
+#                     "error_ingredient":
+#                     "Ошибка введите ингредиенты и поставьте галочки"
+#                     })
+#         form.save()
+#         Recipe.objects.filter(
+#             author=recipe.author, id=recipe.id
+#             ).update(ingredients=ingredient_arrey(request.POST.dict()))
+#         return redirect('index')
+#     return render(
+#         request, 'formChangeRecipe.html',
+#         {
+#             'form': form, 'recipe': recipe, 'tag_breakfast': tag_breakfast,
+#             'tag_dinner': tag_dinner, 'tag_lunch': tag_lunch
+#         })
 
 
 @login_required

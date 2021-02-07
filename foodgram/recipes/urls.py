@@ -10,19 +10,21 @@ urlpatterns = [
         ),
     path('myfollow/', views.MyFollowView.as_view(), name='myfollow'),
     path('shop_list/', views.shop_list, name='shop_list'),
-    path('create_recipe/', views.create_recipe, name='create_recipe'),
+    path(
+        'create_recipe/',
+        views.CreateRecipeView.as_view(), name='create_recipe'),
     path(
         'favorite_list/',
         views.FavoritesView.as_view(), name='favorite_list'
         ),
     path(
-        '<username>/', views.AuthorRecipeViev.as_view(), name='author_recipe'),
+        '<username>/', views.AuthorRecipeView.as_view(), name='author_recipe'),
     path(
         '<str:username>/<int:recipe_id>/',
-        views.recipe_view, name='recipe'),
+        views.RecipeDetailView.as_view(), name='recipe'),
     path(
         '<str:username>/<int:recipe_id>/edit/',
-        views.recipe_edit, name='recipe_edit'),
+        views.RecipeUpdateView.as_view(), name='recipe_edit'),
     path(
         '<str:username>/<int:recipe_id>/delete/',
         views.recipe_delete, name='recipe_delete'),

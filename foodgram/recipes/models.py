@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
+from django.urls import reverse
 
 User = get_user_model()
 
@@ -10,7 +11,8 @@ class Recipe(models.Model):
         'Название рецепта',
         default=None)
     ingredients = models.ManyToManyField(
-        'Ingredient', verbose_name='Ингредиенты', blank=True)
+        'Ingredient', through='RecipeIngridient',
+        verbose_name='Ингредиенты', blank=True)
     pub_date = models.DateTimeField('date published', auto_now_add=True)
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='recipes',
@@ -22,6 +24,9 @@ class Recipe(models.Model):
         validators=[MinValueValidator(1)], verbose_name='время приготовления')
     image = models.ImageField(
         upload_to='recipes/', blank=True, null=True)
+
+    def get_absolute_url(self):
+        return reverse('recipe', kwargs={'recipe_id': self.pk})
 
     def __str__(self):
         return self.title
