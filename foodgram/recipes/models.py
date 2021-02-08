@@ -100,7 +100,6 @@ class FollowRecipe(models.Model):
         User, on_delete=models.CASCADE, related_name="followers_recipe")
     following_recipe = models.ForeignKey(
         Recipe, on_delete=models.CASCADE, related_name="following_recipe")
-    is_favore = models.BooleanField(default=False)
 
     class Meta:
         verbose_name_plural = "Избранные рецепты"
@@ -112,8 +111,6 @@ class Purchases(models.Model):
         related_name='shoping_list')
     recipe = models.ForeignKey(
         Recipe, on_delete=models.CASCADE,
-        related_name='recipe_shoping_list')
-    is_purchases = models.BooleanField(default=False)
-
+        related_name='shoping_list')
     class Meta:
         verbose_name_plural = "Покупки"

@@ -13,6 +13,9 @@ from recipes.models import (
     Ingredient,
     Purchases)
 
+JsonResponse_True = JsonResponse({"success": True})
+JsonResponse_False = JsonResponse({"success": False}, status=400)
+
 
 class Purchases_shop(LoginRequiredMixin, View):
 
@@ -26,15 +29,15 @@ class Purchases_shop(LoginRequiredMixin, View):
             obj, created = Purchases.objects.get_or_create(
                 user=request.user, recipe_id=recipe.id)
             if created:
-                return JsonResponse({"success": True})
-            return JsonResponse({"success": True})
-        return JsonResponse({"success": False}, status=400)
+                return JsonResponse_True
+            return JsonResponse_True
+        return JsonResponse_False
 
     def delete(self, request, purchase_id):
         recipe = get_object_or_404(
             Purchases, recipe_id=purchase_id, user=request.user)
         recipe.delete()
-        return JsonResponse({"success": True})
+        return JsonResponse_True
 
 
 class Subscriptions(LoginRequiredMixin, View):
@@ -51,15 +54,15 @@ class Subscriptions(LoginRequiredMixin, View):
                 created = FollowUser.objects.create(
                     user=request.user, author=author)
                 if created:
-                    return JsonResponse({"success": True})
-                return JsonResponse({"success": True})
-            return JsonResponse({"success": False}, status=400)
+                    return JsonResponse_True
+                return JsonResponse_True
+            return JsonResponse_False
 
     def delete(self, request, username_id):
         recipe = get_object_or_404(
             FollowUser, author=username_id, user=request.user)
         recipe.delete()
-        return JsonResponse({"success": True})
+        return JsonResponse_True
 
 
 class Favorites(LoginRequiredMixin, View):
@@ -72,15 +75,15 @@ class Favorites(LoginRequiredMixin, View):
             obj, created = FollowRecipe.objects.get_or_create(
                 user=request.user, following_recipe_id=recipe.id)
             if created:
-                return JsonResponse({"success": True})
-            return JsonResponse({"success": True})
-        return JsonResponse({"success": False}, status=400)
+                return JsonResponse_True
+            return JsonResponse_True
+        return JsonResponse_False
 
     def delete(self, request, recipe_id):
         recipe = get_object_or_404(
             FollowRecipe, following_recipe=recipe_id, user=request.user)
         recipe.delete()
-        return JsonResponse({"success": True})
+        return JsonResponse_True
 
 
 def get_ingredients(request):

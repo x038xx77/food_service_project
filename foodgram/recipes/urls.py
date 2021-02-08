@@ -6,10 +6,10 @@ urlpatterns = [
     path('', views.RecipesView.as_view(), name='index'),
     path(
         '<str:username>/<int:recipe_id>/delete/',
-        views.recipe_delete, name='recipe_delete'),
+        views.delete_recipe, name='delete_recipe'),
     path(
         'purcheses_download/',
-        views.purcheses_download, name='purcheses_download'
+        views.download_purcheses, name='purcheses_download'
         ),
     path('myfollow/', views.MyFollowView.as_view(), name='myfollow'),
     path('shop_list/', views.ShopListView.as_view(), name='shop_list'),

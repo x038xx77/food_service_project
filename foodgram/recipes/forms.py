@@ -21,9 +21,3 @@ class RecipeForm(forms.ModelForm):
                    'image': forms.FileInput(                            # noqa
                     attrs={'class': 'form__file-button'})
                     }
-
-
-class MyForm(forms.Form):
-    breakfast = forms.BooleanField(required=False)
-    lunch = forms.BooleanField(required=False)
-    dinner = forms.BooleanField(required=False)

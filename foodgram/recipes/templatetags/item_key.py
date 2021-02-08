@@ -20,3 +20,8 @@ def query_transform(request, **kwargs):
         else:
             updated.pop(k, 0)
     return updated.urlencode()
+
+
+@register.simple_tag  
+def total_posts():  
+    return Post.published.count()

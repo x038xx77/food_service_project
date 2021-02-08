@@ -78,6 +78,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'recipes.context_processors.purchases',
+                'recipes.context_processors.is_purchases',
             ],
         },
     },
@@ -175,6 +177,8 @@ CACHES = {
 }
 
 SITE_ID = 1
+
+paginate_by = 6
 
 INTERNAL_IPS = [
     "127.0.0.1",

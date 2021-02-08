@@ -5,13 +5,14 @@
 
         <li class="tags__item">
            
-            {% if tag_breakfast %}&diet=1{%endif%}{%if tag_lunch %}&diet=2{%endif%}{%if tag_dinner%}&diet=3{%endif%}
-
-            <a id="breakfast" class="tags__checkbox tags__checkbox_style_orange {% if tag_breakfast %} tags__checkbox_active {% endif %} "  href="{% url 'index' %}?{{url_breakfast}}&{% if tag_breakfast %}&diet=1{%endif%}{%if tag_lunch %}&diet=2{%endif%}{%if tag_dinner%}&diet=3{%endif%} "></a>
+            {{request.resolver_match.url_name }} //////
+            {{request.GET.urlencode}}
+            <a id="breakfast" class="tags__checkbox tags__checkbox_style_orange {% if not tag_breakfast %} tags__checkbox_active {% endif %} "  href="{% url 'index' %}?office=foobar&{{ request.GET.urlencode }} "></a>
+            <a id="breakfast" class="tags__checkbox tags__checkbox_style_orange {% if not tag_breakfast %} tags__checkbox_active {% endif %} "  href="{% url 'index' %}?{{url_breakfast}}{% if tag_breakfast %}&diet=1{%endif%}{%if tag_lunch %}&diet=2{%endif%}{%if tag_dinner%}&diet=3{%endif%} "></a>
             <span class="tags__label">"Завтрак"</span>
-            <a id="lunch" class="tags__checkbox tags__checkbox_style_green {% if  tag_lunch %} tags__checkbox_active {% endif %}" href="{% url 'index' %}?{{url_lunch}}&{% if tag_breakfast %}&diet=1{%endif%}{%if tag_lunch %}&diet=2{%endif%}{%if tag_dinner%}&diet=3{%endif%}"></a>     
+            <a id="lunch" class="tags__checkbox tags__checkbox_style_green {% if  not tag_lunch %} tags__checkbox_active {% endif %}" href="{% url 'index' %}?{{url_lunch}}{% if tag_breakfast %}&diet=1{%endif%}{%if tag_lunch %}&diet=2{%endif%}{%if tag_dinner%}&diet=3{%endif%}"></a>     
             <span class="tags__label">"Обед"</span>
-            <a id="dinner" class="tags__checkbox tags__checkbox_style_purple {% if  tag_dinner %} tags__checkbox_active {% endif %}" href="{% url 'index' %}?{{url_dinner}}&{% if tag_breakfast %}&diet=1{%endif%}{%if tag_lunch %}&diet=2{%endif%}{%if tag_dinner%}&diet=3{%endif%}"></a>
+            <a id="dinner" class="tags__checkbox tags__checkbox_style_purple {% if  not tag_dinner %} tags__checkbox_active {% endif %}" href="{% url 'index' %}?{{url_dinner}}{% if tag_breakfast %}&diet=1{%endif%}{%if tag_lunch %}&diet=2{%endif%}{%if tag_dinner%}&diet=3{%endif%}"></a>
             <span class="tags__label">"Ужин"</span>
            
         </li> 

@@ -15,13 +15,11 @@ from .forms import RecipeForm
 from django.http import HttpResponse
 from .utils import (
     tag_create_change_template,
-    ingredient_array,
-    print_list_purchases,
+    get_ingredients_from,
+    is_empty_ingredients,
     follow_id)
-
 import json # noqa
 import csv
-from .forms import MyForm
 
 
 class Diets:
@@ -32,12 +30,10 @@ class Diets:
 class RecipesView(Diets, ListView):
     """Список рецептов """
 
-    paginate_by = 6
-
     def get_queryset(self):
-
+        sort_list = self.request.GET.getlist('diet', None)
         queryset = Recipe.objects.filter(
-            diets__in=self.request.GET.getlist('diet', None))
+            diets__in=sort_list)
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -46,8 +42,6 @@ class RecipesView(Diets, ListView):
         quer = Recipe.objects.filter(
             diets__in=self.request.GET.getlist('diet', None))
         context['follow_recipe_list'] = follow_id(quer)
-        form = MyForm(self.request.GET or None)
-        print("========")
         tag_lunch = Diet.objects.filter(slug='lunch')
         tag_dinner = Diet.objects.filter(slug='dinner')
         tag_breakfast = Diet.objects.filter(slug='breakfast')
@@ -108,13 +102,11 @@ class RecipesView(Diets, ListView):
         context['url_param_breakfast'] = url_param_breakfast
         context['url_param_lunch'] = url_param_lunch
         context['url_param_dinner'] = url_param_dinner
-        context['form'] = form
         return context
 
 
 class FavoritesView(Diets, ListView):
     model = FollowRecipe
-    paginate_by = 6
 
     def get_queryset(self):
         pk = FollowRecipe.objects.filter(
@@ -150,7 +142,6 @@ class RecipeDetailView(DetailView):
 class AuthorRecipeView(Diets, ListView):
 
     template_name = "recipes/authorRecipe.html"
-    paginate_by = 6
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
@@ -176,7 +167,6 @@ class AuthorRecipeView(Diets, ListView):
 class MyFollowView(LoginRequiredMixin, ListView):
     model = FollowUser
     queryset = FollowUser.objects.all()
-    paginate_by = 6
 
 
 class CreateRecipeView(LoginRequiredMixin, CreateView):
@@ -189,18 +179,19 @@ class CreateRecipeView(LoginRequiredMixin, CreateView):
         obj = form.save(commit=False)
         obj.author = self.request.user
         obj.save
+
         self.object = form.save()
         recipe_dict = self.request.POST.dict()
-        for ingredient in ingredient_array(self.request.POST.dict()):
+        for nameIngr, valueIngr, unitsIngr in get_ingredients_from(self.request.POST.dict()):  # noqa
             ingredient_recipe = get_object_or_404(
-                Ingredient, title=ingredient['nameIngredient'])
+                Ingredient, title=nameIngr)
             RecipeIngridient.objects.get_or_create(
                 recipe=obj, ingredient=ingredient_recipe,
-                amount=ingredient['valueIngredient']
+                amount=valueIngr
                 )
         list_diet = tag_create_change_template(obj, recipe_dict)
-        if len(ingredient_array(
-                self.request.POST.dict())) == 0 or len(list_diet) == 0:
+        if is_empty_ingredients(get_ingredients_from(
+                self.request.POST.dict())) or len(list_diet) == 0:
             obj.delete()
             return render(
                 self.request, 'formRecipe.html', {
@@ -222,15 +213,14 @@ class RecipeUpdateView(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         obj = form.save(commit=False)
         obj.author = self.request.user
-
         self.object = form.save()
         recipe_dict = self.request.POST.dict()
         if form.is_valid():
             obj.diets.clear()
             list_diet = tag_create_change_template(obj, recipe_dict)
-            if len(ingredient_array(
-                self.request.POST.dict())) == 0 or len(
-                    list_diet) == 0:
+            data = self.request.POST.dict()
+            if is_empty_ingredients(
+                get_ingredients_from(data)) or len(list_diet) == 0: # noqa
                 return render(
                     self.request, 'formRecipe.html', {
                         'form': form,
@@ -238,12 +228,12 @@ class RecipeUpdateView(LoginRequiredMixin, UpdateView):
                         "Ошибка введите ингредиенты и поставьте галочки"
                         })
         obj.save
-        for ingredient in ingredient_array(self.request.POST.dict()):
+        for nameIngr, valueIngr, unitsIngr in get_ingredients_from(self.request.POST.dict()):  # noqa
             ingredient_recipe = get_object_or_404(
-                Ingredient, title=ingredient['nameIngredient'])
+                Ingredient, title=nameIngr)
             RecipeIngridient.objects.get_or_create(
                 recipe=obj, ingredient=ingredient_recipe,
-                amount=ingredient['valueIngredient']
+                amount=valueIngr
                 )
         return super().form_valid(form)
 
@@ -266,30 +256,39 @@ class RecipeUpdateView(LoginRequiredMixin, UpdateView):
 class ShopListView(ListView):
     model = Purchases
     template_name = 'shopList.html'
-    paginate_by = 6
     context_object_name = 'purchases'
 
 
 @login_required
-def purcheses_download(request):
+def download_purcheses(request):
     purchases = Purchases.objects.all()
-    list_all_purchases = []
-    for i in purchases:
-        list_all_purchases += i.recipe.ingredients
+    list_name_unit = []
+    list_value = []
+    for obj in purchases:
+        recipe_ingredients = RecipeIngridient.objects.filter(recipe=obj.recipe)
+        for item in recipe_ingredients:
+            list_name_unit.append(
+                ('{} ({}) - ').format(
+                    item.ingredient, item.ingredient.dimension))
+            list_value.append(item.amount)
+    list_ingredient = list(zip(list_name_unit, list_value))
+    dict_set_ingedient = {}
+    for name_value_ingredient, unit_ingredient in list_ingredient:
+        dict_set_ingedient.setdefault(
+            name_value_ingredient, []).append(int(unit_ingredient))
     response = HttpResponse(content_type='text/plain')
     response['Content-Type'] = 'text/plain'
-    response[
-        'Content-Disposition'
-        ] = 'attachment; filename=DownloadedPurchases_list.txt'
+    response['Content-Disposition'] = 'attachment; filename=Purchases_list.txt'
     writer = csv.writer(response)
-    writer.writerow(['Наименование', 'Кол-во'])
-    for key, value in print_list_purchases(list_all_purchases).items():
-        writer.writerow([str(key) + str(value)])
+    writer.writerow(['Наименование (единица измерения)', 'Кол-во'])
+    for name_value_ingredient, unit_ingredient in dict_set_ingedient.items():
+        writer.writerow(
+            [str(name_value_ingredient), str(sum(unit_ingredient))])
     return response
 
 
 @login_required
-def recipe_delete(request, username, recipe_id):
+def delete_recipe(request, username, recipe_id):
     recipe = get_object_or_404(Recipe, pk=recipe_id, author__username=username)
     if request.user != recipe.author:
         return redirect(
