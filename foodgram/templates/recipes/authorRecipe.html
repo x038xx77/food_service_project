@@ -8,9 +8,7 @@
 {% block content %}
 <div class="main__header">
     <h1 class="main__title"> {{author_recipe_name.get_full_name}}</h1>
-    {% include "menu_diet.html" %}
-    <!--        <p style="padding: 0 0 2em 0;"><a class="button button_style_light-blue" href="#">Подписаться на автора</a></p>-->
-   
+    {% include "menu_diet.html" %}   
     <div class="author-subscribe" data-author={{author_recipe_name.id}}>
         {% if user.is_authenticated %}
         {% if not author_follow %}
@@ -19,19 +17,16 @@
         <p style="padding: 0 0 2em 0;"><button class="button button_style_light-blue button_size_subscribe" name="subscribe" >Отписаться от автора</button></p>
         {%endif%}
         {%endif%}
-       
     </div>
     <div class="card-list">
-       
-  {% for recipe in recipe_list %}
-            {% include "includes/recipe_item.html" with author_recipes=recipe %}
+    {% for recipe in recipe_list %}
+        {% include "includes/recipe_item.html" with author_recipes=recipe %}
         {%endfor%}    
     </div> 
-        {% include "paginator.html" with items=page paginator=paginator%}
-  {%endblock%}
-  {% block js %}
+    {% include "paginator.html" with items=page paginator=paginator%}
+    {%endblock%}
+    {% block js %}
   <script src="{% static './js/components/MainCards.js' %}"></script>
-
   <script src="{% static './js/components/Purchases.js' %}"></script>
   <script src="{% static './js/components/Favorites.js' %}"></script>
   <script src="{% static './js/components/Subscribe.js'%}"></script>

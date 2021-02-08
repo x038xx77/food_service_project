@@ -1,20 +1,19 @@
-import json # noqa
-from .models import Diet, FollowRecipe
+from .models import Diet, FavoritesRecipe
 
 
 def tag_create_change_template(recipe, recipe_dict):
     list_diet = []
     for slug in recipe_dict:
         try:
-            if slug == "breakfast":
+            if slug == 'breakfast':
                 diet_breakfast = Diet.objects.get(slug=slug)
                 recipe.diets.add(diet_breakfast)
                 list_diet.append(slug)
-            elif slug == "lunch":
+            elif slug == 'lunch':
                 diet_lunch = Diet.objects.get(slug=slug)
                 recipe.diets.add(diet_lunch)
                 list_diet.append(slug)
-            elif slug == "dinner":
+            elif slug == 'dinner':
                 diet_dinner = Diet.objects.get(slug=slug)
                 recipe.diets.add(diet_dinner)
                 list_diet.append(slug)
@@ -26,7 +25,7 @@ def tag_create_change_template(recipe, recipe_dict):
 def follow_id(queryset):
     follow_list = []
     for is_following in queryset:
-        id_follow_recipe = FollowRecipe.objects.filter(
+        id_follow_recipe = FavoritesRecipe.objects.filter(
             following_recipe_id=is_following.id
             ).exists()
         if id_follow_recipe:
@@ -63,7 +62,7 @@ def data_conversion_get_unitsIngredient(unit_dimension):
     for split_parts in range(len(items) // 2):
         _tmp = items[2 * split_parts:2 * (split_parts + 1)]
         update.append(_tmp)
-    new_list_key = ["title", "dimension"]
+    new_list_key = ['title', 'dimension']
     old_arrey = update
     list_unit_value = []
     for i in old_arrey:
@@ -74,7 +73,3 @@ def data_conversion_get_unitsIngredient(unit_dimension):
             counter_new_value += 1
         list_unit_value.append(new_dict)
     return list_unit_value
-
-
-def get_tag(sort_list):
-    pass

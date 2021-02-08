@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import (
     Diet,
     Recipe,
-    FollowRecipe,
+    FavoritesRecipe,
     FollowUser,
     Purchases,
     RecipeIngridient,
@@ -19,10 +19,10 @@ class RecipeAdmin(admin.ModelAdmin):
     search_fields = ('title', 'description')
 
     def get_diet(self, obj):
-        return "\n".join([p.title for p in obj.diets.all()])
+        return '\n'.join([p.title for p in obj.diets.all()])
 
     def get_ingredients(self, obj):
-        return "\n".join([p.title for p in obj.ingredients.all()])
+        return '\n'.join([p.title for p in obj.ingredients.all()])
 
 
 class RecipeIngridientAdmin(admin.ModelAdmin):
@@ -42,7 +42,7 @@ class DietAdmin(admin.ModelAdmin):
     search_fields = ('title',)
 
 
-admin.site.register(FollowRecipe)
+admin.site.register(FavoritesRecipe)
 admin.site.register(FollowUser)
 admin.site.register(Purchases)
 admin.site.register(Ingredient, IngredientAdmin)

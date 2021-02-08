@@ -5,12 +5,6 @@ from django import template
 register = template.Library() # noqa
 
 
-@register.filter('get_value_from_dict')
-def get_value_from_dict(dict_data, key):
-    if key:
-        return dict_data.get(key)
-
-
 @register.simple_tag
 def query_transform(request, **kwargs):
     updated = request.GET.copy()
@@ -20,8 +14,3 @@ def query_transform(request, **kwargs):
         else:
             updated.pop(k, 0)
     return updated.urlencode()
-
-
-@register.simple_tag  
-def total_posts():  
-    return Post.published.count()

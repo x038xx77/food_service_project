@@ -32,9 +32,9 @@ class Recipe(models.Model):
         return self.title
 
     class Meta:
-        ordering = ["-pub_date"]
-        verbose_name = "Рецепт"
-        verbose_name_plural = "Рецепты"
+        ordering = ['-pub_date']
+        verbose_name = 'Рецепт'
+        verbose_name_plural = 'Рецепты'
 
 
 class Ingredient(models.Model):
@@ -45,7 +45,7 @@ class Ingredient(models.Model):
         return self.title
 
     class Meta:
-        verbose_name_plural = "Ингредиенты"
+        verbose_name_plural = 'Ингредиенты'
 
 
 class RecipeIngridient(models.Model):
@@ -76,13 +76,12 @@ class Diet(models.Model):
     title = models.CharField(max_length=50)
     slug = models.SlugField(max_length=50, unique=True)
     published = models.BooleanField()
-    # objects = models.Manager()
 
     def __str__(self):
         return self.title
 
     class Meta:
-        verbose_name_plural = "Рацион"
+        verbose_name_plural = 'Рацион'
 
 
 class FollowUser(models.Model):
@@ -92,17 +91,17 @@ class FollowUser(models.Model):
         User, on_delete=models.CASCADE, related_name='following')
 
     class Meta:
-        verbose_name_plural = "Подписки"
+        verbose_name_plural = 'Подписки'
 
 
-class FollowRecipe(models.Model):
+class FavoritesRecipe(models.Model):
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="followers_recipe")
+        User, on_delete=models.CASCADE, related_name='favorites')
     following_recipe = models.ForeignKey(
-        Recipe, on_delete=models.CASCADE, related_name="following_recipe")
+        Recipe, on_delete=models.CASCADE, related_name='favorites')
 
     class Meta:
-        verbose_name_plural = "Избранные рецепты"
+        verbose_name_plural = 'Избранные рецепты'
 
 
 class Purchases(models.Model):
@@ -112,5 +111,6 @@ class Purchases(models.Model):
     recipe = models.ForeignKey(
         Recipe, on_delete=models.CASCADE,
         related_name='shoping_list')
+
     class Meta:
-        verbose_name_plural = "Покупки"
+        verbose_name_plural = 'Покупки'

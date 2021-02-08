@@ -7,23 +7,23 @@ from recipes.utils import data_conversion_get_unitsIngredient
 
 from recipes.models import (
     Recipe,
-    FollowRecipe,
+    FavoritesRecipe,
     FollowUser,
     User,
     Ingredient,
     Purchases)
 
-JsonResponse_True = JsonResponse({"success": True})
-JsonResponse_False = JsonResponse({"success": False}, status=400)
+JsonResponse_True = JsonResponse({'success': True})
+JsonResponse_False = JsonResponse({'success': False}, status=400)
 
 
 class Purchases_shop(LoginRequiredMixin, View):
 
-    template_name = "shopList.html"
+    template_name = 'shopList.html'
 
     def post(self, request):
         reg = json.loads(request.body)
-        recipe_id = reg.get("id", None)
+        recipe_id = reg.get('id', None)
         if recipe_id is not None:
             recipe = get_object_or_404(Recipe, id=recipe_id)
             obj, created = Purchases.objects.get_or_create(
@@ -44,7 +44,7 @@ class Subscriptions(LoginRequiredMixin, View):
 
     def post(self, request):
         reg = json.loads(request.body)
-        user_id = reg.get("id", None)
+        user_id = reg.get('id', None)
         if user_id is not None:
             username = User.objects.get(pk=user_id)
             author = get_object_or_404(User, username=username)
@@ -69,10 +69,10 @@ class Favorites(LoginRequiredMixin, View):
 
     def post(self, request):
         reg = json.loads(request.body)
-        recipe_id = reg.get("id", None)
+        recipe_id = reg.get('id', None)
         if recipe_id is not None:
             recipe = get_object_or_404(Recipe, id=recipe_id)
-            obj, created = FollowRecipe.objects.get_or_create(
+            obj, created = FavoritesRecipe.objects.get_or_create(
                 user=request.user, following_recipe_id=recipe.id)
             if created:
                 return JsonResponse_True
@@ -81,7 +81,7 @@ class Favorites(LoginRequiredMixin, View):
 
     def delete(self, request, recipe_id):
         recipe = get_object_or_404(
-            FollowRecipe, following_recipe=recipe_id, user=request.user)
+            FavoritesRecipe, following_recipe=recipe_id, user=request.user)
         recipe.delete()
         return JsonResponse_True
 

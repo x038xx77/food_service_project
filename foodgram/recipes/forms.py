@@ -13,7 +13,7 @@ class RecipeForm(forms.ModelForm):
 
         widgets = {
                   'title': forms.TextInput(
-                      attrs={"class": "form__input"}),
+                      attrs={'class': 'form__input'}),
                   'cooking_time': forms.TextInput(
                       attrs={'class': 'form__input'}),
                   'description': forms.Textarea(
