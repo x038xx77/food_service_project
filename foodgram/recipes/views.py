@@ -28,6 +28,7 @@ class Diets:
 
 class RecipesView(Diets, ListView):
     """Список рецептов """
+    paginate_by = 6
 
     def get_queryset(self):
         sort_list = self.request.GET.getlist('tag', None)
@@ -47,6 +48,7 @@ class RecipesView(Diets, ListView):
 
 class FavoritesView(Diets, ListView):
     model = FavoritesRecipe
+    paginate_by = 6
 
     def get_queryset(self):
         pk = FavoritesRecipe.objects.filter(
@@ -60,6 +62,7 @@ class RecipeDetailView(DetailView):
     model = Recipe
     template_name = 'singlePage.html'
     pk_url_kwarg = 'recipe_id'
+    paginate_by = 6
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -80,7 +83,7 @@ class RecipeDetailView(DetailView):
 
 
 class AuthorRecipeView(Diets, ListView):
-
+    paginate_by = 6
     template_name = 'recipes/authorRecipe.html'
 
     def get_queryset(self):
@@ -107,6 +110,7 @@ class AuthorRecipeView(Diets, ListView):
 class MyFollowView(LoginRequiredMixin, ListView):
     model = FollowUser
     queryset = FollowUser.objects.all()
+    paginate_by = 6
 
 
 class CreateRecipeView(LoginRequiredMixin, CreateView):
@@ -197,6 +201,7 @@ class ShopListView(ListView):
     model = Purchases
     template_name = 'shopList.html'
     context_object_name = 'purchases'
+    paginate_by = 6
 
 
 @login_required

@@ -10,44 +10,31 @@
     <h1 class="main__title">Рецепты</h1>
 {% include "menu_diet.html" %}
     <div class="card-list">
-        
         {% for recipe in recipe_list %}
-        
             {% include "includes/recipe_item.html"  %}
-        {%endfor%}
-                   
+        {%endfor%}       
     </div> 
-  
         {% include "paginator.html" with items=page paginator=paginator%}
   {%endblock%}
-
-  {% block js %}
   {% if user.is_authenticated %}
   <script src="{% static './js/components/MainCards.js' %}"></script>
-
   <script src="{% static './js/components/Purchases.js' %}"></script>
   <script src="{% static './js/components/Favorites.js' %}"></script>
-
   <script src="{% static './js/config/config.js' %}"></script>
   <script src="{% static './js/components/CardList.js' %}"></script>
   <script src="{% static './js/components/Header.js' %}"></script>
-
   <script src="{% static './js/api/Api.js' %}"></script>
   <script src="{% static 'indexAuth.js' %}"></script>
   {%else%}
   <script src="{% static './js/components/MainCards.js' %}"></script>
-
   <script src="{% static './js/components/Purchases.js' %}"></script>
-
   <script src="{% static './js/config/config.js' %}"></script>
   <script src="{% static './js/components/CardList.js' %}"></script>
   <script src="{% static './js/components/Header.js' %}"></script>
-
   <script src="{% static './js/api/Api.js' %}"></script>
   <script src="{% static 'indexNotAuth.js' %}"></script>
   {%endif%}
-
-
+{% block js %}
 {%endblock%}
 
  

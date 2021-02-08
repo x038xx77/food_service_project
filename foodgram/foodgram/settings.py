@@ -178,7 +178,6 @@ CACHES = {
 
 SITE_ID = 1
 
-paginate_by = 6
 
 INTERNAL_IPS = [
     "127.0.0.1",
