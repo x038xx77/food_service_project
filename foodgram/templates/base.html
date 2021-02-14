@@ -19,26 +19,29 @@
         {% block menu_diet %} {%endblock%}
         {% block content %} {%endblock%}
     </main>
-{% block footer %}  {% include "footer.html" %} {%endblock%}               
-{% if user.is_authenticated %}
+{% block footer %}  {% include "footer.html" %} {%endblock%}  
+{% if not request.resolver_match.url_name == 'shop_list' or not request.resolver_match.url_name == 'myfollow'%}
 <script src="{% static './js/components/MainCards.js' %}"></script>
 <script src="{% static './js/components/Purchases.js' %}"></script>
-<script src="{% static './js/components/Favorites.js' %}"></script>
-<script src="{% static './js/config/config.js' %}"></script>
-<script src="{% static './js/components/CardList.js' %}"></script>
-<script src="{% static './js/components/Header.js' %}"></script>
-<script src="{% static './js/api/Api.js' %}"></script>
-<script src="{% static 'indexAuth.js' %}"></script>
+{%endif%}
+{% if request.resolver_match.url_name == 'author_recipe' or request.resolver_match.url_name == 'myfollow' or request.resolver_match.url_name == 'recipe' %}
 <script src="{% static './js/components/Subscribe.js' %}"></script>
-{%else%}
-<script src="{% static './js/components/MainCards.js' %}"></script>
-<script src="{% static './js/components/Purchases.js' %}"></script>
-<script src="{% static './js/config/config.js' %}"></script>
+{%endif%}
+{% if request.resolver_match.url_name == 'index' or request.resolver_match.url_name == 'favorite_list' %}
 <script src="{% static './js/components/CardList.js' %}"></script>
+{%endif%}
+<script src="{% static './js/config/config.js' %}"></script>
 <script src="{% static './js/components/Header.js' %}"></script>
 <script src="{% static './js/api/Api.js' %}"></script>
+{% if user.is_authenticated %}
+{% if not request.resolver_match.url_name == 'shop_list' or not request.resolver_match.url_name == 'myfollow'%}
+<script src="{% static './js/components/Favorites.js' %}"></script>
+{%endif%}
+{% block js %} 
+<script src="{% static 'indexAuth.js' %}"></script>
+{%endblock%}
+{%else%}
 <script src="{% static 'indexNotAuth.js' %}"></script>
 {%endif%}
-{% block js %} {%endblock%}
 </body> 
 </html>

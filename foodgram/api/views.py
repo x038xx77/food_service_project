@@ -3,7 +3,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views import View
-from recipes.utils import data_conversion_get_unitsIngredient
 
 from recipes.models import (
     Recipe,
@@ -28,8 +27,6 @@ class Purchases_shop(LoginRequiredMixin, View):
             recipe = get_object_or_404(Recipe, id=recipe_id)
             obj, created = Purchases.objects.get_or_create(
                 user=request.user, recipe_id=recipe.id)
-            if created:
-                return JsonResponse_True
             return JsonResponse_True
         return JsonResponse_False
 
@@ -46,15 +43,12 @@ class Subscriptions(LoginRequiredMixin, View):
         reg = json.loads(request.body)
         user_id = reg.get('id', None)
         if user_id is not None:
-            username = User.objects.get(pk=user_id)
-            author = get_object_or_404(User, username=username)
+            author = get_object_or_404(User, pk=user_id)
             obj_exists = FollowUser.objects.filter(
                 user=request.user, author=author).exists()
             if not obj_exists and author.id != request.user.id:
-                created = FollowUser.objects.create(
+                obj, created = FollowUser.objects.create(
                     user=request.user, author=author)
-                if created:
-                    return JsonResponse_True
                 return JsonResponse_True
             return JsonResponse_False
 
@@ -74,8 +68,6 @@ class Favorites(LoginRequiredMixin, View):
             recipe = get_object_or_404(Recipe, id=recipe_id)
             obj, created = FavoritesRecipe.objects.get_or_create(
                 user=request.user, following_recipe_id=recipe.id)
-            if created:
-                return JsonResponse_True
             return JsonResponse_True
         return JsonResponse_False
 
@@ -89,11 +81,6 @@ class Favorites(LoginRequiredMixin, View):
 def get_ingredients(request):
     list_unit_value = []
     part_product_name = request.GET.get('query', None)
-    try:
-        unit_dimension = Ingredient.objects.filter(
-            title__icontains=part_product_name)
-        list_unit_value = data_conversion_get_unitsIngredient(unit_dimension)
-    except IndexError:
-        pass
-    return JsonResponse(
-        list_unit_value, safe=False)
+    list_unit_value = Ingredient.objects.values(
+        'title', 'dimension').filter(title__search=part_product_name)
+    return JsonResponse(list(list_unit_value.values()), safe=False)

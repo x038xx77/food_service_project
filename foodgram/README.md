@@ -1,4 +1,4 @@
-#Образ YaMDb
+#Образ Foodgram
 ![Cat](https://github.com/x038xx77/foodgram-project/workflows/foodgram/badge.svg)
 ## Краткое описание проекта
 

@@ -1,14 +1,17 @@
 {% extends "base.html" %}
 {% load static %}
 {% block head %}
-<title>Французские тосты</title>
+<title>{{recipe.title}}</title>
 <link rel="stylesheet" href="{% static './pages/single.css' %}">
 {%endblock%}
 {% block content %}  
 {% load item_key %}
 {% csrf_token %} 
         <div class="single-card" data-id={{recipe.id}} data-author={{author.id}}>
-            <img src="{% static './images/testCardImg.png' %}" alt="какой-то текст" class="single-card__image">
+            {% load thumbnail %}  
+            {% thumbnail recipe.image "960x339" crop="center" upscale=True as im %} 
+            <img src="{{ im.url }}" alt="{{recipe.title}}" class="single-card__image">
+            {% endthumbnail %}
             <div class="single-card__info">
                 <div class="single-card__header-info">
                     <h1 class="single-card__title">{{recipe.title}}</h1>
@@ -78,11 +81,10 @@
         </div>
 {%endblock%}
 {% block js %}
-{% if user.is_authenticated %}
 <script src="{% static './js/components/SingleCard.js' %}"></script>
+{% if user.is_authenticated %}
 <script src="{% static 'singlePage.js' %}"></script>
 {%else%}
-<script src="{% static './js/components/SingleCard.js' %}"></script>
 <script src="{% static 'singlePageNotAuth.js' %}"></script>
 {%endif%}
 {%endblock%}

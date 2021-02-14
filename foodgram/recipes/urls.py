@@ -21,7 +21,8 @@ urlpatterns = [
         views.FavoritesView.as_view(), name='favorite_list'
         ),
     path(
-        '<username>/', views.AuthorRecipeView.as_view(), name='author_recipe'),
+        '<str:username>/',
+        views.AuthorRecipeView.as_view(), name='author_recipe'),
     path(
         '<str:username>/<int:recipe_id>/',
         views.RecipeDetailView.as_view(), name='recipe'),

@@ -21,14 +21,8 @@ from .utils import (
 import csv
 
 
-class Diets:
-    def get_diet(self):
-        return Diet.objects.all()
-
-
-class RecipesView(Diets, ListView):
+class RecipesView(ListView):
     """Список рецептов """
-    paginate_by = 6
 
     def get_queryset(self):
         sort_list = self.request.GET.getlist('tag', None)
@@ -41,14 +35,12 @@ class RecipesView(Diets, ListView):
             RecipesView, self).get_context_data(**kwargs)
         quer = Recipe.objects.filter(
             diets__slug__in=self.request.GET.getlist('tag', None))
-        print(self.request.GET.getlist('tag', None))
         context['follow_recipe_list'] = follow_id(quer)
         return context
 
 
-class FavoritesView(Diets, ListView):
+class FavoritesView(ListView):
     model = FavoritesRecipe
-    paginate_by = 6
 
     def get_queryset(self):
         pk = FavoritesRecipe.objects.filter(
@@ -62,7 +54,6 @@ class RecipeDetailView(DetailView):
     model = Recipe
     template_name = 'singlePage.html'
     pk_url_kwarg = 'recipe_id'
-    paginate_by = 6
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -82,8 +73,8 @@ class RecipeDetailView(DetailView):
         return context
 
 
-class AuthorRecipeView(Diets, ListView):
-    paginate_by = 6
+class AuthorRecipeView(ListView):
+
     template_name = 'recipes/authorRecipe.html'
 
     def get_queryset(self):
@@ -110,7 +101,6 @@ class AuthorRecipeView(Diets, ListView):
 class MyFollowView(LoginRequiredMixin, ListView):
     model = FollowUser
     queryset = FollowUser.objects.all()
-    paginate_by = 6
 
 
 class CreateRecipeView(LoginRequiredMixin, CreateView):
@@ -124,7 +114,6 @@ class CreateRecipeView(LoginRequiredMixin, CreateView):
         obj.author = self.request.user
         obj.save
 
-        self.object = form.save()
         recipe_dict = self.request.POST.dict()
         for nameIngr, valueIngr, unitsIngr in get_ingredients_from(self.request.POST.dict()):  # noqa
             ingredient_recipe = get_object_or_404(
@@ -201,12 +190,12 @@ class ShopListView(ListView):
     model = Purchases
     template_name = 'shopList.html'
     context_object_name = 'purchases'
-    paginate_by = 6
 
 
 @login_required
 def download_purcheses(request):
     purchases = Purchases.objects.all()
+
     list_name_unit = []
     list_value = []
     for obj in purchases:
@@ -217,15 +206,17 @@ def download_purcheses(request):
                     item.ingredient, item.ingredient.dimension))
             list_value.append(item.amount)
     list_ingredient = list(zip(list_name_unit, list_value))
+
     dict_set_ingedient = {}
     for name_value_ingredient, unit_ingredient in list_ingredient:
         dict_set_ingedient.setdefault(
             name_value_ingredient, []).append(int(unit_ingredient))
+
     response = HttpResponse(content_type='text/plain')
-    response['Content-Type'] = 'text/plain'
     response['Content-Disposition'] = 'attachment; filename=Purchases_list.txt'
     writer = csv.writer(response)
     writer.writerow(['Наименование (единица измерения)', 'Кол-во'])
+
     for name_value_ingredient, unit_ingredient in dict_set_ingedient.items():
         writer.writerow(
             [str(name_value_ingredient), str(sum(unit_ingredient))])

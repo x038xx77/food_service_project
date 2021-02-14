@@ -1,8 +1,8 @@
 {% block menu %}
-{% if user.is_authenticated %}
   <header class="header">
       <nav class="nav">
           <div class="nav__container container">
+            {% if user.is_authenticated %}
               <ul class="nav__items list">
                   <li class="nav__item {% if request.resolver_match.url_name == 'index' %} nav__item_active {% endif %}" > <a href="{% url 'index' %}" class="nav__link link">Рецепты</a></li>
                   <li class="nav__item {% if request.resolver_match.url_name == 'myfollow' %} nav__item_active {%endif%}"><a href="{% url 'myfollow' %}" class="nav__link link">Мои подписки</a></li>
@@ -14,14 +14,8 @@
                   <li class="nav__item"><a href="{% url 'password_change' %}" class="nav__link link">Изменить пароль</a></li>
                   <li class="nav__item"><a href="{% url 'logout' %}" class="nav__link link">Выход</a></li>
               </ul>
-          </div>
-      </nav>
-  </header>
-{% else %}
-  <header class="header">
-    <nav class="nav">
-        <div class="nav__container container">
-            <ul class="nav__items list">
+              {% else %}
+              <ul class="nav__items list">
                 <li class="nav__item nav__item_disabled"><a href="{% url 'index' %}" class="nav__link link">Рецепты</a></li>
                 <li class="nav__item nav__item_disabled"><a href="{% url 'shop_list' %}" class="nav__link link">Список покупок {% if user.is_authenticated %} <span class="badge badge_style_blue nav__badge" id="counter"> {{purchases_count}} {% endif %}</span></a></li>
             </ul>
@@ -29,8 +23,8 @@
                 <li class="nav__item"><a href="{% url 'login' %}" class="nav__link link">Войти</a></li>
                 <li class="nav__item"><a href="{% url 'signup' %}" class="button button_style_blue">Создать аккаунт</a></li>
             </ul>
-        </div>
-    </nav>
-</header>
-{% endif %}
+            {% endif %}
+          </div>
+      </nav>
+  </header>
 {%endblock%}

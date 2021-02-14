@@ -11,13 +11,10 @@ class RecipeForm(forms.ModelForm):
             'description',
             'image']
 
-        widgets = {
-                  'title': forms.TextInput(
-                      attrs={'class': 'form__input'}),
-                  'cooking_time': forms.TextInput(
-                      attrs={'class': 'form__input'}),
-                  'description': forms.Textarea(
-                      attrs={'class': 'form__textarea', 'rows': 8}),
-                   'image': forms.FileInput(                            # noqa
-                    attrs={'class': 'form__file-button'})
-                    }
+        widgets = {'title': forms.TextInput(attrs={'class': 'form__input'}),
+                   'cooking_time': forms.TextInput(
+                       attrs={'class': 'form__input'}),
+                   'description': forms.Textarea(
+                       attrs={'class': 'form__textarea', 'rows': 8}),
+                   'image': forms.FileInput(
+                       attrs={'class': 'form__file-button'})}
