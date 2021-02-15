@@ -19,6 +19,7 @@ from .utils import (
     is_empty_tag_or_ingredients,
     follow_id)
 import csv
+from collections import defaultdict
 
 
 class RecipesView(ListView):
@@ -172,12 +173,8 @@ class UpdateRecipeView(LoginRequiredMixin, UpdateView):
             Recipe, pk=self.kwargs['recipe_id'],
             author__username=self.kwargs['username'])
         ingredient_recipe = RecipeIngridient.objects.filter(recipe=recipe)
-        tag_breakfast = recipe.diets.filter(slug='breakfast')
-        tag_lunch = recipe.diets.filter(slug='lunch')
-        tag_dinner = recipe.diets.filter(slug='dinner')
-        context['tag_breakfast'] = tag_breakfast
-        context['tag_lunch'] = tag_lunch
-        context['tag_dinner'] = tag_dinner
+        tags = list(Diet.objects.all())
+        context['tag_all'] = tags,
         context['ingredient_recipe'] = ingredient_recipe
         return context
 
@@ -203,10 +200,9 @@ def download_purcheses(request):
             list_value.append(item.amount)
     list_ingredient = list(zip(list_name_unit, list_value))
 
-    dict_set_ingedient = {}
+    dict_set_ingedient = defaultdict(list)
     for name_value_ingredient, unit_ingredient in list_ingredient:
-        dict_set_ingedient.setdefault(
-            name_value_ingredient, []).append(int(unit_ingredient))
+        dict_set_ingedient[name_value_ingredient].append(int(unit_ingredient))
 
     response = HttpResponse(content_type='text/plain')
     response['Content-Disposition'] = 'attachment; filename=Purchases_list.txt'

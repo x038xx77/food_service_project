@@ -5,7 +5,7 @@
                 {% endthumbnail %}
                 <div class="card__body">
                     <a class="card__title link" href="{% url 'recipe' recipe.author.username recipe.id %}" target="_blank">{{recipe.title}}</a>
-                    <ul class="card__items">                        
+                    <ul class="card__items">                    
                         {% for tag in recipe.diets.all %}
                         {% if tag.title == "Завтрак" %}
                         <li class="card__item"><span class="badge badge_style_orange">{{tag.title}}</span></li>

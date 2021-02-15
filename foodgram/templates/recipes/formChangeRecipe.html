@@ -24,16 +24,16 @@
                 <div class="form__field-group">
                     <div class="tags">
                         <div class="tags__item">
-                            <input type="checkbox" name="breakfast" id="id_breakfast" class="tags__checkbox tags__checkbox_style_orange" {% if tag_breakfast %} checked {%endif%}>
-                            <label for="id_breakfast" class="tags__label">Завтрак</label> 
-                        </div>
-                        <div class="tags__item">
-                            <input type="checkbox" name="lunch" id="id_lunch" class="tags__checkbox tags__checkbox_style_green" {% if tag_lunch%} checked {%endif%}>
-                            <label for="id_lunch" class="tags__label">Обед</label>
-                        </div>
-                        <div class="tags__item">
-                            <input type="checkbox" name="dinner" id="id_dinner" class="tags__checkbox tags__checkbox_style_purple" {% if tag_dinner%} checked {%endif%}>
-                            <label for="id_dinner" class="tags__label">Ужин</label>                           
+                          {% for tag in tag_all %}
+                          {% for item in recipe.diets.all %}
+                          {% if item == tag %}
+                            <input type="checkbox" name="{{tag.title}}" id="id_{{tag.id}}" class="tags__checkbox tags__checkbox_style_{{tag.checkbox_style}}" checked >
+                            {%else%}
+                            <input type="checkbox" name="{{tag.title}}" id="id_{{tag.id}}" class="tags__checkbox tags__checkbox_style_{{tag.checkbox_style}}" >
+                            {%endif%}
+                            <label for="id_{{tag.slug}}" class="tags__label">{{tag.title}}</label>
+                            {%endfor%}
+                            {%endfor%}
                         </div>
                     </div>
                     <span class="form__error"></span>

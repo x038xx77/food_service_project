@@ -72,6 +72,7 @@ class Diet(models.Model):
     title = models.CharField(max_length=50)
     slug = models.SlugField(max_length=50, unique=True)
     published = models.BooleanField()
+    checkbox_style = models.CharField(max_length=50)
 
     def __str__(self):
         return self.title
