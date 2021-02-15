@@ -31,9 +31,10 @@ def get_ingredients_from(request):
     return ingredients
 
 
-def is_empty_ingredients(ingredient_zip):
-    try:
-        next(ingredient_zip)
-        return False
-    except StopIteration:
+def is_empty_tag_or_ingredients(recipe_dict):
+    ing = [recipe_dict[key] for key in recipe_dict if 'nameIngredient' in key]
+    tag_break = [recipe_dict[key] for key in recipe_dict if 'breakfast' in key]
+    tag_lunch = [recipe_dict[key] for key in recipe_dict if 'lunch' in key]
+    tag_dinner = [recipe_dict[key] for key in recipe_dict if 'dinner' in key]
+    if not tag_dinner and not tag_lunch and not tag_break or not ing:
         return True

@@ -2,24 +2,24 @@
 <form action="" method="GET">
    <ul class="tags">  
         <li class="tags__item">
-    {% if 'breakfast' in request.GET.urlencode %}
-  <a id="breakfast" class="tags__checkbox tags__checkbox_style_orange tags__checkbox_active" href="{{request.get_full_path|cut:'tag=breakfast'}}"></a>
-    {% else %}
-  <a id="breakfast" class="tags__checkbox tags__checkbox_style_orange " href="{{request.get_full_path}}?&{% query_transform request tag='breakfast'%}"></a>
-    {% endif %}
-   <span class="tags__label">Завтрак</span>
-   {% if 'lunch' in request.GET.urlencode %}
-  <a id="lunch" class="tags__checkbox tags__checkbox_style_green tags__checkbox_active" href="{{request.get_full_path|cut:'tag=lunch'}}"></a>
-    {% else %}
-  <a id="lunch" class="tags__checkbox tags__checkbox_style_green " href="{{request.get_full_path}}?&{% query_transform request tag='lunch' %}"></a>
-    {% endif %}
-   <span class="tags__label">Обед</span>
-   {% if 'dinner' in request.GET.urlencode %}
-  <a id="dinner" class="tags__checkbox tags__checkbox_style_purple tags__checkbox_active" href="{{request.get_full_path|cut:'tag=dinner'}}"></a>
-    {% else %}
-  <a id="dinner" class="tags__checkbox tags__checkbox_style_purple " href="{{request.get_full_path}}?&{% query_transform request tag='dinner' %}"></a>
-    {% endif %}
-   <span class="tags__label">Ужин</span>
+  {% if 'breakfast' in request.GET.urlencode %}
+  <a id="breakfast" class="tags__checkbox tags__checkbox_style_orange tags__checkbox_active" href="{{request.get_full_path|cut:'tag=breakfast'|cut:'page='}}"></a>
+  {% else %}
+  <a id="breakfast" class="tags__checkbox tags__checkbox_style_orange " href="?tag=breakfast&{{ request.GET.urlencode }}"></a>
+  {% endif %}
+  <span class="tags__label">Завтрак</span>
+  {% if 'lunch' in request.GET.urlencode %}
+  <a id="lunch" class="tags__checkbox tags__checkbox_style_green tags__checkbox_active" href="{{request.get_full_path|cut:'tag=lunch'|cut:'page='}}"></a>
+  {% else %}
+  <a id="lunch" class="tags__checkbox tags__checkbox_style_green " href="?tag=lunch&{{ request.GET.urlencode }}"></a>
+  {% endif %}
+  <span class="tags__label">Обед</span>
+  {% if 'dinner' in request.GET.urlencode %}
+  <a id="dinner" class="tags__checkbox tags__checkbox_style_purple tags__checkbox_active" href="{{request.get_full_path|cut:'tag=dinner'|cut:'page='}}" ></a>
+  {% else %}
+  <a id="dinner" class="tags__checkbox tags__checkbox_style_purple " href="?tag=dinner&{{ request.GET.urlencode }}" ></a>
+  {% endif %}
+  <span class="tags__label">Ужин</span>
         </li> 
     </ul>  
 </div>

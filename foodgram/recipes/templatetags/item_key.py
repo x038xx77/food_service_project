@@ -6,11 +6,12 @@ register = template.Library() # noqa
 
 
 @register.simple_tag
-def query_transform(request, **kwargs):
-    updated = request.GET.copy()
-    for k, v in kwargs.items():
-        if v is not None:
-            updated[k] = v
-        else:
-            updated.pop(k, 0)
-    return updated.urlencode()
+def relative_url(value, field_name, urlencode=None):
+    url = '?{}={}'.format(field_name, value)
+    if urlencode:
+        querystring = urlencode.split('&')
+        filtered_querystring = filter(
+            lambda p: p.split('=')[0] != field_name, querystring)
+        encoded_querystring = '&'.join(filtered_querystring)
+        url = '{}&{}'.format(url, encoded_querystring)
+    return url

@@ -16,7 +16,7 @@ from django.http import HttpResponse
 from .utils import (
     tag_create_change_template,
     get_ingredients_from,
-    is_empty_ingredients,
+    is_empty_tag_or_ingredients,
     follow_id)
 import csv
 
@@ -112,26 +112,22 @@ class CreateRecipeView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         obj = form.save(commit=False)
         obj.author = self.request.user
-        obj.save
-
+        ingredients = get_ingredients_from(self.request.POST.dict())
         recipe_dict = self.request.POST.dict()
-        for nameIngr, valueIngr, unitsIngr in get_ingredients_from(self.request.POST.dict()):  # noqa
-            ingredient_recipe = get_object_or_404(
-                Ingredient, title=nameIngr)
-            RecipeIngridient.objects.get_or_create(
-                recipe=obj, ingredient=ingredient_recipe,
-                amount=valueIngr
-                )
-        list_diet = tag_create_change_template(obj, recipe_dict)
-        if is_empty_ingredients(get_ingredients_from(
-                self.request.POST.dict())) or len(list_diet) == 0:
-            obj.delete()
+        if is_empty_tag_or_ingredients(recipe_dict):
             return render(
                 self.request, 'recipes/formRecipe.html', {
                     'form': form,
                     'error_ingredient':
                     'Ошибка введите ингредиенты и поставьте галочки'
-                        })
+                            })
+        obj.save()
+        for item in ingredients:
+            RecipeIngridient.objects.create(
+                ingredient=Ingredient.objects.get(title=item[0]),
+                recipe=obj, amount=item[1]
+                )
+        tag_create_change_template(obj, recipe_dict)
         return super().form_valid(form)
 
 
@@ -149,25 +145,25 @@ class UpdateRecipeView(LoginRequiredMixin, UpdateView):
         self.object = form.save()
         recipe_dict = self.request.POST.dict()
         if form.is_valid():
+            RecipeIngridient.objects.filter(recipe=obj).delete()
             obj.diets.clear()
-            list_diet = tag_create_change_template(obj, recipe_dict)
-            data = self.request.POST.dict()
-            if is_empty_ingredients(
-                get_ingredients_from(data)) or len(list_diet) == 0: # noqa
-                return render(
-                    self.request, 'reciipes/formRecipe.html', {
-                        'form': form,
-                        'error_ingredient':
-                        'Ошибка введите ингредиенты и поставьте галочки'
-                        })
-        obj.save
-        for nameIngr, valueIngr, unitsIngr in get_ingredients_from(self.request.POST.dict()):  # noqa
-            ingredient_recipe = get_object_or_404(
-                Ingredient, title=nameIngr)
-            RecipeIngridient.objects.get_or_create(
-                recipe=obj, ingredient=ingredient_recipe,
-                amount=valueIngr
+        ingredients = get_ingredients_from(self.request.POST.dict())
+        recipe_dict = self.request.POST.dict()
+        if is_empty_tag_or_ingredients(recipe_dict):
+            return render(
+                self.request, 'recipes/formRecipe.html', {
+                    'form': form,
+                    'resipe': obj,
+                    'error_ingredient':
+                    'Ошибка введите ингредиенты и поставьте галочки'
+                            })
+        obj.save()
+        for item in ingredients:
+            RecipeIngridient.objects.create(
+                ingredient=Ingredient.objects.get(title=item[0]),
+                recipe=obj, amount=item[1]
                 )
+        tag_create_change_template(obj, recipe_dict)
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
