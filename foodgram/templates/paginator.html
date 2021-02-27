@@ -2,7 +2,6 @@
 {% if is_paginated %}
 <nav class="pagination" aria-label="Search results pages">
         <ul class="pagination__container">
-               
                 <li class="pagination__item {% if page_obj.has_previous %} disabled {% endif%}">
                         {% if page_obj.has_previous %}
                         <a class="pagination__link link" href="{% relative_url page_obj.previous_page_number 'page' request.GET.urlencode %}"><span class="icon-left"></span></a></li>

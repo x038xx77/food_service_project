@@ -25,15 +25,29 @@ class Purchases_shop(LoginRequiredMixin, View):
         recipe_id = reg.get('id', None)
         if recipe_id is not None:
             recipe = get_object_or_404(Recipe, id=recipe_id)
-            obj, created = Purchases.objects.get_or_create(
-                user=request.user, recipe_id=recipe.id)
-            return JsonResponse_True
+            if request.user.is_authenticated:
+                obj, created = Purchases.objects.get_or_create(
+                    user=request.user, recipe_id=recipe.id)
+                return JsonResponse_True
+            else:
+                if 'purchase' not in request.session:
+                    request.session['purchase'] = list()
+
+                if recipe_id not in request.session['purchase']:
+                    request.session['purchase'].append(recipe_id)
+                    request.session.save()
+                    return JsonResponse_True
+            return JsonResponse({'success': False})
         return JsonResponse_False
 
     def delete(self, request, purchase_id):
-        recipe = get_object_or_404(
-            Purchases, recipe_id=purchase_id, user=request.user)
-        recipe.delete()
+        if request.user.is_authenticated:
+            recipe = get_object_or_404(
+                Purchases, recipe_id=purchase_id, user=request.user)
+            recipe.delete()
+        else:
+            request.session['purchase'].remove(purchase_id)
+            request.session.save()
         return JsonResponse_True
 
 
@@ -44,13 +58,14 @@ class Subscriptions(LoginRequiredMixin, View):
         user_id = reg.get('id', None)
         if user_id is not None:
             author = get_object_or_404(User, pk=user_id)
-            obj_exists = FollowUser.objects.filter(
-                user=request.user, author=author).exists()
+            obj_exists = FollowUser.objects.get_or_create(
+                user=request.user, author=author)
             if not obj_exists and author.id != request.user.id:
                 obj, created = FollowUser.objects.create(
                     user=request.user, author=author)
                 return JsonResponse_True
-            return JsonResponse_False
+            return JsonResponse_True
+        return JsonResponse_False
 
     def delete(self, request, username_id):
         recipe = get_object_or_404(

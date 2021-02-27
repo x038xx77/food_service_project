@@ -1,4 +1,11 @@
-from .models import Purchases
+from .models import Diet, Purchases, Recipe
+
+
+def all_tags(self):
+
+    all_tags = Diet.objects.values_list(
+        'title', flat=True)
+    return {'all_tags': all_tags}
 
 
 def purchases(self):

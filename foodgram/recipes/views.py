@@ -1,9 +1,13 @@
+import logging
+logger = logging.getLogger(__name__)
+from django.conf import settings
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls.base import reverse_lazy
 from .models import (
     Recipe, User,
-    FollowUser, FavoritesRecipe, Diet, Purchases,
+    FollowUser, FavoritesRecipe, Purchases,
     RecipeIngridient,
     Ingredient)
 from django.contrib.auth.decorators import login_required
@@ -20,10 +24,12 @@ from .utils import (
     follow_id)
 import csv
 from collections import defaultdict
+from foodgram.settings import PAGINATE_BY
 
 
 class RecipesView(ListView):
     """Список рецептов """
+    paginate_by = PAGINATE_BY
 
     def get_queryset(self):
         sort_list = self.request.GET.getlist('tag', None)
@@ -101,10 +107,16 @@ class AuthorRecipeView(ListView):
 
 class MyFollowView(LoginRequiredMixin, ListView):
     model = FollowUser
-    queryset = FollowUser.objects.all()
+    template_name = 'recipes/followuser_list.html'
+    paginate_by = 3
+
+    def get_queryset(self):
+        queryset = FollowUser.objects.filter(user=self.request.user)
+        return queryset
 
 
 class CreateRecipeView(LoginRequiredMixin, CreateView):
+
     form_class = RecipeForm
     template_name = 'recipes/formRecipe.html'
     pk_url_kwarg = 'recipe_id'
@@ -113,22 +125,6 @@ class CreateRecipeView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         obj = form.save(commit=False)
         obj.author = self.request.user
-        ingredients = get_ingredients_from(self.request.POST.dict())
-        recipe_dict = self.request.POST.dict()
-        if is_empty_tag_or_ingredients(recipe_dict):
-            return render(
-                self.request, 'recipes/formRecipe.html', {
-                    'form': form,
-                    'error_ingredient':
-                    'Ошибка введите ингредиенты и поставьте галочки'
-                            })
-        obj.save()
-        for item in ingredients:
-            RecipeIngridient.objects.create(
-                ingredient=Ingredient.objects.get(title=item[0]),
-                recipe=obj, amount=item[1]
-                )
-        tag_create_change_template(obj, recipe_dict)
         return super().form_valid(form)
 
 
@@ -136,53 +132,28 @@ class UpdateRecipeView(LoginRequiredMixin, UpdateView):
 
     model = Recipe
     form_class = RecipeForm
-    template_name = 'recipes/formChangeRecipe.html'
+    template_name = 'recipes/formRecipe.html'
     pk_url_kwarg = 'recipe_id'
     success_url = reverse_lazy('index')
-
-    def form_valid(self, form):
-        obj = form.save(commit=False)
-        obj.author = self.request.user
-        self.object = form.save()
-        recipe_dict = self.request.POST.dict()
-        if form.is_valid():
-            RecipeIngridient.objects.filter(recipe=obj).delete()
-            obj.diets.clear()
-        ingredients = get_ingredients_from(self.request.POST.dict())
-        recipe_dict = self.request.POST.dict()
-        if is_empty_tag_or_ingredients(recipe_dict):
-            return render(
-                self.request, 'recipes/formRecipe.html', {
-                    'form': form,
-                    'resipe': obj,
-                    'error_ingredient':
-                    'Ошибка введите ингредиенты и поставьте галочки'
-                            })
-        obj.save()
-        for item in ingredients:
-            RecipeIngridient.objects.create(
-                ingredient=Ingredient.objects.get(title=item[0]),
-                recipe=obj, amount=item[1]
-                )
-        tag_create_change_template(obj, recipe_dict)
-        return super().form_valid(form)
-
-    def get_context_data(self, **kwargs):
-        context = super(UpdateRecipeView, self).get_context_data(**kwargs)
-        recipe = get_object_or_404(
-            Recipe, pk=self.kwargs['recipe_id'],
-            author__username=self.kwargs['username'])
-        ingredient_recipe = RecipeIngridient.objects.filter(recipe=recipe)
-        tags = list(Diet.objects.all())
-        context['tag_all'] = tags,
-        context['ingredient_recipe'] = ingredient_recipe
-        return context
 
 
 class ShopListView(ListView):
     model = Purchases
     template_name = 'shopList.html'
     context_object_name = 'purchases'
+    paginate_by = 100
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            queryset = Purchases.objects.filter(user=self.request.user)
+        else:
+            try:
+                queryset = Recipe.objects.filter(
+                    pk__in=self.request.session['purchase'])
+            except Exception as e:
+                logger.error(str(e))
+                queryset = []
+        return queryset
 
 
 @login_required

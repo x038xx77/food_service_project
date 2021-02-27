@@ -22,13 +22,15 @@
                     </div>
                 </div>
                 <div class="card__footer">
-                    {% if recipe.id not in list_purchases%}
+                    {% load item_key %}
+                    {% if not request|check_purchase:recipe %}
                     <button class="button button_style_light-blue" name="purchases" data-out ><span class="icon-plus button__icon"></span>Добавить в покупки</button>
                     {%else%}
-                    <button class="button button_style_light-blue" name="purchases"  data-out><span class="icon-plus "></span> Рецепт добавлен</button>
+                    <button class="button button_style_light-blue-outline" name="purchases"><span class="icon-check button__icon"></span> Рецепт добавлен</button>
                     {%endif%}
                     {% if user.is_authenticated %}
-                    {% if recipe.id not in follow_recipe_list %}
+                    {% load item_key %}
+                    {% if not recipe.id|check_favorite:request.user %}
                     <button class="button button_style_none" name="favorites" data-out><span class="icon-favorite"></span></button> 
                     {% else %}  
                     <button class="button button_style_none" name="favorites"><span class="icon-favorite icon-favorite_active"></span></button>

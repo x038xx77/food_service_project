@@ -11,10 +11,11 @@
     {% include "menu_diet.html" %}   
     <div class="author-subscribe" data-author={{author_recipe_name.id}}>
         {% if user.is_authenticated %}
-        {% if not author_follow %}
-        <p style="padding: 0 0 2em 0;"><button class="button button_style_light-blue button_size_subscribe" name="subscribe" data-out>Подписаться на автора</button></p>
+        {% load item_key %}
+        {% if not author_recipe_name|check_subscription:request.user %}
+        <p style="padding: 0 0 2em 0;"><button class="button button_style_light-blue button_size_subscribe" name="subscribe" data-out >Подписаться на автора</button></p>
         {%else%}
-        <p style="padding: 0 0 2em 0;"><button class="button button_style_light-blue button_size_subscribe" name="subscribe" >Отписаться от автора</button></p>
+        <p style="padding: 0 0 2em 0;"><button class="button button_style_light-blue button_size_subscribe" name="subscribe"  >Отписаться от автора</button></p>
         {%endif%}
         {%endif%}
     </div>
