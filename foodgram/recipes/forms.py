@@ -1,19 +1,17 @@
 from django import forms
 from .models import Diet, Recipe, Ingredient, RecipeIngridient
+from .utils import get_ingredients_from
+from django.shortcuts import get_object_or_404
 
 
 class RecipeForm(forms.ModelForm):
-
-    # ingredients = forms.ModelMultipleChoiceField(
-    #     queryset=Ingredient.objects.all()
-    # )
-    # amount = {}
 
     class Meta:
         model = Recipe
         fields = [
             'title',
             'diets',
+            'ingredients',
             'cooking_time',
             'description',
             'image']
@@ -29,20 +27,30 @@ class RecipeForm(forms.ModelForm):
                    'image': forms.FileInput(
                        attrs={'class': 'form__file-button'})}
 
-        def __init__(self, data, *args, **kwargs):
+    def clean(self):
+        is_tags, is_Ingredient = False, False
+        for key in self.data.keys():
+            if 'tags' in key:
+                is_tags = True
+            if 'nameIngredient' in key:
+                is_Ingredient = True
+        if not is_tags:
+            self.add_error('diets', 'Отсутствует рацион, поставьте галочки')
+        if not is_Ingredient:
+            self.add_error('ingredients', 'Необходимо добавить ингредиенты')
 
-            if data is not None:
-                data = data.copy()
-
-                for tag in ['breakfast', 'lunch', 'dinner']:
-                    if tag in data:
-                        data.update({'diets': tag})
-            super().__init__(data=data, *args, **kwargs)
-
-        def save(self, commit=True):
-            recipe_obj = super(RecipeForm, self).save(commit=False)
-            recipe_obj.save()
-            recipe_obj.tag.set([tag for tag in self.cleaned_data['diets']])
-            self.save_m2m()
-            
-            return recipe_obj
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.save()
+        instance.diets.clear()
+        for title in (self.data).getlist('tags'):
+            diet = get_object_or_404(Diet, title=title)
+            instance.diets.add(diet)
+        ingredients = get_ingredients_from(self.data)
+        RecipeIngridient.objects.filter(recipe=instance).delete()
+        for item in ingredients:
+            RecipeIngridient.objects.create(
+                ingredient=Ingredient.objects.get(title=item[0]),
+                recipe=instance, amount=item[1]
+                )
+        return instance

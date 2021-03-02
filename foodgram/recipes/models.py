@@ -10,15 +10,15 @@ class Recipe(models.Model):
         'Название рецепта',
         default=None)
     ingredients = models.ManyToManyField(
-        'Ingredient', through='RecipeIngridient',
-        verbose_name='Ингредиенты', blank=True)
+        'Ingredient', blank=True, through='RecipeIngridient',
+        verbose_name='Ингредиенты')
     pub_date = models.DateTimeField('date published', auto_now_add=True)
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='recipes',
         verbose_name='автор рецепта')
     diets = models.ManyToManyField(
         'Diet', blank=True, related_name='recipe_set', verbose_name='рацион')
-    description = models.TextField(blank=True, verbose_name='описание рецепта')
+    description = models.TextField(verbose_name='описание рецепта')
     cooking_time = models.IntegerField(
         validators=[MinValueValidator(1)], verbose_name='время приготовления')
     image = models.ImageField(

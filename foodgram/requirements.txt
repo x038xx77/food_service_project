@@ -48,3 +48,4 @@ Pillow==8.1.0
 psycopg2-binary
 flake8==3.8.4
 gunicorn
+# apt-get install gettext

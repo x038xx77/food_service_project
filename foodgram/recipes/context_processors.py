@@ -1,4 +1,4 @@
-from .models import Diet, Purchases, Recipe
+from .models import Diet, Purchases
 
 
 def all_tags(self):

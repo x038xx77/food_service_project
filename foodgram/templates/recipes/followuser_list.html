@@ -9,6 +9,9 @@
 <div class="main__header">
     <h1 class="main__title">Мои подписки</h1>
 </div>
+{% if not followuser_list %}
+{% include "customPage.html" %}
+{% endif %}
 <div class="card-list">
     {% for follow in followuser_list %}
     <div class="card-user" data-author={{follow.author.id}}>
@@ -30,26 +33,18 @@
                 </li>
            {%endfor%}
                 <li class="card-user__item">
-                    <a id="recipe" href="{% url 'author_recipe' follow.author %}" class="card-user__link link"></a>
+                    {% load item_key %}
+                    <a id="recipe" href="{% url 'author_recipe' follow.author %}" class="card-user__link link"> {{ follow.author.recipes.count|change_ending_recipe }}</a>
                 </li>
             </ul>
-            <script>
-                  function sklonenie(number, txt) {
-                    var cases = [2, 0, 1, 1, 1, 2];
-                    return txt[(number % 100 > 4 && number % 100 < 20) ? 2 : cases[(number % 10 < 5) ? number % 10 : 5]];}
-                    var title = 'Еще ' + {{follow.author.recipes.all.count|add:-3}} + sklonenie({{follow.author.recipes.all.count|add:-3}}, [' рецепт', ' рецепта', ' рецептов']);
-                  let fon_comment = document.getElementById('recipe')
-                  var comment = document.getElementById('recipe')
-                  comment.innerText = title
-                </script>
         </div>
         <div class="card-user__footer">
             <button class="button button_style_light-blue button_size_auto" name="subscribe">Отписаться</button>
         </div>
     </div>
-    {% endfor %}
-</div>
-{% include "paginator.html" %}   
+{% endfor %}
+</div> 
+{% include "paginator.html" %} 
 {%endblock%}
 {% block js %}
 <script src="{% static './js/components/MyFollow.js' %}"></script>

@@ -30,12 +30,16 @@
                                 {% if choices in recipe.diets.all|get_list_tag %} checked {% endif %}>
                                 <label for="id_{{ pk }}" class="tags__label">{{ choices }}</label>                  
                         </div>
+        
                         {% endfor %}
-                       
+                        {{form.diets.non_field_errors}}
                     </div>
-                    <span class="form__error"></span>
+                    <span class="form__error">{{form.diets.errors}}</span>
+                   
+                    
                 </div>
             </div>
+            
             <div class="form__group">
                 <label for="nameIngredient" class="form__label">Ингредиенты</label>
                 <div class="form__field-group">
@@ -48,7 +52,7 @@
                         <label for="cantidad" class="form__label" id="cantidadVal">шт.</label>
                     </div>
                     <div class="form__field-group-ingredientes-container">
-                        {%for item in  ingredient_recipe %}
+                        {%for item in  recipe.ingredient_recipes.all %}
                         <div id="ing_{{ forloop.counter }}" class="form__field-item-ingredient">
                             <span>{{ item.ingredient.title }} {{ item.amount }} {{ item.ingredient.dimension }}</span><span class="form__field-item-delete"></span>
                             <input id="nameIngredient_{{ forloop.counter }}" name="nameIngredient_{{ forloop.counter }}" type="hidden" value="{{ item.ingredient.title }}">
@@ -58,7 +62,7 @@
                         {%endfor%}
                     </div>
                     <span class="form__ingredient-link" id="addIng">Добавить ингредиент</span>
-                    <span class="form__error"></span>
+                    <span class="form__error">{{form.ingredients.errors}}</span>            
                 </div>
             </div>
             <div class="form__group">

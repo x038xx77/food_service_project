@@ -12,11 +12,11 @@ from recipes.models import (
     Ingredient,
     Purchases)
 
-JsonResponse_True = JsonResponse({'success': True})
-JsonResponse_False = JsonResponse({'success': False}, status=400)
+JsonResponseTrue = JsonResponse({'success': True})
+JsonResponseFalse = JsonResponse({'success': False}, status=400)
 
 
-class Purchases_shop(LoginRequiredMixin, View):
+class Purchases_shop(View):
 
     template_name = 'shopList.html'
 
@@ -28,7 +28,7 @@ class Purchases_shop(LoginRequiredMixin, View):
             if request.user.is_authenticated:
                 obj, created = Purchases.objects.get_or_create(
                     user=request.user, recipe_id=recipe.id)
-                return JsonResponse_True
+                return JsonResponseTrue
             else:
                 if 'purchase' not in request.session:
                     request.session['purchase'] = list()
@@ -36,9 +36,9 @@ class Purchases_shop(LoginRequiredMixin, View):
                 if recipe_id not in request.session['purchase']:
                     request.session['purchase'].append(recipe_id)
                     request.session.save()
-                    return JsonResponse_True
+                    return JsonResponseTrue
             return JsonResponse({'success': False})
-        return JsonResponse_False
+        return JsonResponseFalse
 
     def delete(self, request, purchase_id):
         if request.user.is_authenticated:
@@ -46,9 +46,9 @@ class Purchases_shop(LoginRequiredMixin, View):
                 Purchases, recipe_id=purchase_id, user=request.user)
             recipe.delete()
         else:
-            request.session['purchase'].remove(purchase_id)
+            request.session['purchase'].remove(str(purchase_id))
             request.session.save()
-        return JsonResponse_True
+        return JsonResponseTrue
 
 
 class Subscriptions(LoginRequiredMixin, View):
@@ -63,15 +63,15 @@ class Subscriptions(LoginRequiredMixin, View):
             if not obj_exists and author.id != request.user.id:
                 obj, created = FollowUser.objects.create(
                     user=request.user, author=author)
-                return JsonResponse_True
-            return JsonResponse_True
-        return JsonResponse_False
+                return JsonResponseTrue
+            return JsonResponseTrue
+        return JsonResponseFalse
 
     def delete(self, request, username_id):
         recipe = get_object_or_404(
             FollowUser, author=username_id, user=request.user)
         recipe.delete()
-        return JsonResponse_True
+        return JsonResponseTrue
 
 
 class Favorites(LoginRequiredMixin, View):
@@ -83,19 +83,20 @@ class Favorites(LoginRequiredMixin, View):
             recipe = get_object_or_404(Recipe, id=recipe_id)
             obj, created = FavoritesRecipe.objects.get_or_create(
                 user=request.user, following_recipe_id=recipe.id)
-            return JsonResponse_True
-        return JsonResponse_False
+            return JsonResponseTrue
+        return JsonResponseFalse
 
     def delete(self, request, recipe_id):
         recipe = get_object_or_404(
             FavoritesRecipe, following_recipe=recipe_id, user=request.user)
         recipe.delete()
-        return JsonResponse_True
+        return JsonResponseTrue
 
 
-def get_ingredients(request):
-    list_unit_value = []
-    part_product_name = request.GET.get('query', None)
-    list_unit_value = Ingredient.objects.values(
-        'title', 'dimension').filter(title__search=part_product_name)
-    return JsonResponse(list(list_unit_value.values()), safe=False)
+class GetIngredients(LoginRequiredMixin, View):
+
+    def get(self, request):
+        part_product_name = request.GET['query'].lower()
+        list_unit_value = list(Ingredient.objects.filter(
+            title__startswith=part_product_name).values('title', 'dimension'))
+        return JsonResponse(list_unit_value, safe=False)

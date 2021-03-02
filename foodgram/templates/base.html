@@ -18,6 +18,13 @@
     <main class="main container">
         {% block menu_diet %} {%endblock%}
         {% block content %} {%endblock%}
+        {% if 'about' in request.resolver_match.url_name or 'tech' in request.resolver_match.url_name %}
+        <div class="custom-button-block">
+            <a href="{% url  'index' %}">
+            <button class="button button_style_blue">Перейти на главную</button>
+        </a>
+        </div>
+        {%endif%}
     </main>
 {% block footer %}  {% include "footer.html" %} {%endblock%}  
 {% if not request.resolver_match.url_name == 'shop_list' or not request.resolver_match.url_name == 'myfollow'%}
@@ -33,7 +40,7 @@
 <script src="{% static './js/config/config.js' %}"></script>
 <script src="{% static './js/components/Header.js' %}"></script>
 <script src="{% static './js/api/Api.js' %}"></script>
-{% if user.is_authenticated %}
+{% if user.is_authenticated%}
 {% if not request.resolver_match.url_name == 'shop_list' or not request.resolver_match.url_name == 'myfollow'%}
 <script src="{% static './js/components/Favorites.js' %}"></script>
 {%endif%}

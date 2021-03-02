@@ -21,7 +21,7 @@
     </div>
     <div class="card-list">
     {% for recipe in recipe_list %}
-        {% include "includes/recipe_item.html" with author_recipes=recipe %}
+        {% include "includes/recipe_item.html" with author_recipe=recipe %}
         {%endfor%}    
     </div> 
     {% include "paginator.html" with items=page paginator=paginator%}

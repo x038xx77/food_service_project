@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load thumbnail %}      
-    {% csrf_token %} 
+{% csrf_token %} 
 {% load static %}
 {% block head %}
 <title>Избранное</title>
@@ -12,12 +12,12 @@
 {% include "menu_diet.html" %}
 <div class="card__footer">
 </div>   
-        <div class="card-list">                   
-            {% for follow_recipe in followrecipe_list %}                   
-                {% include "includes/recipe_item.html" with recipe=follow_recipe.following_recipe %}
+        <div class="card-list">                
+            {% for recipe in object_list %}    
+                {% include "includes/recipe_item.html" with recipe = recipe %}
             {%endfor%}      
         </div>    
-            {% include "paginator.html" with items=page paginator=paginator%}  
+            {% include "paginator.html" %}  
 {%endblock%} 
 {% block js %}
 <script src="{% static 'favorite.js' %}"></script>

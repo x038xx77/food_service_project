@@ -1,15 +1,12 @@
-import logging
-logger = logging.getLogger(__name__)
-from django.conf import settings
-
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render
+from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls.base import reverse_lazy
 from .models import (
     Recipe, User,
     FollowUser, FavoritesRecipe, Purchases,
-    RecipeIngridient,
-    Ingredient)
+    RecipeIngridient)
 from django.contrib.auth.decorators import login_required
 from django.views.generic import (
     ListView,
@@ -17,14 +14,11 @@ from django.views.generic import (
     UpdateView)
 from .forms import RecipeForm
 from django.http import HttpResponse
-from .utils import (
-    tag_create_change_template,
-    get_ingredients_from,
-    is_empty_tag_or_ingredients,
-    follow_id)
 import csv
 from collections import defaultdict
 from foodgram.settings import PAGINATE_BY
+import logging
+logger = logging.getLogger(__name__)
 
 
 class RecipesView(ListView):
@@ -32,18 +26,11 @@ class RecipesView(ListView):
     paginate_by = PAGINATE_BY
 
     def get_queryset(self):
+        queryset = Recipe.objects.all()
         sort_list = self.request.GET.getlist('tag', None)
-        queryset = Recipe.objects.filter(
-            diets__slug__in=sort_list)
+        if sort_list:
+            queryset = Recipe.objects.filter(diets__slug__in=sort_list)
         return queryset
-
-    def get_context_data(self, **kwargs):
-        context = super(
-            RecipesView, self).get_context_data(**kwargs)
-        quer = Recipe.objects.filter(
-            diets__slug__in=self.request.GET.getlist('tag', None))
-        context['follow_recipe_list'] = follow_id(quer)
-        return context
 
 
 class FavoritesView(ListView):
@@ -62,23 +49,6 @@ class RecipeDetailView(DetailView):
     template_name = 'singlePage.html'
     pk_url_kwarg = 'recipe_id'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        recipe = get_object_or_404(
-            Recipe, pk=self.kwargs['recipe_id'],
-            author__username=self.kwargs['username'])
-        author_follow = FollowUser.objects.filter(
-             author=recipe.author)
-        recipe_ingredient = RecipeIngridient.objects.filter(recipe=recipe)
-        following_recipe = FavoritesRecipe.objects.filter(
-            following_recipe=recipe).exists()
-        context['following_recipe'] = following_recipe
-        context['recipe_ingredient'] = recipe_ingredient
-        context['recipe'] = recipe
-        context['author'] = recipe.author
-        context['author_follow'] = author_follow
-        return context
-
 
 class AuthorRecipeView(ListView):
 
@@ -95,13 +65,6 @@ class AuthorRecipeView(ListView):
             AuthorRecipeView, self).get_context_data(**kwargs)
         context['author_recipe_name'] = get_object_or_404(
             User, username=self.kwargs.get('username'))
-        follow_user = get_object_or_404(
-            User, username=self.kwargs.get('username'))
-        context['author_follow'] = FollowUser.objects.filter(
-             author=follow_user)
-        quer = Recipe.objects.filter(
-            diets__in=self.request.GET.getlist('diet', None))
-        context['follow_recipe_list'] = follow_id(quer)
         return context
 
 
@@ -123,8 +86,7 @@ class CreateRecipeView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('index')
 
     def form_valid(self, form):
-        obj = form.save(commit=False)
-        obj.author = self.request.user
+        form.instance.author = self.request.user
         return super().form_valid(form)
 
 
@@ -141,7 +103,6 @@ class ShopListView(ListView):
     model = Purchases
     template_name = 'shopList.html'
     context_object_name = 'purchases'
-    paginate_by = 100
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
