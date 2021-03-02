@@ -91,7 +91,7 @@
             <div class="form__footer">
                 {% if recipe %}
                 <button class="button button_style_blue">Сохранить</button> 
-                <button style="margin-left: 2.5em" href="{% url 'delete_recipe' recipe.author.username recipe.id %}" class="form__ingredient-link">Удалить</button>
+                <a style="margin-left: 2.5em" href="{% url 'delete_recipe' recipe.author.username recipe.id %}" class="form__ingredient-link">Удалить</a>
                 {% else %}
                 <button class="button button_style_blue">Создать рецепт</button>
                 {% endif %}

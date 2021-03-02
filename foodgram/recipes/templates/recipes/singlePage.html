@@ -29,15 +29,9 @@
                 </div>
                 <ul class="single-card__items">
                     {% for tag in recipe.diets.all %}
-                    {% if tag == "Обед" %}
-                    <li class="single-card__item"><span class="badge badge_style_green">{{tag}}</span></li>
-                    {% elif tag == "Завтрак" %}
-                    <li class="single-card__item"><span class="badge badge_style_orange">{{tag}}</span></li>
-                    {% else %}
-                    <li class="single-card__item"><span class="badge badge_style_purple">{{tag}}</span></li>
-                    {%endif%}
+                        <li class="single-card__item"><span
+                                class="badge badge_style_{{ tag.checkbox_style }}">{{ tag.title }}</span></li>
                     {% endfor %}
-     
                 </ul>
                 <div class="single-card__items single-card__items_column">
                     <p class="single-card__text"><span class="icon-time"></span> {{recipe.cooking_time}} мин.</p>

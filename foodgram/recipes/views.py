@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from django.shortcuts import redirect
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls.base import reverse_lazy
@@ -11,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic import (
     ListView,
     DetailView, CreateView,
-    UpdateView)
+    UpdateView, DeleteView)
 from .forms import RecipeForm
 from django.http import HttpResponse
 import csv
@@ -34,7 +33,9 @@ class RecipesView(ListView):
 
 
 class FavoritesView(ListView):
+    """Список избранных рецептов."""
     model = FavoritesRecipe
+    paginate_by = PAGINATE_BY
 
     def get_queryset(self):
         pk = FavoritesRecipe.objects.filter(
@@ -45,14 +46,16 @@ class FavoritesView(ListView):
 
 
 class RecipeDetailView(DetailView):
+    """Детали рецепта."""
     model = Recipe
-    template_name = 'singlePage.html'
+    template_name = 'recipes/singlePage.html'
     pk_url_kwarg = 'recipe_id'
 
 
 class AuthorRecipeView(ListView):
-
+    """Список рецептов автора."""
     template_name = 'recipes/authorRecipe.html'
+    paginate_by = PAGINATE_BY
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
@@ -69,6 +72,7 @@ class AuthorRecipeView(ListView):
 
 
 class MyFollowView(LoginRequiredMixin, ListView):
+    """Подписка на автора рецепта."""
     model = FollowUser
     template_name = 'recipes/followuser_list.html'
     paginate_by = 3
@@ -79,7 +83,7 @@ class MyFollowView(LoginRequiredMixin, ListView):
 
 
 class CreateRecipeView(LoginRequiredMixin, CreateView):
-
+    """Создание рецепта."""
     form_class = RecipeForm
     template_name = 'recipes/formRecipe.html'
     pk_url_kwarg = 'recipe_id'
@@ -91,7 +95,7 @@ class CreateRecipeView(LoginRequiredMixin, CreateView):
 
 
 class UpdateRecipeView(LoginRequiredMixin, UpdateView):
-
+    """Редактирование рецепта."""
     model = Recipe
     form_class = RecipeForm
     template_name = 'recipes/formRecipe.html'
@@ -99,7 +103,20 @@ class UpdateRecipeView(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy('index')
 
 
+class DeleteRecipe(DeleteView):
+    """Удаление рецепта."""
+    model = Recipe
+    template_name = "recipes/recipe_congirm_delete.html"
+    pk_url_kwarg = 'recipe_id'
+    success_url = reverse_lazy("index")
+
+    def get_queryset(self):
+        owner = self.request.user
+        return self.model.objects.filter(author=owner)
+
+
 class ShopListView(ListView):
+    """Список покупок."""
     model = Purchases
     template_name = 'shopList.html'
     context_object_name = 'purchases'
@@ -145,16 +162,6 @@ def download_purcheses(request):
         writer.writerow(
             [str(name_value_ingredient), str(sum(unit_ingredient))])
     return response
-
-
-@login_required
-def delete_recipe(request, username, recipe_id):
-    recipe = get_object_or_404(Recipe, pk=recipe_id, author__username=username)
-    if request.user != recipe.author:
-        return redirect(
-            'recipe', username=request.user.username, recipe_id=recipe_id)
-    recipe.delete()
-    return redirect('index')
 
 
 def page_not_found(request, exception):
