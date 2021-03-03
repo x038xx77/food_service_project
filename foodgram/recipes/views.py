@@ -15,6 +15,7 @@ from .forms import RecipeForm
 from django.http import HttpResponse
 import csv
 from collections import defaultdict
+from django.db.models import F, Sum
 from foodgram.settings import PAGINATE_BY
 import logging
 logger = logging.getLogger(__name__)
@@ -143,31 +144,20 @@ class ShopListView(ListView):
 
 @login_required
 def download_purcheses(request):
-    purchases = Purchases.objects.all()
 
-    list_name_unit = []
-    list_value = []
-    for obj in purchases:
-        recipe_ingredients = RecipeIngridient.objects.filter(recipe=obj.recipe)
-        for item in recipe_ingredients:
-            list_name_unit.append(
-                ('{} ({}) - ').format(
-                    item.ingredient, item.ingredient.dimension))
-            list_value.append(item.amount)
-    list_ingredient = list(zip(list_name_unit, list_value))
+    recipes_list = Recipe.objects.filter(shoping_list__user=request.user)
+    list_ingredients = (
+        RecipeIngridient.objects.filter(recipe__id__in=recipes_list)
+        .values('ingredient__title', 'ingredient__dimension')
+        .annotate(total=Sum('amount'))
+    )
+    context = ''
+    for item in list_ingredients:
+        row = ' '.join(str(value) for value in item.values())
+        context += row + '\n'
 
-    dict_set_ingedient = defaultdict(list)
-    for name_value_ingredient, unit_ingredient in list_ingredient:
-        dict_set_ingedient[name_value_ingredient].append(int(unit_ingredient))
-
-    response = HttpResponse(content_type='text/plain')
+    response = HttpResponse(context, content_type='text/plain')
     response['Content-Disposition'] = 'attachment; filename=Purchases_list.txt'
-    writer = csv.writer(response)
-    writer.writerow(['Наименование (единица измерения)', 'Кол-во'])
-
-    for name_value_ingredient, unit_ingredient in dict_set_ingedient.items():
-        writer.writerow(
-            [str(name_value_ingredient), str(sum(unit_ingredient))])
     return response
 
 
