@@ -26,7 +26,8 @@
     </div> 
     {% include "paginator.html" with items=page paginator=paginator%}
     {%endblock%}
-    {% block js %}
-  <script src="{% static './js/components/AuthorRecipe.js' %}"></script>
-  <script src="{% static 'authorRecipe.js' %}"></script>
-    {%endblock%}
+{% block js %}
+{% include 'block_js.html' %}
+    <script src="{% static './js/components/AuthorRecipe.js' %}"></script>
+    <script src="{% static 'authorRecipe.js' %}"></script>  
+{%endblock%}

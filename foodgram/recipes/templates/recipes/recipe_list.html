@@ -16,3 +16,5 @@
     </div> 
         {% include "paginator.html" with items=page paginator=paginator%}
   {%endblock%}
+    {% block js %} {% include 'block_js.html' %}
+  {%endblock%}

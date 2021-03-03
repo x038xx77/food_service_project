@@ -47,6 +47,10 @@
 {% include "paginator.html" %} 
 {%endblock%}
 {% block js %}
+{% include 'block_js.html' %}
+<script src="{% static './js/components/MainCards.js' %}"></script>
+<script src="{% static './js/components/Subscribe.js' %}"></script>
+
 <script src="{% static './js/components/MyFollow.js' %}"></script>
 <script src="{% static 'myFollow.js' %}"></script>
 {%endblock%}
