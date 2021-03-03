@@ -3,6 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views import View
+from django.db.models import F
 
 from recipes.models import (
     Recipe,
@@ -17,13 +18,12 @@ JsonResponseFalse = JsonResponse({'success': False}, status=400)
 
 
 class Purchases_shop(View):
-
     template_name = 'shopList.html'
 
     def post(self, request):
         reg = json.loads(request.body)
         recipe_id = reg.get('id', None)
-        if recipe_id is not None:
+        if recipe_id:
             recipe = get_object_or_404(Recipe, id=recipe_id)
             if request.user.is_authenticated:
                 obj, created = Purchases.objects.get_or_create(
@@ -56,14 +56,10 @@ class Subscriptions(LoginRequiredMixin, View):
     def post(self, request):
         reg = json.loads(request.body)
         user_id = reg.get('id', None)
-        if user_id is not None:
+        if user_id:
             author = get_object_or_404(User, pk=user_id)
-            obj_exists = FollowUser.objects.get_or_create(
+            obj, created = FollowUser.objects.get_or_create(
                 user=request.user, author=author)
-            if not obj_exists and author.id != request.user.id:
-                obj, created = FollowUser.objects.create(
-                    user=request.user, author=author)
-                return JsonResponseTrue
             return JsonResponseTrue
         return JsonResponseFalse
 
@@ -79,7 +75,7 @@ class Favorites(LoginRequiredMixin, View):
     def post(self, request):
         reg = json.loads(request.body)
         recipe_id = reg.get('id', None)
-        if recipe_id is not None:
+        if recipe_id:
             recipe = get_object_or_404(Recipe, id=recipe_id)
             obj, created = FavoritesRecipe.objects.get_or_create(
                 user=request.user, following_recipe_id=recipe.id)
@@ -98,5 +94,7 @@ class GetIngredients(LoginRequiredMixin, View):
     def get(self, request):
         part_product_name = request.GET['query'].lower()
         list_unit_value = list(Ingredient.objects.filter(
-            title__startswith=part_product_name).values('title', 'dimension'))
-        return JsonResponse(list_unit_value, safe=False)
+            title__startswith=part_product_name)
+            .annotate(name=F('title'), unit=F('dimension'))
+            .values('title', 'dimension'))
+        return JsonResponse(list_unit_value, safe=False,)

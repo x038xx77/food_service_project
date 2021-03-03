@@ -30,16 +30,12 @@
                                 {% if choices in recipe.diets.all|get_list_tag %} checked {% endif %}>
                                 <label for="id_{{ pk }}" class="tags__label">{{ choices }}</label>                  
                         </div>
-        
                         {% endfor %}
                         {{form.diets.non_field_errors}}
                     </div>
                     <span class="form__error">{{form.diets.errors}}</span>
-                   
-                    
                 </div>
             </div>
-            
             <div class="form__group">
                 <label for="nameIngredient" class="form__label">Ингредиенты</label>
                 <div class="form__field-group">

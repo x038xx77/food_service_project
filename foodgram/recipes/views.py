@@ -41,7 +41,11 @@ class FavoritesView(ListView):
         pk = FavoritesRecipe.objects.filter(
             user=self.request.user).values('following_recipe')
         queryset = Recipe.objects.filter(
-            id__in=pk, diets__slug__in=self.request.GET.getlist('tag', None))
+                id__in=pk)
+        sort_list = self.request.GET.getlist('tag', None)
+        if sort_list:
+            queryset = Recipe.objects.filter(
+                id__in=pk, diets__slug__in=sort_list)
         return queryset
 
 
@@ -59,8 +63,11 @@ class AuthorRecipeView(ListView):
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
-        queryset = Recipe.objects.filter(
-            diets__slug__in=self.request.GET.getlist('tag', None), author=user)
+        sort_list = self.request.GET.getlist('tag', None)
+        queryset = Recipe.objects.filter(author=user)
+        if sort_list:
+            queryset = Recipe.objects.filter(
+                diets__slug__in=sort_list, author=user)
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -103,7 +110,7 @@ class UpdateRecipeView(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy('index')
 
 
-class DeleteRecipe(DeleteView):
+class DeleteRecipeView(DeleteView):
     """Удаление рецепта."""
     model = Recipe
     template_name = "recipes/recipe_congirm_delete.html"
