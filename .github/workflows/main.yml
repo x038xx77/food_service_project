@@ -19,10 +19,7 @@ jobs:
         pip install flake8 pytest
         pip install -r requirements.txt
     - name: Lint with flake8
-      run: flake8 . --ignore=E261,E262,F401,E402,E501,W503,F811 --exclude=tests
-
-    - name: Test with pytest
-      run: pytest
+      run: flake8 . --ignore=F401,E501 --exclude=tests
   
   build_and_push_to_docker_hub:
     name: Push Docker image to Docker Hub
