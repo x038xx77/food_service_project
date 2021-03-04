@@ -142,7 +142,7 @@ class ShopListView(ListView):
 
 
 @login_required
-def download_purcheses(request):
+def download_purchases(request):
 
     recipes_list = Recipe.objects.filter(shoping_list__user=request.user)
     list_ingredients = (

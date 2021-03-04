@@ -8,8 +8,8 @@ urlpatterns = [
         '<str:username>/<int:recipe_id>/delete/',
         views.DeleteRecipeView.as_view(), name='delete_recipe'),
     path(
-        'purcheses_download/',
-        views.download_purcheses, name='purcheses_download'
+        'purchases_download/',
+        views.download_purchases, name='purchases_download'
         ),
     path('myfollow/', views.MyFollowView.as_view(), name='myfollow'),
     path('shop_list/', views.ShopListView.as_view(), name='shop_list'),

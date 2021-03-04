@@ -1,5 +1,5 @@
 
-def get_ingredients_from(request):
+def get_ingredients_from_form(request):
     nameIng = [request[key] for key in request if 'nameIngredient' in key]
     valueIng = [request[key] for key in request if 'valueIngredient' in key]
     unitsIng = [request[key] for key in request if 'unitsIngredient' in key]

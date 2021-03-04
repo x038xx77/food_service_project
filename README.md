@@ -11,6 +11,27 @@
 Docker-compose - подробнее о версиях можно прочесть в документации:
 https://docs.docker.com/compose/compose-file/compose-versioning/
 
+
+### Подготовка к запуску на локальном компьютере (Python 3, Linux)
+Клонируйте репозиторий foodgram-project
+```
+https://github.com/x038xx77/foodgram-project.git
+```
+```
+Создайте виртуальное окружение python3 -m venv venv
+Активируйте виртуальное окружение source venv/bin/activate
+Создайте файл .env командой touch .env и добавьте в него переменные окружения:
+SECRET_KEY = #секретный ключ Django
+DEBUG=1
+Сгенерировать SECRET_KEY вы можете, например, по этой статье https://tech.serhatteker.com/post/2020-01/django-create-secret-key/
+
+- Установите зависимости pip install -r requirements.txt
+- Создайте все необходимые таблицы в базе данных - выполните команду ./manage.py migrate
+- Импортируйте в базу теги и ингридиенты из файла tags.json и ingredients.json соответственно  - выполните команду python manage.py load_fixtures
+- Создайте администратора сайта ./manage.py createsuperuser
+- Чтобы запустить проект на локальной машине - ./manage.py runserver
+```
+
 ### Подготовка к запуску на сервере
 Клонируйте репозиторий foodgram-project
 ```
