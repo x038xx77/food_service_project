@@ -16,7 +16,6 @@ services:
       - .env
   web:
     image: x038xx77/foodgram:v1.1.2021  
-    command: gunicorn api_yamdb.wsgi:application --bind 0.0.0.0:8000
     restart: always
     volumes:
       - static_volume:/code/static/
