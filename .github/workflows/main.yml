@@ -1,4 +1,4 @@
-name: Yamdb-final
+name: Foodgram
 
 on: [push]
 
