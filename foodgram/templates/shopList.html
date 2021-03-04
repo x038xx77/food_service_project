@@ -39,9 +39,7 @@
                 {% endif %}
             </div>
             {% csrf_token %}
-            {% if user.is_authenticated %}
             <a href="{% url 'shop_list' %}" class="shopping-list__button link">Удалить</a>
-            {% endif %}
         </li>
         {%endfor%}
     </ul>

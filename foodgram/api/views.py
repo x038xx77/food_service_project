@@ -23,7 +23,7 @@ class Purchases_shop(View):
     def post(self, request):
         reg = json.loads(request.body)
         recipe_id = reg.get('id', None)
-        if recipe_id:
+        if recipe_id is not None:
             recipe = get_object_or_404(Recipe, id=recipe_id)
             if request.user.is_authenticated:
                 obj, created = Purchases.objects.get_or_create(
@@ -56,7 +56,7 @@ class Subscriptions(LoginRequiredMixin, View):
     def post(self, request):
         reg = json.loads(request.body)
         user_id = reg.get('id', None)
-        if user_id:
+        if user_id is not None:
             author = get_object_or_404(User, pk=user_id)
             obj, created = FollowUser.objects.get_or_create(
                 user=request.user, author=author)
@@ -75,7 +75,7 @@ class Favorites(LoginRequiredMixin, View):
     def post(self, request):
         reg = json.loads(request.body)
         recipe_id = reg.get('id', None)
-        if recipe_id:
+        if recipe_id is not None:
             recipe = get_object_or_404(Recipe, id=recipe_id)
             obj, created = FavoritesRecipe.objects.get_or_create(
                 user=request.user, following_recipe_id=recipe.id)

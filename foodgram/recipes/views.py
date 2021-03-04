@@ -13,9 +13,8 @@ from django.views.generic import (
     UpdateView, DeleteView)
 from .forms import RecipeForm
 from django.http import HttpResponse
-import csv
-from collections import defaultdict
-from django.db.models import F, Sum
+from .utils import get_sort_list_tags
+from django.db.models import Sum
 from foodgram.settings import PAGINATE_BY
 import logging
 logger = logging.getLogger(__name__)
@@ -27,7 +26,7 @@ class RecipesView(ListView):
 
     def get_queryset(self):
         queryset = Recipe.objects.all()
-        sort_list = self.request.GET.getlist('tag', None)
+        sort_list = get_sort_list_tags(self.request)
         if sort_list:
             queryset = Recipe.objects.filter(diets__slug__in=sort_list)
         return queryset
@@ -43,7 +42,7 @@ class FavoritesView(ListView):
             user=self.request.user).values('following_recipe')
         queryset = Recipe.objects.filter(
                 id__in=pk)
-        sort_list = self.request.GET.getlist('tag', None)
+        sort_list = get_sort_list_tags(self.request)
         if sort_list:
             queryset = Recipe.objects.filter(
                 id__in=pk, diets__slug__in=sort_list)
@@ -64,7 +63,7 @@ class AuthorRecipeView(ListView):
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
-        sort_list = self.request.GET.getlist('tag', None)
+        sort_list = get_sort_list_tags(self.request)
         queryset = Recipe.objects.filter(author=user)
         if sort_list:
             queryset = Recipe.objects.filter(
