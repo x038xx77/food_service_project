@@ -40,8 +40,7 @@ class FavoritesView(ListView):
     def get_queryset(self):
         pk = FavoritesRecipe.objects.filter(
             user=self.request.user).values('following_recipe')
-        queryset = Recipe.objects.filter(
-                id__in=pk)
+        queryset = Recipe.objects.filter(id__in=pk)
         sort_list = get_sort_list_tags(self.request)
         if sort_list:
             queryset = Recipe.objects.filter(

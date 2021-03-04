@@ -25,7 +25,12 @@ SECRET_KEY = os.environ['SECRET_KEY_DJ']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*', 'localhost', 'llgall.ga', 'www.llgall.ga']
+ALLOWED_HOSTS = [
+    '*',
+    '130.193.41.129',
+    'localhost',
+    'llgall.ga',
+    'www.llgall.ga']
 
 PAGINATE_BY = 6
 
@@ -90,9 +95,20 @@ WSGI_APPLICATION = 'foodgram.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-DATABASES = {
-    'default': env.db(),
-}
+if DEBUG:
+    DATABASES = {
+        'default': env.db()}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get('POSTGRES_DB'),
+            'USER': os.environ.get('POSTGRES_USER'),
+            'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+            'HOST': os.environ.get('DB_HOST'),
+            'PORT': os.environ.get('DB_PORT'),
+        }
+    }
 
 
 # Password validation
