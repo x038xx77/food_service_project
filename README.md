@@ -1,5 +1,5 @@
 #Образ Foodgram
-![Cat](https://github.com/x038xx77/foodgram-project/workflows/foodgram/badge.svg)
+![Cat](https://github.com/x038xx77/foodgram-project/workflows/Foodgram/badge.svg)
 ## Краткое описание проекта
 
 Эти инструкции позволят вам получить копию проекта foodgram — продуктовый помошник
