@@ -27,26 +27,13 @@ services:
 
   nginx:
     image: nginx:1.19.6
+    restart: always
     depends_on:
       - web
     ports:
       - 80:80
-      - 443:443
     volumes:
-      - ./nginx:/etc/nginx/conf.d/
-      - static_volume:/code/static/
-      - media_volume:/code/media/
-      - ./data/certbot/conf:/etc/letsencrypt
-      - ./data/certbot/www:/var/www/certbot
-    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
-    restart: unless-stopped
-
-  certbot:
-    image: certbot/certbot
-    restart: unless-stopped
-    depends_on:
-      - web
-    volumes:
-      - ./data/certbot/conf:/etc/letsencrypt
-      - ./data/certbot/www:/var/www/certbot
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./static:/code/static/
+      - ./media:/code/media/  
+            

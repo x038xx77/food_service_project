@@ -4,6 +4,8 @@ from . import views
 
 urlpatterns = [
     path('', views.RecipesView.as_view(), name='index'),
+    path('about/', views.FlatPageAbout.as_view(), name='about'),
+    path('tech/', views.FlatPageTechnology.as_view(), name='tech'),
     path(
         '<str:username>/<int:recipe_id>/delete/',
         views.DeleteRecipeView.as_view(), name='delete_recipe'),
@@ -27,4 +29,5 @@ urlpatterns = [
     path(
         '<str:username>/<int:recipe_id>/edit/',
         views.UpdateRecipeView.as_view(), name='recipe_edit'),
+    
 ]

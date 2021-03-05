@@ -15,6 +15,7 @@ from .forms import RecipeForm
 from django.http import HttpResponse
 from .utils import get_sort_list_tags
 from django.db.models import Sum
+from django.views.generic import TemplateView
 from foodgram.settings import PAGINATE_BY
 import logging
 logger = logging.getLogger(__name__)
@@ -170,3 +171,43 @@ def page_not_found(request, exception):
 
 def server_error(request):
     return render(request, 'misc/500.html', status=500)
+
+
+class FlatPageAbout(TemplateView):
+    template_name = 'flatpages/default.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Об авторе сайта'
+        context['text'] = '''
+            Лаврентьев Павел Александрович.<br>
+            <a href="https://github.com/x038xx77"></a>.<br>
+        '''
+        return context
+
+
+class FlatPageTechnology(TemplateView):
+    template_name = 'flatpages/default.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Технологии'
+        context['text'] = '''
+            Для создания этого сайта использовались следующии технологии:<br>
+            <br>
+            Ubuntu<br>
+            Python<br>
+            Django<br>
+            БД PostgreSQL<br>
+            Docker<br>
+            Docker-compose<br>
+            Docker Hub<br>
+            Gunicorn<br>
+            Nginx<br>
+            Github Actions<br>
+            <br>
+            <a href="https://github.com/x038xx77/foodgram-project">
+                Подробнее
+            </a><br>
+        '''
+        return context
