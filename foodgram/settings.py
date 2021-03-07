@@ -185,7 +185,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 6,
 }
 
-# AUTH_USER_MODEL = 'api.User'
+
 
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')

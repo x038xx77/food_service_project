@@ -150,7 +150,7 @@ class FlatPageAbout(TemplateView):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Об авторе сайта'
         context['text'] = '''
-            Лаврентьев Павел Александрович.<br>
+            Лаврентьев Павел Александрович<br>
             <a href="https://github.com/x038xx77"></a>.<br>
         '''
         return context
