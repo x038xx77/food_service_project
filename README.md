@@ -25,25 +25,31 @@ https://github.com/x038xx77/foodgram-project.git
 Активируйте виртуальное окружение source venv/bin/activate
 Создайте файл .env командой touch .env и добавьте в него переменные окружения:
 SECRET_KEY = #секретный ключ Django
-DEBUG=1
+DEBUG=0
 Сгенерировать SECRET_KEY вы можете, например, по этой статье https://tech.serhatteker.com/post/2020-01/django-create-secret-key/
 
 - Установите зависимости pip install -r requirements.txt
-- Создайте все необходимые таблицы в базе данных - выполните команду ./manage.py migrate
+- Создайте все необходимые таблицы в базе данных - выполните команду python manage.py migrate
 - Импортируйте в базу теги и ингридиенты из файла tags.json и ingredients.json соответственно  - выполните команду python manage.py load_fixtures
-- Создайте администратора сайта ./manage.py createsuperuser
+- Создайте администратора сайта python manage.py createsuperuser
 - Чтобы запустить проект на локальной машине - ./manage.py runserver
 ```
 
-### Подготовка к запуску на сервере
-Клонируйте репозиторий foodgram-project
+### Подготовка к запуску на удаленном сервере
+Для запуска проекта на удаленном сервере необходимо:
+- установите docker и docker-compose см. Необходимые компоненты
+- в файле `.env` поменять настройки `DEBUG=0`
+- скопировать на сервер файлы `docker-compose.yaml`, `.env`, `nginx.conf` командами:
 ```
-https://github.com/x038xx77/foodgram-project.git
+scp /home/{user}/foodgram-project/ docker-compose.yaml  {user}@{server-ip}:
+scp /home/{user}/foodgram-project/ .env {user}@{server-ip}:
+scp /home/{user}/foodgram-project/ nginx.conf {user}@{server-ip}:
 ```
+- запустить на сервере контейнеры командой `sudo docker-compose up`
 
 ## Развертывание
-На вашем сервере в папке /foodgram-project создайте файл .env и укажите ваши логины, пароли (все необходимые 
-параметры указаны в setting.py настройки DATABASE ) для работы с базой данных PostgresQL.
+На вашем сервере в папке /foodgram-project при необходимости отредактируйте ранее выше загруженный файл .env проверьте DEBUG=0 и укажите ваши логины, пароли (все необходимые 
+параметры указаны в setting.py настройки DATABASE ) для работы с базой данных PostgresQL ниже:
 
 ```  
 DB_ENGINE=django.db.backends.postgresql
@@ -53,7 +59,6 @@ POSTGRES_PASSWORD=<пароль базы данных>
 DB_HOST=db
 DB_PORT=5432
 ```
-
 В директории /foodgram-project запустите c правами root docker-compose командой 
 docker-compose pull && docker-compose down && docker-compose up
 . У вас развернется проект, запущенный с базой данных postgres.
@@ -70,6 +75,10 @@ docker-compose run web python manage.py migrate
 docker-compose run web python manage.py createsuperuser
 ```
 далее следуйте инструкции в терминале.
+
+- Импортируйте в базу теги и ингридиенты выполнив команду docker-compose run web python manage.py load_fixtures```
+
+```
 
 Для заполнения базы, вашими данными, скопируйте в директорию foodgram-project файл вашей базы в формате json 
 и выполните команду:

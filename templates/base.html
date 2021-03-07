@@ -1,32 +1,27 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-    {% load thumbnail %}
-    {% csrf_token %}
+    {% load thumbnail %} {% csrf_token %}
     <head>
-        {% load static %}      
-        <meta charset="UTF-8">
-        <meta name="viewport"
-              content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        {% load static %}
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
         {% block head %}
         <title>Рецепты</title>
-        <link rel="stylesheet" href="{% static './pages/index.css' %}">
-        {%endblock%}        
+        <link rel="stylesheet" href="{% static './pages/index.css' %}" />
+        {%endblock%}
     </head>
     <body class="body">
-        {% block menu %}   {% include "menu.html" %}  {%endblock%}       
-    <main class="main container">
-        {% block menu_diet %} {%endblock%}
-        {% block content %} {%endblock%}
-        {% if 'about' in request.resolver_match.url_name or 'tech' in request.resolver_match.url_name %}
-        <div class="custom-button-block">
-            <a href="{% url  'index' %}">
-            <button class="button button_style_blue">Перейти на главную</button>
-        </a>
-        </div>
-        {%endif%}
-    </main>
-{% block footer %}  {% include "footer.html" %} {%endblock%}  
-{% block js %}  {%endblock%}
-</body> 
+        {% block menu %} {% include "menu.html" %} {%endblock%}
+        <main class="main container">
+            {% block menu_diet %} {%endblock%} {% block content %} {%endblock%} {% if 'about' in request.resolver_match.url_name or 'tech' in request.resolver_match.url_name %}
+            <div class="custom-button-block">
+                <a href="{% url  'index' %}">
+                    <button class="button button_style_blue">Перейти на главную</button>
+                </a>
+            </div>
+            {%endif%}
+        </main>
+        {% block footer %} {% include "footer.html" %} {%endblock%} {% block js %} {%endblock%}
+    </body>
 </html>

@@ -37,6 +37,7 @@ class RecipesView(ListView):
 class FavoritesView(ListView):
     """Список избранных рецептов."""
     model = FavoritesRecipe
+    template_name = 'recipes/followrecipe_list.html'
     paginate_by = PAGINATE_BY
 
     def get_queryset(self):
@@ -53,13 +54,13 @@ class FavoritesView(ListView):
 class RecipeDetailView(DetailView):
     """Детали рецепта."""
     model = Recipe
-    template_name = 'recipes/singlePage.html'
+    template_name = 'recipes/single-page.html'
     pk_url_kwarg = 'recipe_id'
 
 
 class AuthorRecipeView(ListView):
     """Список рецептов автора."""
-    template_name = 'recipes/authorRecipe.html'
+    template_name = 'recipes/author_recipe_list.html'
     paginate_by = PAGINATE_BY
 
     def get_queryset(self):
@@ -93,7 +94,7 @@ class MyFollowView(LoginRequiredMixin, ListView):
 class CreateRecipeView(LoginRequiredMixin, CreateView):
     """Создание рецепта."""
     form_class = RecipeForm
-    template_name = 'recipes/formRecipe.html'
+    template_name = 'recipes/form-recipe.html'
     pk_url_kwarg = 'recipe_id'
     success_url = reverse_lazy('index')
 
@@ -106,7 +107,7 @@ class UpdateRecipeView(LoginRequiredMixin, UpdateView):
     """Редактирование рецепта."""
     model = Recipe
     form_class = RecipeForm
-    template_name = 'recipes/formRecipe.html'
+    template_name = 'recipes/form-recipe.html'
     pk_url_kwarg = 'recipe_id'
     success_url = reverse_lazy('index')
 
@@ -126,7 +127,7 @@ class DeleteRecipeView(DeleteView):
 class ShopListView(ListView):
     """Список покупок."""
     model = Purchases
-    template_name = 'shopList.html'
+    template_name = 'shop_list.html'
     context_object_name = 'purchases'
 
     def get_queryset(self):
