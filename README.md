@@ -84,7 +84,7 @@ docker-compose run web python manage.py createsuperuser
 и выполните команду:
 ```     
 docker-compose run web python manage.py python loaddata <your_basa_postgresql>.json
-``` 
+
 Подробнее https://postgrespro.ru/docs/postgresql/9.6/sql-load
 
 ## Authors
