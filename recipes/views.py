@@ -191,8 +191,7 @@ def download_purchases(request):
     response = HttpResponse(content_type='text/plain')
     response['Content-Disposition'] = 'attachment; filename=Purchases_list.txt'
     writer = csv.writer(response)
-    writer.writerow(['Наименование',  '(единица измерения)', 'Кол-во'])
-
+    writer.writerow(['Наименование', '(единица измерения)', 'Кол-во'])
     for title, value, amount in set_ingredients:
         writer.writerow(
             [title, ('({})').format(value), amount])

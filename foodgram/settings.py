@@ -98,8 +98,7 @@ WSGI_APPLICATION = 'foodgram.wsgi.application'
 
 if DEBUG:
     DATABASES = {
-        'default': env.db(),
-        }
+        'default': env.db()}
 else:
     DATABASES = {
         'default': {
@@ -109,8 +108,7 @@ else:
             'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
             'HOST': os.environ.get('DB_HOST'),
             'PORT': os.environ.get('DB_PORT'),
-            }
-    }
+            }}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
