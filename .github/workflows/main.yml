@@ -39,7 +39,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: x038xx77/foodgram:v1.1.2021
+          tags: x038xx77/foodgram:v2.3.2021
 
   deploy:
     runs-on: ubuntu-latest
