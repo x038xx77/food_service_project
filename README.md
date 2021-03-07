@@ -76,7 +76,7 @@ docker-compose run web python manage.py createsuperuser
 ```
 далее следуйте инструкции в терминале.
 
-- Импортируйте в базу теги и ингридиенты выполнив команду docker-compose run web python manage.py load_fixtures```
+- Импортируйте в базу теги и ингридиенты выполнив команду docker-compose run web python manage.py load_fixtures
 
 ```
 
@@ -86,3 +86,27 @@ docker-compose run web python manage.py createsuperuser
 docker-compose run web python manage.py python loaddata <your_basa_postgresql>.json
 ``` 
 Подробнее https://postgrespro.ru/docs/postgresql/9.6/sql-load
+
+## Authors
+
+* **Pavel Lavrentev** - *Initial work* - [Lavrentev](https://github.com/x038xx77)
+
+# License Templates
+
+These files are designed to be used by `lice`, a command-line license generator
+for software projects. 
+
+## Format/Structure
+
+The template uses variables as placeholders to substitute values specified by
+`lice`.
+
+* `{{ 2021 }}`: the year of the software's copyright.
+* `{{ x038xx77 }}`: the name of the organization or individual who holds
+the copyright to the software.
+* `{{ foodgram-progect }}`: the name of the software project.
+
+## Copyright
+
+All licenses in this repository are copyrighted by their respective authors.
+Everything else is released under CC0. See `LICENSE` for details.
