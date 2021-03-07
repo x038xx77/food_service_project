@@ -66,17 +66,17 @@ docker-compose pull && docker-compose down && docker-compose up
 После, для создания базы данных в директории foodgram-project запустите команду:
 
 ```  
-docker-compose run web python manage.py migrate
+sudo docker-compose run web python manage.py migrate
 ```
 
 Для создания суперпользователя в директории foodgram-project запустите команду:
 
 ```  
-docker-compose run web python manage.py createsuperuser
+sudo docker-compose run web python manage.py createsuperuser
 ```
 далее следуйте инструкции в терминале.
 
-- Импортируйте в базу теги и ингридиенты выполнив команду docker-compose run web python manage.py load_fixtures
+- Импортируйте в базу теги и ингридиенты выполнив команду sudo docker-compose run web python manage.py load_fixtures
 
 ```
 

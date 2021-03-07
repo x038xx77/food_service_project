@@ -1,0 +1,26 @@
+{% load item_key%}
+<form action="" method="GET">
+    <ul class="tags">
+        <li class="tags__item">
+            {% if 'breakfast' in request.GET.urlencode %}
+            <a id="breakfast" class="tags__checkbox tags__checkbox_style_orange tags__checkbox_active" href="?{% query_transform request breakfast=None page=None %}"></a>
+            {% else %}
+            <a id="breakfast" class="tags__checkbox tags__checkbox_style_orange" href="?{% query_transform request breakfast='on' page=None %}"></a>
+            {% endif %}
+            <span class="tags__label">Завтрак</span>
+            {% if 'lunch' in request.GET.urlencode %}
+            <a id="lunch" class="tags__checkbox tags__checkbox_style_green tags__checkbox_active" href="?{% query_transform request lunch=None page=None %}"></a>
+            {% else %}
+            <a id="lunch" class="tags__checkbox tags__checkbox_style_green" href="?{% query_transform request lunch='on' page=None %}"></a>
+            {% endif %}
+            <span class="tags__label">Обед</span>
+            {% if 'dinner' in request.GET.urlencode %}
+            <a id="dinner" class="tags__checkbox tags__checkbox_style_purple tags__checkbox_active" href="?{% query_transform request dinner=None page=None %}"></a>
+            {% else %}
+            <a id="dinner" class="tags__checkbox tags__checkbox_style_purple" href="?{% query_transform request dinner='on' page=None %}"></a>
+            {% endif %}
+            <span class="tags__label">Ужин</span>
+        </li>
+    </ul>
+  </div>
+</form>
