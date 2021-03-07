@@ -16,8 +16,8 @@ from django.http import HttpResponse
 from .utils import get_sort_list_tags
 from django.db.models import Sum
 from django.views.generic import TemplateView
-import csv
 from foodgram.settings import PAGINATE_BY
+import csv
 import logging
 logger = logging.getLogger(__name__)
 
@@ -42,8 +42,7 @@ class FavoritesView(ListView):
     def get_queryset(self):
         pk = FavoritesRecipe.objects.filter(
             user=self.request.user).values('following_recipe')
-        queryset = Recipe.objects.filter(
-                id__in=pk)
+        queryset = Recipe.objects.filter(id__in=pk)
         sort_list = get_sort_list_tags(self.request)
         if sort_list:
             queryset = Recipe.objects.filter(
@@ -115,9 +114,9 @@ class UpdateRecipeView(LoginRequiredMixin, UpdateView):
 class DeleteRecipeView(DeleteView):
     """Удаление рецепта."""
     model = Recipe
-    template_name = 'recipes/recipe_congirm_delete.html'
+    template_name = "recipes/recipe_congirm_delete.html"
     pk_url_kwarg = 'recipe_id'
-    success_url = reverse_lazy('index')
+    success_url = reverse_lazy("index")
 
     def get_queryset(self):
         owner = self.request.user
@@ -175,7 +174,7 @@ class FlatPageTechnology(TemplateView):
 
 
 @login_required
-def download_purcheses(request):
+def download_purchases(request):
 
     recipes_list = Recipe.objects.filter(shoping_list__user=request.user)
     list_ingredients = list(

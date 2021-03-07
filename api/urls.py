@@ -12,5 +12,5 @@ urlpatterns = [
     path('subscriptions/<int:username_id>', views.Subscriptions.as_view()),
     path('favorites', views.Favorites.as_view(), name='favorite_list'),
     path('favorites/<int:recipe_id>', views.Favorites.as_view()),
-    path('ingredients/', views.GetIngredients.as_view(), name='ingredients'),
+    path('ingredients', views.GetIngredients.as_view(), name='ingredients'),
 ]

@@ -26,7 +26,12 @@ SECRET_KEY = os.environ.get('SECRET_KEY_DJ', default=get_random_secret_key())
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(int(os.environ.get("DEBUG") if os.environ.get("DEBUG") else "0"))
 
-ALLOWED_HOSTS = ['*', 'localhost', 'llgall.ga', 'www.llgall.ga']
+
+ALLOWED_HOSTS = [
+    '*',
+    'localhost',
+    'llgall.ga',
+    'www.llgall.ga']
 
 PAGINATE_BY = 6
 
@@ -177,8 +182,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ],
     'DEFAULT_FILTER_BACKENDS': [
-            'django_filters.rest_framework.DjangoFilterBackend'
-        ],
+        'django_filters.rest_framework.DjangoFilterBackend'],
     'DEFAULT_PAGINATION_CLASS':
     'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 6,

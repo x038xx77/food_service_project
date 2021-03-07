@@ -1,5 +1,4 @@
 #!/bin/sh​
-
 if [ "$DATABASE" = "postgres" ]
 then
     echo "Waiting for postgres..."​
@@ -8,5 +7,6 @@ then
     done​
     echo "PostgreSQL started"
 fi​
-
+# python manage.py makemigrations
+# python manage.py migrate
 exec "$@"

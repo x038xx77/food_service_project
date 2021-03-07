@@ -6,8 +6,7 @@ from .models import (
     FollowUser,
     Purchases,
     RecipeIngridient,
-    Ingredient
-    )
+    Ingredient)
 
 
 class RecipeAdmin(admin.ModelAdmin):
