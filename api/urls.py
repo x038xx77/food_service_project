@@ -1,6 +1,7 @@
 
 from django.urls import path
 from . import views
+from django.conf import settings
 
 
 urlpatterns = [
@@ -12,5 +13,13 @@ urlpatterns = [
     path('subscriptions/<int:username_id>', views.Subscriptions.as_view()),
     path('favorites', views.Favorites.as_view(), name='favorite_list'),
     path('favorites/<int:recipe_id>', views.Favorites.as_view()),
-    path('ingredients', views.GetIngredients.as_view(), name='ingredients'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += [path(
+        'ingredients', views.GetIngredients.as_view(), name='ingredients'),
+        ]
+else:
+    urlpatterns += [path(
+        'ingredients/', views.GetIngredients.as_view(), name='ingredients'),
+        ]
