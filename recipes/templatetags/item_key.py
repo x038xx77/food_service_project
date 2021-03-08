@@ -32,14 +32,12 @@ def get_list_tag(arg):
 
 @register.filter
 def check_subscription(author_id, user):
-    check = user.follower.filter(author=author_id).exists()
-    return check
+    return user.follower.filter(author=author_id).exists()
 
 
 @register.filter
 def check_favorite(recipe_id, user):
-    check = user.favorites.filter(following_recipe=recipe_id).exists()
-    return check
+    return user.favorites.filter(following_recipe=recipe_id).exists()
 
 
 @register.filter

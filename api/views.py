@@ -4,7 +4,6 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views import View
 from django.db.models import F
-
 from recipes.models import (
     Recipe,
     FavoritesRecipe,
@@ -12,13 +11,15 @@ from recipes.models import (
     User,
     Ingredient,
     Purchases)
+import logging
+logger = logging.getLogger(__name__)
 
 JsonResponseTrue = JsonResponse({'success': True})
 JsonResponseFalse = JsonResponse({'success': False}, status=400)
 
 
 class Purchases_shop(View):
-    template_name = 'shopList.html'
+    template_name = 'shop_list.html'
 
     def post(self, request):
         reg = json.loads(request.body)
@@ -37,8 +38,7 @@ class Purchases_shop(View):
             if recipe_id not in request.session['purchase']:
                 request.session['purchase'].append(recipe_id)
                 request.session.save()
-                return JsonResponseTrue
-        return JsonResponseFalse
+            return JsonResponseTrue
 
     def delete(self, request, purchase_id):
         if request.user.is_authenticated:
@@ -58,6 +58,7 @@ class Subscriptions(LoginRequiredMixin, View):
         user_id = reg.get('id')
         if not user_id:
             return JsonResponseFalse
+
         author = get_object_or_404(User, pk=user_id)
         obj, created = FollowUser.objects.get_or_create(
             user=request.user, author=author)
@@ -77,6 +78,7 @@ class Favorites(LoginRequiredMixin, View):
         recipe_id = reg.get('id')
         if not recipe_id:
             return JsonResponseFalse
+
         recipe = get_object_or_404(Recipe, id=recipe_id)
         obj, created = FavoritesRecipe.objects.get_or_create(
             user=request.user, following_recipe_id=recipe.id)

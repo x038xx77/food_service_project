@@ -1,0 +1,10 @@
+{% csrf_token %}
+{% load item_key %} {% if not request|check_purchase:recipe %}
+    <button class="button button_style_blue" name="purchases" data-out><span class="icon-plus"></span>
+        Добавить в покупки</button>
+</li>
+{%else%}
+    <button class="button button_style_light-blue-outline" name="purchases"><span
+            class="icon-check button__icon"></span> Рецепт добавлен</button>
+</li>
+{%endif%}

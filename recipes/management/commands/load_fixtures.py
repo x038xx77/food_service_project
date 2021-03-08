@@ -6,6 +6,8 @@ from django.core.management.base import BaseCommand
 
 from recipes.models import Ingredient
 from foodgram.settings import BASE_DIR
+import logging
+logger = logging.getLogger(__name__)
 
 
 # load data from json to Indgridient model
@@ -22,10 +24,11 @@ class Command(BaseCommand):
                         title=ingredient['title'],
                         dimension=ingredient['dimension'])
                     if created:
-                        msg = f'Successfully loaded {len(ingredients)} ingredients'
+                        msg = f'Successfully loaded \
+                            {len(ingredients)} ingredients'
                         self.stdout.write(self.style.SUCCESS(msg))
-                except Exception as ex:
-                    print(str(ex))
+                except Exception as e:
+                    logger.error(str(e))
 
     @staticmethod
     def load_tags():
