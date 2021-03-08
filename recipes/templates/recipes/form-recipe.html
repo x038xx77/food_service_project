@@ -1,7 +1,7 @@
 {% extends "base.html" %} {% load static %} {% block head %}
 <title>{% if recipe %}Редактирование{% else %}Создание{%endif%} рецепта</title>
 <link rel="stylesheet" href="{% static './pages/form.css' %}" />
-{%endblock%} {% block content %} {% load item_key %}
+{%endblock%} {% block content %}
 <div class="main__header">
     <h1 class="main__title">{% if recipe %}Редактирование{% else %}Создание{%endif%} рецепта</h1>
 </div>
@@ -19,7 +19,7 @@
             <p class="form__label">Теги</p>
             <div class="form__field-group">
                 <div class="tags">
-                    {% load item_key%} {% for pk, choices in form.diets.field.choices %}
+                    {% load tags_filter %} {% for pk, choices in form.diets.field.choices %}
                     <div class="tags__item">
                         <input
                             type="checkbox"

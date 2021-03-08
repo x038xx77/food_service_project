@@ -86,6 +86,11 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'libraries':{
+                'changing_endings_word_filter': 'recipes.templatetags.changing_endings_word_filter', # noqa
+                'checking_status_filter': 'recipes.templatetags.checking_status_filter', # noqa
+                'tags_filter': 'recipes.templatetags.tags_filter',
+            }
         },
     },
 ]

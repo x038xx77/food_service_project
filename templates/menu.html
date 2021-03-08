@@ -1,4 +1,4 @@
-{% block menu %} {% load item_key %}
+{% block menu %} 
 <header class="header">
     <nav class="nav">
         <div class="nav__container container">
@@ -10,6 +10,7 @@
                 <li class="nav__item {% if request.resolver_match.url_name == 'favorite_list' %} nav__item_active {%endif%}"><a href="{% url 'favorite_list' %}" class="nav__link link">Избранное</a></li>
                 {%endif%}
                 <li class="nav__item {% if request.resolver_match.url_name == 'shop_list' %} nav__item_active {%endif%}">
+                    {% load checking_status_filter %}
                     <a href="{% url 'shop_list' %}" class="nav__link link">Список покупок</a> <span class="badge badge_style_blue nav__badge" id="counter">{{ request|purchases_count }}</span>
                 </li>
             </ul>

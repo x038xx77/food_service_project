@@ -1,4 +1,4 @@
-{% load item_key %}
+{% load checking_status_filter %}
 {% csrf_token %}
 {% if author != request.user %} 
 {% if user.is_authenticated %} {% if not author|check_subscription:request.user %}
