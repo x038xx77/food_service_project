@@ -48,6 +48,9 @@ DEBUG=0
 ```
 ./manage.py loaddata db.json
 ```
+### Настройка почтового сервера yandex
+https://django.fun/tutorials/nastrojka-pochty-v-django/
+https://searchengines.guru/ru/forum/1037543
 
 ### Подготовка к запуску на удаленном сервере
 Для запуска проекта на удаленном сервере необходимо:

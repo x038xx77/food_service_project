@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 
 class RecipesView(ListView):
     """Список рецептов """
+    template_name = 'index.html'
     paginate_by = PAGINATE_BY
 
     def get_queryset(self):
@@ -54,7 +55,7 @@ class FavoritesView(ListView):
 class RecipeDetailView(DetailView):
     """Детали рецепта."""
     model = Recipe
-    template_name = 'recipes/single-page.html'
+    template_name = 'recipes/single_page.html'
     pk_url_kwarg = 'recipe_id'
 
 
@@ -94,7 +95,7 @@ class MyFollowView(LoginRequiredMixin, ListView):
 class CreateRecipeView(LoginRequiredMixin, CreateView):
     """Создание рецепта."""
     form_class = RecipeForm
-    template_name = 'recipes/form-recipe.html'
+    template_name = 'recipes/form_recipe.html'
     pk_url_kwarg = 'recipe_id'
     success_url = reverse_lazy('index')
 
@@ -107,7 +108,7 @@ class UpdateRecipeView(LoginRequiredMixin, UpdateView):
     """Редактирование рецепта."""
     model = Recipe
     form_class = RecipeForm
-    template_name = 'recipes/form-recipe.html'
+    template_name = 'recipes/form_recipe.html'
     pk_url_kwarg = 'recipe_id'
     success_url = reverse_lazy('index')
 

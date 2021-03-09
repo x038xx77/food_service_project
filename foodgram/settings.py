@@ -90,6 +90,7 @@ TEMPLATES = [
                 'changing_endings_word_filter': 'recipes.templatetags.changing_endings_word_filter', # noqa
                 'checking_status_filter': 'recipes.templatetags.checking_status_filter', # noqa
                 'tags_filter': 'recipes.templatetags.tags_filter',
+                'addclass_html_filter': 'users.templatetags.addclass_html_filter',      # noqa
             }
         },
     },
@@ -190,9 +191,23 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 6,
 }
 
-
-EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+    EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    ACCOUNT_ACTIVATION_DAYS = 7
+    EMAIL_HOST = os.environ.get('EMAIL_HOST')
+    EMAIL_PORT = int(os.environ.get('EMAIL_PORT'))
+    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+    EMAIL_USE_TLS = False
+    EMAIL_USE_SSL = True
+    SERVER_EMAIL = EMAIL_HOST_USER
+    DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+    ADMINS = (
+        (EMAIL_HOST_USER, SERVER_EMAIL),)
+    MANAGERS = ADMINS
 
 CACHES = {
     'default': {

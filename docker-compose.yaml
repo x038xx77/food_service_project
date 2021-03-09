@@ -15,7 +15,7 @@ services:
     env_file:
       - .env
   web:
-    image: x038xx77/foodgram:v2.3.2021
+    image: x038xx77/foodgram:v3.3.2021
     restart: always
     volumes:
       - static_volume:/code/static/

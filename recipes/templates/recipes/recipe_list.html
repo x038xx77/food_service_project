@@ -8,5 +8,5 @@
     <div class="card-list">
         {% for recipe in recipe_list %} {% include "includes/recipe_item.html" with recipe=recipe %} {%endfor%}
     </div>
-    {% include "paginator.html" with items=page paginator=paginator%} {%endblock%} {% block js %} {% include 'block_js.html' %} {%endblock%}
+    {% include "paginator.html" with items=page paginator=paginator%} {%endblock%} {% block js %} {%endblock%}
 </div>
