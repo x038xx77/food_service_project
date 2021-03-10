@@ -9,7 +9,7 @@
             <div class="form__field-group">
                 <input type="text" name="first_name" id="first_name" class="form__input" />
                 {% if form.errors.last_name %}
-                <span class="form__error">{{form.errors.last_name}}</span>
+                    <span class="form__error">{{form.errors.last_name}}</span>
                 {%endif%}
             </div>
         </div>
@@ -18,8 +18,9 @@
             <div class="form__field-group">
                 <input type="text" name="username" id="username" class="form__input" />
                 <span class="form__error">
-                    Имя пользователя и пароль не совпадают. Введите правильные данные. {% if form.errors.username %}
-                    <span class="form__error">{{form.errors.username}}</span>
+                    Имя пользователя и пароль не совпадают. Введите правильные данные. 
+                    {% if form.errors.username %}
+                        <span class="form__error">{{form.errors.username}}</span>
                     {%endif%}
                 </span>
             </div>
@@ -29,7 +30,7 @@
             <div class="form__field-group">
                 <input type="email" name="email" id="email" class="form__input" />
                 {% if form.errors.email %}
-                <span class="form__error">Обязательное поле, почта указана неверно</span>
+                    <span class="form__error">Обязательное поле, почта указана неверно</span>
                 {%endif%}
             </div>
         </div>
@@ -38,7 +39,7 @@
             <div class="form__field-group">
                 <input type="password" name="password1" id="password1" class="form__input" />
                 {% if form.errors.password1 %}
-                <span class="form__error">Обязательное поле или пароли не совпадают</span>
+                    <span class="form__error">Обязательное поле или пароли не совпадают</span>
                 {%endif%}
             </div>
         </div>
@@ -47,7 +48,7 @@
             <div class="form__field-group">
                 <input type="password" name="password2" id="password2" class="form__input" />
                 {% if form.errors.password2 %}
-                <span class="form__error">Обязательное поле или пароли не совпадают</span>
+                    <span class="form__error">Обязательное поле или пароли не совпадают</span>
                 {%endif%}
             </div>
         </div>

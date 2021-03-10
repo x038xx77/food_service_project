@@ -32,12 +32,12 @@ class Purchases_shop(View):
             obj, created = Purchases.objects.get_or_create(
                 user=request.user, recipe_id=recipe.id)
             return JsonResponseTrue
-        else:
-            if 'purchase' not in request.session:
-                request.session['purchase'] = list()
-            if recipe_id not in request.session['purchase']:
-                request.session['purchase'].append(recipe_id)
-                request.session.save()
+
+        if 'purchase' not in request.session:
+            request.session['purchase'] = []
+        if recipe_id not in request.session['purchase']:
+            request.session['purchase'].append(recipe_id)
+            request.session.save()
             return JsonResponseTrue
 
     def delete(self, request, purchase_id):

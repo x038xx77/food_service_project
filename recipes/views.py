@@ -133,13 +133,13 @@ class ShopListView(ListView):
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            queryset = Purchases.objects.filter(user=self.request.user)
+            queryset = Recipe.objects.filter(
+                shoping_list__user=self.request.user)
         else:
             try:
                 queryset = Recipe.objects.filter(
                     pk__in=self.request.session['purchase'])
-            except Exception as e:
-                logger.error(str(e))
+            except KeyError:
                 queryset = []
         return queryset
 

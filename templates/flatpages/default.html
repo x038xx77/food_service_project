@@ -1,10 +1,14 @@
-{% extends "base.html" %} {% block title %} {{ flatpage.title }} {% endblock %} {% block content %}
-<div class="single-card__header-info">
-    <h1 class="single-card__title">{{title}}</h1>
-</div>
-<div class="single-card__section">
-    <p class="single-card__section-text">
-        {% autoescape off %} {{text}} {% endautoescape %}
-    </p>
-</div>
+{% extends "base.html" %} 
+{% block title %} 
+    {{ flatpage.title }} 
+{% endblock %} 
+{% block content %}
+    <div class="single-card__header-info">
+        <h1 class="single-card__title">{{title}}</h1>
+    </div>
+    <div class="single-card__section">
+        <p class="single-card__section-text">
+            {% autoescape off %} {{text}} {% endautoescape %}
+        </p>
+    </div>
 {% endblock %}

@@ -1,7 +1,6 @@
 import json
 import os
 
-from django.core.management import execute_from_command_line
 from django.core.management.base import BaseCommand
 
 from recipes.models import Ingredient
@@ -10,16 +9,17 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-# load data from json to Indgridient model
 class Command(BaseCommand):
     help = 'Imports ingredients and tags to the DataBase'
 
     def load_ingredients(self):
-        with open(os.path.join(BASE_DIR, 'fixtures', 'ingredients.json')) as f:
+        with open(os.path.join(
+            BASE_DIR,
+            'igredientdb',
+            'ingredients.json')) as f: # noqa
             ingredients = json.load(f)
             for ingredient in ingredients:
                 try:
-                    print(ingredient['title'], ingredient['dimension'])
                     ingredient_obj, created = Ingredient.objects.get_or_create(
                         title=ingredient['title'],
                         dimension=ingredient['dimension'])
@@ -30,11 +30,5 @@ class Command(BaseCommand):
                 except Exception as e:
                     logger.error(str(e))
 
-    @staticmethod
-    def load_tags():
-        execute_from_command_line(
-            ["manage.py", "loaddata", "fixtures/tags.json"])
-
     def handle(self, *args, **options):
         self.load_ingredients()
-        self.load_tags()

@@ -26,12 +26,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY_DJ', default=get_random_secret_key())
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(int(os.environ.get("DEBUG") if os.environ.get("DEBUG") else "0"))
 
-
-ALLOWED_HOSTS = [
-    '*',
-    'localhost',
-    'llgall.ga',
-    'www.llgall.ga']
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS').split(' ')
 
 PAGINATE_BY = 6
 
@@ -142,7 +137,6 @@ LANGUAGES = (
     ('ru', 'Russian'),
     ('en', 'English'),
 )
-USE_I18N = True
 
 LOCALE_PATHS = (
     'locale',

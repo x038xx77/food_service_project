@@ -50,8 +50,6 @@ class RecipeForm(forms.ModelForm):
         RecipeIngridient.objects.filter(recipe=instance).delete()
         for title, amount, dimension in ingredients:
             ingredient = get_object_or_404(Ingredient, title=title)
-            if ingredient:
-                RecipeIngridient.objects.create(
-                    ingredient=ingredient, recipe=instance, amount=amount
-                )
+            RecipeIngridient.objects.create(
+                ingredient=ingredient, recipe=instance, amount=amount)
         return instance

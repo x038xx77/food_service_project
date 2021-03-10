@@ -2,11 +2,11 @@
 <link rel="stylesheet" href="{% static 'pages/index.css' %}" />
 <div class="custom-center-block">
     {% if 'shop_list' in request.resolver_match.url_name %}
-    <p class="custom-text-block">У Вас нет добавленных покупок.</p>
+        <p class="custom-text-block">У Вас нет добавленных покупок.</p>
     {% elif 'favorite_list' in request.resolver_match.url_name %}
-    <p class="custom-text-block">У Вас нет избранных рецептов.</p>
+        <p class="custom-text-block">У Вас нет избранных рецептов.</p>
     {% elif 'myfollow' in request.resolver_match.url_name %}
-    <p class="custom-text-block">У Вас нет подписки ни на одного автора.</p>
+        <p class="custom-text-block">У Вас нет подписки ни на одного автора.</p>
     {%endif%}
     <div class="custom-button-block">
         <a href="{% url  'index' %}">

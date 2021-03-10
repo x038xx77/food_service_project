@@ -1,3 +1,5 @@
+from .models import Diet
+
 
 def get_ingredients_from_form(request):
     nameIng = [request[key] for key in request if 'nameIngredient' in key]
@@ -8,11 +10,9 @@ def get_ingredients_from_form(request):
 
 
 def get_sort_list_tags(request):
+    tags = Diet.objects.all()
     sort_list = []
-    if request.GET.getlist('breakfast', None):
-        sort_list.append('breakfast')
-    if request.GET.getlist('lunch', None):
-        sort_list.append('lunch')
-    if request.GET.getlist('dinner', None):
-        sort_list.append('dinner')
+    for tag in tags:
+        if request.GET.getlist(tag.slug, None):
+            sort_list.append(tag.slug)
     return sort_list
