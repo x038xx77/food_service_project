@@ -15,7 +15,6 @@ from .forms import RecipeForm
 from django.http import HttpResponse
 from .utils import get_sort_list_tags
 from django.db.models import Sum
-from django.views.generic import TemplateView
 from foodgram.settings import PAGINATE_BY
 import csv
 import logging
@@ -153,18 +152,15 @@ def download_purchases(request):
         .values('ingredient__title', 'ingredient__dimension')
         .annotate(total=Sum('amount'))
     )
-
-    list_nameIngr = [item['ingredient__title'] for item in list_ingredients]
-    list_valIngr = [item['ingredient__dimension'] for item in list_ingredients]
-    list_amountIngr = [item['total'] for item in list_ingredients]
-    set_ingredients = zip(list_nameIngr, list_valIngr, list_amountIngr)
     response = HttpResponse(content_type='text/plain')
     response['Content-Disposition'] = 'attachment; filename=Purchases_list.txt'
     writer = csv.writer(response)
     writer.writerow(['Наименование', '(единица измерения)', 'Кол-во'])
-    for title, value, amount in set_ingredients:
+    for item in list_ingredients:
         writer.writerow(
-            [title, ('({})').format(value), amount])
+            [item['ingredient__title'],
+            ('({})').format(item['ingredient__dimension']), # noqa
+            item['total']])
     return response
 
 
