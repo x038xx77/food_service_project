@@ -159,8 +159,7 @@ def download_purchases(request):
     for item in list_ingredients:
         writer.writerow(
             [item['ingredient__title'],
-            ('({})').format(item['ingredient__dimension']), # noqa
-            item['total']])
+            ('({})').format(item['ingredient__dimension']), item['total']]) # noqa
     return response
 
 
