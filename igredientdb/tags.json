@@ -1,1 +1,0 @@
-[{"model": "recipes.diet", "id": 1, "fields": {"title": "Завтрак", "slug": "breakfast", "checkbox_style": "orange"}}, {"model": "recipes.diet", "id": 2, "fields": {"title": "Обед", "slug": "lunch", "checkbox_style": "green"}}, {"model": "recipes.diet", "id": 3, "fields": {"title": "Ужин", "slug": "dinner", "checkbox_style": "purple"}}]
