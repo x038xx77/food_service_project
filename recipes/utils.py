@@ -13,6 +13,6 @@ def get_sort_list_tags(request):
     tags = Diet.objects.all()
     sort_list = []
     for tag in tags:
-        if request.GET.getlist(tag.slug, None):
+        if request.GET.getlist(tag.slug):
             sort_list.append(tag.slug)
     return sort_list

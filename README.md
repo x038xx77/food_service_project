@@ -30,8 +30,6 @@ DEBUG=0
 
 - Установите зависимости pip install -r requirements.txt
 - Создайте все необходимые таблицы в базе данных - выполните команду python manage.py migrate
-- Импортируйте в базу ингридиенты из файла ingredients.json - выполните команду python manage.py load_ingredients_db
-- Импортируйте в базу теги и ингридиенты из файла tags.json - выполните команду python manage.py load_tags_db
 - Создайте администратора сайта python manage.py createsuperuser
 - Чтобы запустить проект на локальной машине - ./manage.py runserver
 ```

@@ -10,12 +10,13 @@
     <div class="card__footer"></div>
     {% if not object_list %} 
         {% include "custom_page.html" %} 
-    {% endif %}
-    <div class="card-list">
-    {% for recipe in object_list %} 
-        {% include 'includes/recipe_item.html' %} 
-    {%endfor%}
-    </div>
+    {% else %}
+        <div class="card-list">
+            {% for recipe in object_list %} 
+                {% include 'includes/recipe_item.html' %} 
+            {%endfor%}
+        </div>
+    {%endif%}
     {% include "paginator.html" %} 
 {%endblock%}
 {% block js %} 

@@ -1,12 +1,16 @@
 {% load checking_status_filter %}
 {% csrf_token %}
-{% if user.is_authenticated %} {% if not recipe.id|check_favorite:request.user %}
-<button class="button button_style_none" name="favorites" data-out><span class="icon-favorite"></span></button>
-{% else %}
-<button class="button button_style_none" name="favorites"><span class="icon-favorite icon-favorite_active"></span></button>
-{%endif%} {%endif%}
-{% if request.resolver_match.url_name == 'recipe' %} {% if not recipe.id|check_favorite:request.user %}
-<div class="single-card__favorite-tooltip tooltip">Добавить в избранное</div>
-{% else %}
-<div class="single-card__favorite-tooltip tooltip">Убрать из избранного</div>
-{%endif%} {%endif%}
+{% if user.is_authenticated %} 
+    {% if not recipe.id|check_favorite:request.user %}
+        <button class="button button_style_none" name="favorites" data-out><span class="icon-favorite"></span></button>
+    {% else %}
+        <button class="button button_style_none" name="favorites"><span class="icon-favorite icon-favorite_active"></span></button>
+    {%endif%} 
+{%endif%}
+{% if request.resolver_match.url_name == 'recipe' %} 
+    {% if not recipe.id|check_favorite:request.user %}
+        <div class="single-card__favorite-tooltip tooltip">Добавить в избранное</div>
+    {% else %}
+        <div class="single-card__favorite-tooltip tooltip">Убрать из избранного</div>
+    {%endif%} 
+{%endif%}

@@ -7,7 +7,7 @@ class Command(BaseCommand):
     @staticmethod
     def load_tags():
         execute_from_command_line(
-            ['manage.py', 'loaddata', 'igredientdb/tags.json'])
+            ['manage.py', 'loaddata', 'static/tags.json'])
 
     def handle(self, *args, **options):
         self.load_tags()

@@ -1,8 +1,11 @@
 {% load checking_status_filter %}
 {% csrf_token %}
 {% if author != request.user %} 
-{% if user.is_authenticated %} {% if not author|check_subscription:request.user %}
-<button class="button button_style_light-blue button_size_subscribe" name="subscribe" data-out>Подписаться на автора</button>
-{%else%}
-<button class="button button_style_light-blue button_size_subscribe" name="subscribe">Отписаться от автора</button>
-{%endif%} {%endif%} {%endif%}
+    {% if user.is_authenticated %} 
+        {% if not author|check_subscription:request.user %}
+            <button class="button button_style_light-blue button_size_subscribe" name="subscribe" data-out>Подписаться на автора</button>
+        {%else%}
+            <button class="button button_style_light-blue button_size_subscribe" name="subscribe">Отписаться от автора</button>
+        {%endif%} 
+    {%endif%} 
+{%endif%}

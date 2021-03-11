@@ -144,37 +144,6 @@ class ShopListView(ListView):
         return queryset
 
 
-class FlatPageAbout(TemplateView):
-    template_name = 'flatpages/default.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = 'Об авторе сайта'
-        context['text'] = '''
-            Лаврентьев Павел Александрович<br>
-            <a href="https://github.com/x038xx77"></a>.<br>
-        '''
-        return context
-
-
-class FlatPageTechnology(TemplateView):
-    template_name = 'flatpages/default.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = 'Технологии'
-        context['text'] = '''
-            Для создания этого сайта использовались следующии технологии:<br>
-            <br>Ubuntu<br>Python<br>Django<br>БД PostgreSQL<br>
-            Docker<br>Docker-compose<br>Docker Hub<br>Gunicorn<br>
-            Nginx<br>Github Actions<br><br>
-            <a href="https://github.com/x038xx77/foodgram-project">
-                Подробнее
-            </a><br>
-        '''
-        return context
-
-
 @login_required
 def download_purchases(request):
 

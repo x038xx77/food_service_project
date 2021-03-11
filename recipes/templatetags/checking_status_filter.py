@@ -20,9 +20,10 @@ def check_purchase(request, recipe):
     if request.user.is_authenticated:
         return Purchases.objects.filter(user=request.user, recipe=recipe)
     else:
-        try:
-            return str(recipe.id) in request.session['purchase']
-        except KeyError:
+        session_purchase = request.session.get('purchase', default=None)
+        if session_purchase is not None:
+            return str(recipe.id) in session_purchase
+        else:
             return False
 
 
