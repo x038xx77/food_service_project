@@ -35,8 +35,12 @@
                 </ul>
             </div>
             <ul class="single-card__items">
+                <li class="single-card__item">
                     {% include "includes/button_purchases.html" with recipe=recipe %}
+                </li>
+                <li class="single-card__item">
                     {% include "includes/button_subscribe.html" with author=recipe.author %}
+                </li>
             </ul>    
             <div class="single-card__section">
                 <h3 class="single-card__section-title">Ингридиенты:</h3>
@@ -54,18 +58,24 @@
         </div>
     </div>
 {%endblock%} 
-{% block js %}
-    <script src="{% static './js/components/Purchases.js' %}"></script>
-    <script src="{% static './js/components/MainCards.js' %}"></script>
-    <script src="{% static './js/config/config.js' %}"></script>
-    <script src="{% static './js/components/SingleCard.js' %}"></script>
-    <script src="{% static './js/components/Header.js' %}"></script>
-    <script src="{% static './js/api/Api.js' %}"></script> 
+{% block js %}   
     {% if user.is_authenticated %}
+        <script src="{% static './js/components/MainCards.js' %}"></script>
+        <script src="{% static './js/components/Purchases.js' %}"></script>
         <script src="{% static './js/components/Favorites.js' %}"></script>
         <script src="{% static './js/components/Subscribe.js' %}"></script>
+        <script src="{% static './js/config/config.js' %}"></script>
+        <script src="{% static './js/components/SingleCard.js' %}"></script>
+        <script src="{% static './js/components/Header.js' %}"></script>  
+        <script src="{% static './js/api/Api.js' %}"></script> 
         <script src="{% static 'singlePage.js' %}"></script>
     {%else%}
+        <script src="{% static './js/components/MainCards.js' %}"></script>
+        <script src="{% static './js/components/Purchases.js' %}"></script>
+        <script src="{% static './js/config/config.js' %}"></script>
+        <script src="{% static './js/components/SingleCard.js' %}"></script>
+        <script src="{% static './js/components/Header.js' %}"></script>   
+        <script src="{% static './js/api/Api.js' %}"></script> 
         <script src="{% static 'singlePageNotAuth.js' %}"></script>
     {%endif%} 
 {%endblock%}

@@ -161,6 +161,8 @@ if DEBUG:
         os.path.join(BASE_DIR, 'static')]
 else:
     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+    print(STATIC_ROOT)
+print("Debug=", DEBUG, "V3.5.2021")
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
