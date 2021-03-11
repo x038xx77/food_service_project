@@ -92,7 +92,6 @@ sudo docker-compose run web python manage.py createsuperuser
 ```
 далее следуйте инструкции в терминале.
 
-- Импортируйте в базу теги и ингридиенты выполнив команду sudo docker-compose run web python manage.py load_fixtures
 
 ```
 
