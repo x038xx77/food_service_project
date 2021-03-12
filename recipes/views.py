@@ -157,9 +157,10 @@ def download_purchases(request):
     writer = csv.writer(response)
     writer.writerow(['Наименование', '(единица измерения)', 'Кол-во'])
     for item in list_ingredients:
-        writer.writerow(
-            [item['ingredient__title'],
-            ('({})').format(item['ingredient__dimension']), item['total']]) # noqa
+        title = item['ingredient__title']
+        dimension = item['ingredient__dimension']
+        amount = item['total']
+        writer.writerow([title, ('({})').format(dimension), amount])
     return response
 
 
