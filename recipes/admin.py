@@ -41,9 +41,27 @@ class DietAdmin(admin.ModelAdmin):
     search_fields = ('title',)
 
 
-admin.site.register(FavoritesRecipe)
-admin.site.register(FollowUser)
-admin.site.register(Purchases)
+class PurchasesAdmin(admin.ModelAdmin):
+    model = Purchases
+    list_display = ('user', 'recipe')
+    list_filter = ('user',)
+
+
+class FavoritesAdmin(admin.ModelAdmin):
+    model = FavoritesRecipe
+    list_display = ('user', 'following_recipe')
+    list_filter = ('user',)
+
+
+class FollowUserAdmin(admin.ModelAdmin):
+    model = FavoritesRecipe
+    list_display = ('user', 'author')
+    list_filter = ('user',)
+
+
+admin.site.register(FavoritesRecipe, FavoritesAdmin)
+admin.site.register(FollowUser, FollowUserAdmin)
+admin.site.register(Purchases, PurchasesAdmin)
 admin.site.register(Ingredient, IngredientAdmin)
 admin.site.register(RecipeIngridient, RecipeIngridientAdmin)
 admin.site.register(Recipe, RecipeAdmin)

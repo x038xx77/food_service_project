@@ -6,7 +6,6 @@ from .models import (
     Recipe, User,
     FollowUser, FavoritesRecipe, Purchases,
     RecipeIngridient)
-from django.contrib.auth.decorators import login_required
 from django.views.generic import (
     ListView,
     DetailView, CreateView,
@@ -143,10 +142,12 @@ class ShopListView(ListView):
         return queryset
 
 
-@login_required
 def download_purchases(request):
-
-    recipes_list = Recipe.objects.filter(shoping_list__user=request.user)
+    if request.user.is_authenticated:
+        recipes_list = Recipe.objects.filter(shoping_list__user=request.user)
+    else:
+        recipes_list = Recipe.objects.filter(
+            id__in=request.session.get('purchase'))
     list_ingredients = list(
         RecipeIngridient.objects.filter(recipe__id__in=recipes_list)
         .values('ingredient__title', 'ingredient__dimension')

@@ -34,7 +34,8 @@ class Recipe(models.Model):
 
 
 class Ingredient(models.Model):
-    title = models.CharField(max_length=300, verbose_name='название')
+    title = models.CharField(
+        unique=True, max_length=300, verbose_name='название')
     dimension = models.CharField(max_length=300, verbose_name='размерность')
 
     def __str__(self):

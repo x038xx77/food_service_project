@@ -83,11 +83,16 @@
             <div class="form__group">
                 <span class="form__label">Загрузить фото</span>
                 <div class="form__field-group">
+    
+                {% if recipe %}
+                    <input type="file" name="image" id="id_file">    
+                {% else %}  
                     <label for="id_file" class="form__file-button">Выбрать файл</label>
-                    <input type="file" class="form__file" name="image" id="id_file" />
-                    <span class="form__error"></span>
+                    <input type="file" class="form__file" name="image" id="id_file">            
+                {% endif %}
+                <span class="form__error"></span>
                 </div>
-            </div>
+            </div>           
             <div class="form__footer">
                 {% if recipe %}
                     <button class="button button_style_blue">Сохранить</button>
