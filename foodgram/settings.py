@@ -207,12 +207,6 @@ else:
         (EMAIL_HOST_USER, SERVER_EMAIL),)
     MANAGERS = ADMINS
 
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-    }
-}
-
 SITE_ID = 1
 
 
