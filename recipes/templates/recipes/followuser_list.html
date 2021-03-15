@@ -1,13 +1,14 @@
-{% extends "base.html" %} {% load static %} 
-{% block head %}
-    <title>Мои подписки</title>
-    <link rel="stylesheet" href="{% static './pages/myFollow.css' %}" />
-{%endblock%} 
-{% block content %} {% csrf_token %}
-    <div class="main__header">
-        <h1 class="main__title">Мои подписки</h1>
-    </div>
-    {% if not followuser_list %} 
+{% extends "base.html" %} {% load static %}
+{% block title %}Мои подписки>{%endblock%}
+{% block static_css %}
+    <link rel="stylesheet" href="{% static 'pages/myFollow.css' %}">
+{% endblock %}
+{% block menu %}
+    {% include "menu.html" %}
+{%endblock%}
+{% block menu_title %} Мои подписки {%endblock%}
+{% block content %}
+    {% if not followuser_list %}
         {% include "custom_page.html" %}
     {% endif %}
     <div class="card-list">
@@ -22,7 +23,7 @@
                             <li class="card-user__item">
                                 <div class="recipe">
                                     {% load thumbnail %} {% thumbnail recipe.image "100x100" crop="center" upscale=True as im %}
-                                        <img src="{{ im.url }}" alt="{{recipe.title}}" class="recipe__image" />
+                                        <img src="{{ im.url }}" alt="{{recipe.title}}" class="recipe__image">
                                     {% endthumbnail %}
                                     <h3 class="recipe__title">{{recipe.title}}</h3>
                                     <p class="recipe__text"><span class="icon-time"></span> {{recipe.cooking_time}} мин.</p>
@@ -36,21 +37,22 @@
                     </ul>
                 </div>
                 <div class="card-user__footer">
+                    {% csrf_token %}
                     <button class="button button_style_light-blue button_size_auto" name="subscribe">Отписаться</button>
                 </div>
             </div>
         {% endfor %}
     </div>
-    {% include "paginator.html" %} 
-{%endblock%} 
+    {% include "paginator.html" %}
+{%endblock%}
 {% block js %}
     {% if user.is_authenticated %}
-        <script src="{% static './js/config/config.js' %}"></script>
-        <script src="{% static './js/components/MainCards.js' %}"></script>
-        <script src="{% static './js/components/MyFollow.js' %}"></script>
-        <script src="{% static './js/components/Subscribe.js' %}"></script>
-        <script src="{% static './js/components/Header.js' %}"></script>
-        <script src="{% static './js/api/Api.js' %}"></script>
+        <script src="{% static 'js/config/config.js' %}"></script>
+        <script src="{% static 'js/components/MainCards.js' %}"></script>
+        <script src="{% static 'js/components/MyFollow.js' %}"></script>
+        <script src="{% static 'js/components/Subscribe.js' %}"></script>
+        <script src="{% static 'js/components/Header.js' %}"></script>
+        <script src="{% static 'js/api/Api.js' %}"></script>
         <script src="{% static 'myFollow.js' %}"></script>
     {%endif%} 
 {%endblock%}

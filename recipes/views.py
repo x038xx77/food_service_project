@@ -116,7 +116,7 @@ class DeleteRecipeView(DeleteView):
     model = Recipe
     template_name = "recipes/recipe_congirm_delete.html"
     pk_url_kwarg = 'recipe_id'
-    success_url = reverse_lazy("index")
+    success_url = reverse_lazy('index')
 
     def get_queryset(self):
         owner = self.request.user

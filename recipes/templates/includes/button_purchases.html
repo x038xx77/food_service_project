@@ -1,5 +1,5 @@
 {% csrf_token %}
-{% load checking_status_filter %} 
+{% load checking_status_filter %}
 {% if not request|check_purchase:recipe %}
     <button class="button {% if request.resolver_match.url_name == 'recipe' %} button_style_blue {% else %} button_style_light-blue {% endif %}" name="purchases" data-out>
         <span class="icon-plus button__icon"></span>Добавить в покупки
@@ -8,4 +8,4 @@
     <button class="button button_style_light-blue button button_style_light-blue-outline" name="purchases">
         <span class="icon-check button__icon"></span> Рецепт добавлен
     </button>
-{%endif%} 
+{%endif%}

@@ -5,12 +5,7 @@ from django.conf.urls.static import static
 from django.contrib.flatpages import views
 
 
-def trigger_error(request):
-    division_by_zero = 1 / 0 # noqa
-
-
 urlpatterns = [
-    path('sentry-debug/', trigger_error),
     path('auth/', include('users.urls')),
     path('auth/', include('django.contrib.auth.urls')),
     path('admin/', admin.site.urls),

@@ -1,4 +1,12 @@
-{% extends "base.html" %} 
+{% extends "base.html" %} {% csrf_token %} {% load static %}
+{% block title %}Удаление рецепта{%endblock%}
+{% block static_css %}
+    <link rel="stylesheet" href="{% static 'pages/index.css' %}">
+{% endblock %}
+{% block menu %}
+    {% include "menu.html" %}
+{%endblock%}
+{% block menu_title %} Удаление рецепта {%endblock%}
 {% block content %}
     <div class="custom-center-block">
         <form method="post">

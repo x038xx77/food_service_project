@@ -1,7 +1,10 @@
 {% extends "base.html" %} {% load static %} 
-{% block head %}
-    <title>Регистрация</title>
-    <link rel="stylesheet" href="{% static './pages/form.css' %}" />
+{% block title %}Регистрация{%endblock%}
+{% block static_css %}
+<link rel="stylesheet" href="{% static './pages/form.css' %}">
+{% endblock %}
+{% block menu %} 
+    {% include "menu.html" %} 
 {%endblock%}
 {% block content %}
     {% include "includes/reg.html" %}

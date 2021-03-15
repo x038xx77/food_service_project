@@ -1,8 +1,19 @@
-{% extends "base.html" %} 
+{% extends "base.html" %} {%load static%}
 {% block title %} {{ flatpage.title }} {% endblock %}
+{% block static_css %}
+    <link rel="stylesheet" href="{% static 'pages/index.css' %}"> 
+{% endblock %}
+{% block menu %} 
+    {% include "menu.html" %} 
+{%endblock%}
 {% block content %}
     <div class="container">
         <h1>{{ flatpage.title }}</h1>
         {{ flatpage.content }}
+    </div>
+    <div class="custom-button-block">
+        <a href="{% url  'index' %}">
+            <button class="button button_style_blue">Перейти на главную</button>
+        </a>
     </div>
 {% endblock %}

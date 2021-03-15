@@ -1,12 +1,13 @@
-{% extends "base.html" %} {% load static %} 
-{% block head %}
-    <title>{% if recipe %}Редактирование{% else %}Создание{%endif%} рецепта</title>
-    <link rel="stylesheet" href="{% static './pages/form.css' %}" />
-{%endblock%} 
+{% extends "base.html" %} {% load static %}
+{% block title %}{% if recipe %}Редактирование{% else %}Создание{%endif%} рецепта{% endblock title %}
+{% block static_css %}
+    <link rel="stylesheet" href="{% static 'pages/form.css' %}">
+{% endblock %}
+{% block menu %}
+    {% include "menu.html" %}
+{%endblock%}
+{% block menu_title %} {% if recipe %}Редактирование{% else %}Создание{%endif%} рецепта {%endblock%}
 {% block content %}
-    <div class="main__header">
-        <h1 class="main__title">{% if recipe %}Редактирование{% else %}Создание{%endif%} рецепта</h1>
-    </div>
     <div class="form-container">
         <form class="form" method="post" enctype="multipart/form-data" action="{% if recipe %}{% url 'recipe_edit' recipe.author.username recipe.id %}{% else %}{% url 'create_recipe' %}{% endif %}">
             {% csrf_token %}
@@ -21,7 +22,7 @@
                 <p class="form__label">Теги</p>
                 <div class="form__field-group">
                     <div class="tags">
-                        {% load tags_filter %} 
+                        {% load tags_filter %}
                         {% for pk, choices in form.diets.field.choices %}
                             <div class="tags__item">
                                 <input
@@ -34,7 +35,7 @@
                                 />
                                 <label for="id_{{ pk }}" class="tags__label">{{ choices }}</label>
                             </div>
-                        {% endfor %} 
+                        {% endfor %}
                         {{form.diets.non_field_errors}}
                     </div>
                     <span class="form__error">{{form.diets.errors}}</span>
@@ -45,19 +46,19 @@
                 <div class="form__field-group">
                     <div class="form__field-group-ingredientes">
                         <div class="form__dropdown">
-                            <input type="text" id="nameIngredient" class="form__input" />
+                            <input type="text" id="nameIngredient" class="form__input">
                             <div class="form__dropdown-items"></div>
                         </div>
-                        <input type="number" id="cantidad" class="form__input" min="0" />
+                        <input type="number" id="cantidad" class="form__input" min="0">
                         <label for="cantidad" class="form__label" id="cantidadVal">шт.</label>
                     </div>
                     <div class="form__field-group-ingredientes-container">
                         {%for item in recipe.ingredient_recipes.all %}
                             <div id="ing_{{ forloop.counter }}" class="form__field-item-ingredient">
                                 <span>{{ item.ingredient.title }} {{ item.amount }} {{ item.ingredient.dimension }}</span><span class="form__field-item-delete"></span>
-                                <input id="nameIngredient_{{ forloop.counter }}" name="nameIngredient_{{ forloop.counter }}" type="hidden" value="{{ item.ingredient.title }}" />
-                                <input id="valueIngredient_{{ forloop.counter }}" name="valueIngredient_{{ forloop.counter }}" type="hidden" value="{{ item.amount }}" />
-                                <input id="unitsIngredient_{{ forloop.counter }}" name="unitsIngredient_{{ forloop.counter }}" type="hidden" value="{{ item.ingredient.dimension }}" />
+                                <input id="nameIngredient_{{ forloop.counter }}" name="nameIngredient_{{ forloop.counter }}" type="hidden" value="{{ item.ingredient.title }}">
+                                <input id="valueIngredient_{{ forloop.counter }}" name="valueIngredient_{{ forloop.counter }}" type="hidden" value="{{ item.amount }}">
+                                <input id="unitsIngredient_{{ forloop.counter }}" name="unitsIngredient_{{ forloop.counter }}" type="hidden" value="{{ item.ingredient.dimension }}">
                             </div>
                         {%endfor%}
                     </div>
@@ -83,16 +84,16 @@
             <div class="form__group">
                 <span class="form__label">Загрузить фото</span>
                 <div class="form__field-group">
-    
                 {% if recipe %}
-                    <input type="file" name="image" id="id_file">    
-                {% else %}  
                     <label for="id_file" class="form__file-button">Выбрать файл</label>
-                    <input type="file" class="form__file" name="image" id="id_file">            
+                    <input type="file" class="form__file" name="image"
+                       id="id_file" value="{{ form.image.value|cut:'recipes/' }}">  {{ form.image.value|cut:'recipes/' }}
+                {% else %}
+                    <input type="file" name="image" id="id_file">        
                 {% endif %}
                 <span class="form__error"></span>
                 </div>
-            </div>           
+            </div>
             <div class="form__footer">
                 {% if recipe %}
                     <button class="button button_style_blue">Сохранить</button>
@@ -103,13 +104,13 @@
             </div>
         </form>
     </div>
-{%endblock%} 
+{%endblock%}
 {% block js %}
     {% if user.is_authenticated %}
-        <script src="{% static './js/config/config.js' %}"></script>
-        <script src="{% static './js/components/Header.js' %}"></script>
-        <script src="{% static './js/utils/debouncing.js' %}"></script>
-        <script src="{% static './js/api/Api.js' %}"></script>
+        <script src="{% static 'js/config/config.js' %}"></script>
+        <script src="{% static 'js/components/Header.js' %}"></script>
+        <script src="{% static 'js/utils/debouncing.js' %}"></script>
+        <script src="{% static 'js/api/Api.js' %}"></script>
         <script src="{% static 'formRecipe.js' %}"></script>
     {%endif%} 
 {%endblock%}
