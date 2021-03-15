@@ -1,6 +1,6 @@
 #Образ Foodgram
 ![Cat](https://github.com/x038xx77/foodgram-project/workflows/Foodgram/badge.svg)
-## Краткое описание проекта Foodgram
+## Краткое описание проекта Foodgram-prod
 
 Эти инструкции позволят вам получить копию проекта foodgram — продуктовый помошник
 http://llgall.ga
