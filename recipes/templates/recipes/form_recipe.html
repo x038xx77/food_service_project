@@ -89,7 +89,15 @@
                     <input type="file" class="form__file" name="image"
                        id="id_file" value="{{ form.image.value|cut:'recipes/' }}">  {{ form.image.value|cut:'recipes/' }}
                 {% else %}
-                    <input type="file" name="image" id="id_file">        
+                <label for="file_in" class="form__file-button">Выбрать файл</label><span id="file_name"></span>
+                <input type="file" name="image" style="display: none" id="file_in" onchange="onChange()">
+                <script>
+                    function onChange() {
+                    const input = document.getElementById('file_in')
+                    const elem = document.getElementById('file_name')
+                    elem.innerText = input.files[0].name
+                    }
+                </script>     
                 {% endif %}
                 <span class="form__error"></span>
                 </div>
