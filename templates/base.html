@@ -19,5 +19,19 @@
 </main>
 {% include 'footer.html' %}
 {% block js %} {%endblock%}
+<script src="https://browser.sentry-cdn.com/5.11.1/bundle.min.js"></script>
+<!-- https://github.com/getsentry/sentry-javascript/issues/1976#issuecomment-492260648 -->
+<script src="https://browser.sentry-cdn.com/5.11.1/captureconsole.min.js"></script>
+<script>
+    Sentry.init({
+        dsn: 'https://a9d50c03ce364238b88d703cd50c3ea4@o543343.ingest.sentry.io/5663411',
+        debug: false,
+        integrations: [
+            new Sentry.Integrations.CaptureConsole({
+                levels: ['error']
+            })
+        ],
+    });     
+</script>
 </body>
 </html>

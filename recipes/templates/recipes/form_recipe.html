@@ -84,21 +84,25 @@
             <div class="form__group">
                 <span class="form__label">Загрузить фото</span>
                 <div class="form__field-group">
-                {% if recipe %}
-                    <label for="id_file" class="form__file-button">Выбрать файл</label>
-                    <input type="file" class="form__file" name="image"
-                       id="id_file" value="{{ form.image.value|cut:'recipes/' }}">  {{ form.image.value|cut:'recipes/' }}
-                {% else %}
-                <label for="file_in" class="form__file-button">Выбрать файл</label><span id="file_name"></span>
-                <input type="file" name="image" style="display: none" id="file_in" onchange="onChange()">
+                    
+                    <label for="file_in" class="form__file-button">Выбрать файл</label>
+                    <span id="file_name">
+                        <div class="form__group">
+                            <span class="form__label">{% if recipe %} Текущее фото {{ form.image.value|cut:'recipes/' }} {%endif%}</span>
+                            <div class="form__field-group">
+                                <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" style="width:100px;">
+                            </div>
+                        </div>
+                    </span>
+                    <input type="file" name="image" style="display: none" id="file_in" onchange="onChange()">
+                
                 <script>
                     function onChange() {
                     const input = document.getElementById('file_in')
                     const elem = document.getElementById('file_name')
                     elem.innerText = input.files[0].name
                     }
-                </script>     
-                {% endif %}
+                </script>
                 <span class="form__error">{{form.errors}}</span>
                 </div>
             </div>

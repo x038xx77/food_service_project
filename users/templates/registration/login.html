@@ -1,4 +1,4 @@
-{% extends "base.html" %} {% load static %} 
+{% extends "base.html" %} {% load static %} {% csrf_token %}
 {% block title %}Войти на сайт{%endblock%}
 {% block static_css %}
     <link rel="stylesheet" href="{% static './pages/form.css' %}">

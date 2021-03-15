@@ -1,7 +1,5 @@
 {% extends "base.html" %} {% load static %}
-{% block title %}
-    <title>{{recipe.title}}</title>
-{%endblock%}
+{% block title %} {{recipe.title}} {%endblock%}
 {% block static_css %}
 <link rel="stylesheet" href="{% static 'pages/single.css' %}">
 {% endblock %}
