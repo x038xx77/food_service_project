@@ -22,7 +22,7 @@ class Recipe(models.Model):
     cooking_time = models.IntegerField(
         validators=[MinValueValidator(1)], verbose_name='время приготовления')
     image = models.ImageField(
-        upload_to='recipes/', blank=True, null=True)
+        upload_to='recipes/')
 
     def __str__(self):
         return self.title
