@@ -29,7 +29,8 @@ class RecipesView(ListView):
         queryset = Recipe.objects.all()
         sort_list = get_sort_list_tags(self.request)
         if sort_list:
-            queryset = Recipe.objects.filter(diets__slug__in=sort_list)
+            queryset = Recipe.objects.filter(
+                diets__slug__in=sort_list).distinct()
         return queryset
 
 
@@ -46,7 +47,7 @@ class FavoritesView(ListView):
         sort_list = get_sort_list_tags(self.request)
         if sort_list:
             queryset = Recipe.objects.filter(
-                id__in=pk, diets__slug__in=sort_list)
+                id__in=pk, diets__slug__in=sort_list).distinct()
         return queryset
 
 
@@ -68,7 +69,7 @@ class AuthorRecipeView(ListView):
         queryset = Recipe.objects.filter(author=user)
         if sort_list:
             queryset = Recipe.objects.filter(
-                diets__slug__in=sort_list, author=user)
+                diets__slug__in=sort_list, author=user).distinct()
         return queryset
 
     def get_context_data(self, **kwargs):
