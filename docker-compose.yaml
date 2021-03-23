@@ -28,7 +28,7 @@ services:
       - .env
 
   nginx:
-    image: nginx:1.19.6
+    image: nginx:1.19.6-alpine
     depends_on:
       - web
     ports:
